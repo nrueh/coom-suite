@@ -343,3 +343,5 @@ class ASPModelVisitor(ModelVisitor):
         #     pass
         if ctx.INTEGER() is not None:
             self.output_asp.append(f'number("{ctx.INTEGER()}",{ctx.INTEGER()}).')
+        elif ctx.FLOATING() is not None:
+            self.output_asp.append(f'constant("{ctx.FLOATING()}").')

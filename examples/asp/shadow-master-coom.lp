@@ -140,6 +140,7 @@ coom_unary("(grundmerkmale.montagehoehe-8.82)","()","grundmerkmale.montagehoehe-
 coom_binary("grundmerkmale.montagehoehe-8.82","grundmerkmale.montagehoehe","-","8.82").
 coom_path("grundmerkmale.montagehoehe",0,"grundmerkmale").
 coom_path("grundmerkmale.montagehoehe",1,"montagehoehe").
+coom_constant("8.82").
 coom_unary("(90-grundmerkmale.durchgangshoehe)","()","90-grundmerkmale.durchgangshoehe").
 coom_binary("90-grundmerkmale.durchgangshoehe","90","-","grundmerkmale.durchgangshoehe").
 coom_number("90",90).
@@ -148,6 +149,7 @@ coom_path("grundmerkmale.durchgangshoehe",1,"durchgangshoehe").
 coom_unary("acos((48.4985/sqrt(((((grundmerkmale.montagehoehe-8.82)+(90-grundmerkmale.durchgangshoehe))^2)+((125-grundmerkmale.eingabeBreite)^2)))))","acos","(48.4985/sqrt(((((grundmerkmale.montagehoehe-8.82)+(90-grundmerkmale.durchgangshoehe))^2)+((125-grundmerkmale.eingabeBreite)^2))))").
 coom_unary("(48.4985/sqrt(((((grundmerkmale.montagehoehe-8.82)+(90-grundmerkmale.durchgangshoehe))^2)+((125-grundmerkmale.eingabeBreite)^2))))","()","48.4985/sqrt(((((grundmerkmale.montagehoehe-8.82)+(90-grundmerkmale.durchgangshoehe))^2)+((125-grundmerkmale.eingabeBreite)^2)))").
 coom_binary("48.4985/sqrt(((((grundmerkmale.montagehoehe-8.82)+(90-grundmerkmale.durchgangshoehe))^2)+((125-grundmerkmale.eingabeBreite)^2)))","48.4985","/","sqrt(((((grundmerkmale.montagehoehe-8.82)+(90-grundmerkmale.durchgangshoehe))^2)+((125-grundmerkmale.eingabeBreite)^2)))").
+coom_constant("48.4985").
 coom_unary("sqrt(((((grundmerkmale.montagehoehe-8.82)+(90-grundmerkmale.durchgangshoehe))^2)+((125-grundmerkmale.eingabeBreite)^2)))","sqrt","((((grundmerkmale.montagehoehe-8.82)+(90-grundmerkmale.durchgangshoehe))^2)+((125-grundmerkmale.eingabeBreite)^2))").
 coom_unary("((((grundmerkmale.montagehoehe-8.82)+(90-grundmerkmale.durchgangshoehe))^2)+((125-grundmerkmale.eingabeBreite)^2))","()","(((grundmerkmale.montagehoehe-8.82)+(90-grundmerkmale.durchgangshoehe))^2)+((125-grundmerkmale.eingabeBreite)^2)").
 coom_binary("(((grundmerkmale.montagehoehe-8.82)+(90-grundmerkmale.durchgangshoehe))^2)+((125-grundmerkmale.eingabeBreite)^2)","(((grundmerkmale.montagehoehe-8.82)+(90-grundmerkmale.durchgangshoehe))^2)","+","((125-grundmerkmale.eingabeBreite)^2)").
@@ -159,6 +161,7 @@ coom_unary("(grundmerkmale.montagehoehe-8.82)","()","grundmerkmale.montagehoehe-
 coom_binary("grundmerkmale.montagehoehe-8.82","grundmerkmale.montagehoehe","-","8.82").
 coom_path("grundmerkmale.montagehoehe",0,"grundmerkmale").
 coom_path("grundmerkmale.montagehoehe",1,"montagehoehe").
+coom_constant("8.82").
 coom_unary("(90-grundmerkmale.durchgangshoehe)","()","90-grundmerkmale.durchgangshoehe").
 coom_binary("90-grundmerkmale.durchgangshoehe","90","-","grundmerkmale.durchgangshoehe").
 coom_number("90",90).
