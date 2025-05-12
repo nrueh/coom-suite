@@ -56,8 +56,13 @@ path_to(X,P,@dotpath(X')) :- not coom_path(P,I+1,_), path_to(X,P,I,X').
 % Constants and numbers
 path_to(X,P,P) :- coom_binary(F,_,_,P), coom_constant(P), formula_context(F,T), type_aux(X,T).
 path_to(X,P,P) :- coom_binary(F,P,_,_), coom_constant(P), formula_context(F,T), type_aux(X,T).
+path_to(X,P,P) :- coom_unary(F,_,P),    coom_constant(P), formula_context(F,T), type_aux(X,T).
 path_to(X,P,P) :- coom_binary(F,_,_,P), coom_number(P,_), formula_context(F,T), type_aux(X,T).
 path_to(X,P,P) :- coom_binary(F,P,_,_), coom_number(P,_), formula_context(F,T), type_aux(X,T).
+path_to(X,P,P) :- coom_unary(F,_,P),    coom_number(P,_), formula_context(F,T), type_aux(X,T).
+path_to(X,P,P) :- coom_binary(F,_,_,P), coom_float(P),    formula_context(F,T), type_aux(X,T).
+path_to(X,P,P) :- coom_binary(F,P,_,_), coom_float(P),    formula_context(F,T), type_aux(X,T).
+path_to(X,P,P) :- coom_unary(F,_,P),    coom_float(P),    formula_context(F,T), type_aux(X,T).
 
 % Instantiate binaries and unaries
 binary(X,F,@binary(XL,Op,XR),XL,Op,XR) :- coom_binary(F,L,Op,R),
