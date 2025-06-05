@@ -339,7 +339,7 @@ class ASPModelVisitor(ModelVisitor):
                     self.output_asp.append(f'path("{full_path}",{i},"{p.getText()}").')
 
     def visitFloating(self, ctx: ModelParser.FloatingContext):
-        # if ctx.FLOATING() is not None:
-        #     pass
-        if ctx.INTEGER() is not None:
+        if ctx.FLOATING() is not None:
+            self.output_asp.append(f'float("{ctx.FLOATING()}").')
+        elif ctx.INTEGER() is not None:
             self.output_asp.append(f'number("{ctx.INTEGER()}",{ctx.INTEGER()}).')

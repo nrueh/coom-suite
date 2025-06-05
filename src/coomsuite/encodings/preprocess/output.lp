@@ -94,9 +94,11 @@ set(@join(X,N),X')                       :- cardinality_aux(X,N,_), path_to(X,N,
 % Constants and numbers
 constant(C) :- coom_constant(C).
 number(C,N) :- coom_number(C,N).
+float(F)    :- coom_float(F).
 
 #show constant/1.
 #show number/2.
+#show float/1.
 
 % Explanations
 explanation(C,E) :- coom_explanation(C,E).
