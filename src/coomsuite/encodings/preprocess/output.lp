@@ -1,29 +1,29 @@
 %%% Output atoms
 % Attributes of the model (enumerations and numeric features in COOM)
-discrete(T) :- coom_enumeration(T).
+discrete(T,str) :- coom_enumeration(T).
 domain(T,V) :- coom_option(T,V).
 
 % Enumeration attributes
-discrete(@join(T,A)) :- coom_attribute(T,A,"str").
+discrete(@join(T,A),str) :- coom_attribute(T,A,"str").
 domain(@join(T,A),V) :- coom_attribute_value(T,_,A,V), coom_attribute(T,A,"str").
 
-integer(@join(T,A))       :- coom_attribute(T,A,"num"), not discrete.
+numeric(@join(T,A),int)   :- coom_attribute(T,A,"num"), not discrete.
 range(@join(T,A),Min,Max) :- coom_attribute(T,A,"num"), not discrete,
                              Min = #min { V: coom_attribute_value(T,_,A,V) },
                              Max = #max { V: coom_attribute_value(T,_,A,V) }.
 
 % Temporary fix: For clingo, huge ranges might make grounding to large, translate numeric attributes to discrete attributes
-discrete(@join(T,A)) :- coom_attribute(T,A,"num"), discrete.
+discrete(@join(T,A),int) :- coom_attribute(T,A,"num"), discrete.
 domain(@join(T,A),V) :- coom_attribute_value(T,_,A,V), coom_attribute(T,A,"num"), discrete.
 
 % Numeric features
-integer(@join(Ctx,N))       :- coom_feature(Ctx,N,"num",_,_).
+numeric(@join(Ctx,N),int)   :- coom_feature(Ctx,N,"num",_,_).
 range(@join(Ctx,N),Min,Max) :- coom_feature(Ctx,N,"num",_,_), coom_range(Ctx,N,Min,Max).
 
-#show discrete/1.
+#show discrete/2.
 #show domain/2.
 
-#show integer/1.
+#show numeric/2.
 #show range/3.
 
 % Instances (of structures, enumerations and attributes in COOM)
@@ -73,8 +73,11 @@ allow(T,(0,I),O)     :- attribute_constraint((T,_)), coom_option(T,O), I = #coun
 allow(T,(Col,Row),V) :- attribute_constraint((T,_)), allow(T,(0,Row),O), coom_attribute_value(T,O,A,V), attribute_constraint_column(T,Col,A).
 
 % Imply statements
-constraint((C,@binary(X',"=",G)),"boolean") :- imply(C,X',G).
-binary(@binary(X',"=",G),X',"=",G)          :- imply(C,X',G).
+% constraint((C,@binary(X',"=",G)),"boolean") :- imply(C,X',G).
+% binary(@binary(X',"=",G),X',"=",G)          :- imply(C,X',G).
+imply(X',G) :- imply(_,X',G).
+
+#show imply/2.
 
 % Functions
 function(@aggregate(T,X,P),T,@join(X,P)) :- function(X,_,T,P).

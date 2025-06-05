@@ -14,7 +14,7 @@ from .utils.logging import get_logger
 log = get_logger("main")
 
 
-def preprocess(files: List[str], max_bound: int = 99, discrete: bool = False) -> List[str]:
+def preprocess(files: List[str], max_bound: int = 99, discrete: bool = True) -> List[str]:
     """
     Preprocesses COOM ASP facts into a "grounded" configuration fact format
     """

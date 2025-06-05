@@ -66,6 +66,6 @@ def format_sym_coom(s: Symbol) -> str:
         return s.arguments[0].string.removeprefix("root.")
     if s.name == "value":
         path = s.arguments[0].string.removeprefix("root.")
-        value = s.arguments[1]
+        value = s.arguments[-1]
         return f"{path} = {value}"
     raise ValueError(f"Unrecognized predicate: {s.name}")
