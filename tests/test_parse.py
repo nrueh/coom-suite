@@ -328,7 +328,7 @@ class TestCOOMModelParser(TestCase):
         )
 
         self.assertEqual(
-            parse_coom("behavior {condition a = b default c = d}"),
+            parse_coom("behavior {condition a = b default c = 2.2}"),
             [
                 "behavior(0).",
                 'context(0,"product").',
@@ -336,9 +336,9 @@ class TestCOOMModelParser(TestCase):
                 'binary("a=b","a","=","b").',
                 'path("a",0,"a").',
                 'path("b",0,"b").',
-                'default(0,"c","d").',
+                'default(0,"c","2.2").',
                 'path("c",0,"c").',
-                'path("d",0,"d").',
+                'float("2.2").',
             ],
         )
 

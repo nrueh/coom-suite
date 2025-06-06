@@ -113,7 +113,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "enumeration": {
         "test": StableModels(
             {
-                'discrete("Color")',
+                'discrete("Color",str)',
                 'part("product")',
                 'constraint(("root.color",1),"lowerbound")',
                 'domain("Color","Red")',
@@ -137,7 +137,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "bool_enumeration": {
         "test": StableModels(
             {
-                'discrete("Bool")',
+                'discrete("Bool",str)',
                 'part("product")',
                 'constraint(("root.boolean",1),"lowerbound")',
                 'domain("Bool","True")',
@@ -156,8 +156,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "attribute": {
         "test": StableModels(
             {
-                'discrete("Wheel")',
-                'integer("Wheel.size")',
+                'discrete("Wheel",str)',
+                'numeric("Wheel.size",int)',
                 'part("product")',
                 'constraint(("root.wheel",1),"lowerbound")',
                 'constraint(("root.wheel[0].size",1),"lowerbound")',
@@ -201,8 +201,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "require_with_number": {
         "test": StableModels(
             {
-                'discrete("Wheel")',
-                'integer("Wheel.size")',
+                'discrete("Wheel",str)',
+                'numeric("Wheel.size",int)',
                 'part("product")',
                 'constraint(("root.wheel",1),"lowerbound")',
                 'constraint(("root.wheel[0].size",1),"lowerbound")',
@@ -235,8 +235,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "require_with_number_ge": {
         "test": StableModels(
             {
-                'discrete("Wheel")',
-                'integer("Wheel.size")',
+                'discrete("Wheel",str)',
+                'numeric("Wheel.size",int)',
                 'part("product")',
                 'constraint(("root.wheel",1),"lowerbound")',
                 'constraint(("root.wheel[0].size",1),"lowerbound")',
@@ -270,7 +270,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         "test": StableModels(
             {
                 'constant("W28")',
-                'discrete("Wheel")',
+                'discrete("Wheel",str)',
                 'part("product")',
                 'constraint(("root.wheel",1),"lowerbound")',
                 'constraint((0,"root.wheel[0]=W28"),"boolean")',
@@ -289,8 +289,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "require_two_wheels": {
         "test": StableModels(
             {
-                'discrete("Wheel")',
-                'integer("Wheel.size")',
+                'discrete("Wheel",str)',
+                'numeric("Wheel.size",int)',
                 'part("product")',
                 'constraint(("root.frontWheel",1),"lowerbound")',
                 'constraint(("root.rearWheel",1),"lowerbound")',
@@ -337,8 +337,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
             {
                 'constant("True")',
                 'constant("Small")',
-                'discrete("Wheel")',
-                'discrete("Bool")',
+                'discrete("Wheel",str)',
+                'discrete("Bool",str)',
                 'part("product")',
                 'constraint(("root.wheel",1),"lowerbound")',
                 'constraint(("root.wheelSupport",1),"lowerbound")',
@@ -369,7 +369,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
             {
                 'constant("Silver")',
                 'constant("Big")',
-                'discrete("Size")',
+                'discrete("Size",str)',
                 'part("product")',
                 'constraint(("root.Size",1),"lowerbound")',
                 'domain("Size","Small")',
@@ -387,7 +387,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         "test": StableModels(
             {
                 'constant("W28")',
-                'discrete("Size")',
+                'discrete("Size",str)',
                 'part("product")',
                 'part("Wheel")',
                 'constraint(("root.wheel",2),"lowerbound")',
@@ -424,7 +424,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         "test": StableModels(
             {
                 'constant("Red")',
-                'discrete("Color")',
+                'discrete("Color",str)',
                 'part("product")',
                 'part("Basket")',
                 'constraint(("root.basket",1),"lowerbound")',
@@ -450,7 +450,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         "test": StableModels(
             {
                 'constant("Red")',
-                'discrete("Color")',
+                'discrete("Color",str)',
                 'part("product")',
                 'part("Bag")',
                 'constraint(("root.bag",2),"lowerbound")',
@@ -487,7 +487,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         "test": StableModels(
             {
                 'constant("Red")',
-                'discrete("Color")',
+                'discrete("Color",str)',
                 'part("product")',
                 'part("Compartment")',
                 'part("Bag")',
@@ -557,8 +557,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "combination": {
         "test": StableModels(
             {
-                'discrete("Wheel")',
-                'discrete("Bool")',
+                'discrete("Wheel",str)',
+                'discrete("Bool",str)',
                 'part("product")',
                 'constraint(("root.wheelSupport",1),"lowerbound")',
                 'constraint(("root.wheel",1),"lowerbound")',
@@ -593,8 +593,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "combination_with_structure": {
         "test": StableModels(
             {
-                'discrete("Size")',
-                'discrete("Bool")',
+                'discrete("Size",str)',
+                'discrete("Bool",str)',
                 'part("product")',
                 'part("Wheel")',
                 'constraint(("root.wheelSupport",1),"lowerbound")',
@@ -646,8 +646,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "combination_at_part_with_wildcard": {
         "test": StableModels(
             {
-                'discrete("Size")',
-                'discrete("Material")',
+                'discrete("Size",str)',
+                'discrete("Material",str)',
                 'part("product")',
                 'part("Wheel")',
                 'constraint(("root.wheel",2),"lowerbound")',
@@ -708,8 +708,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "combination_at_part_multiple_instances": {
         "test": StableModels(
             {
-                'discrete("Wheel")',
-                'discrete("Material")',
+                'discrete("Wheel",str)',
+                'discrete("Material",str)',
                 'part("product")',
                 'part("Bike")',
                 'constraint(("root.bike",2),"lowerbound")',
@@ -791,7 +791,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "simple_numeric_feature": {
         "test": StableModels(
             {
-                'integer("product.size")',
+                'numeric("product.size",int)',
                 'part("product")',
                 'constraint(("root.size",1),"lowerbound")',
                 'index("root.size[0]",0)',
@@ -810,8 +810,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "simple_arithmetic_plus": {
         "test": StableModels(
             {
-                'integer("product.a")',
-                'integer("product.b")',
+                'numeric("product.a",int)',
+                'numeric("product.b",int)',
                 'part("product")',
                 'constraint(("root.a",1),"lowerbound")',
                 'constraint(("root.b",1),"lowerbound")',
@@ -837,8 +837,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "simple_arithmetic_minus": {
         "test": StableModels(
             {
-                'integer("product.a")',
-                'integer("product.b")',
+                'numeric("product.a",int)',
+                'numeric("product.b",int)',
                 'part("product")',
                 'constraint(("root.a",1),"lowerbound")',
                 'constraint(("root.b",1),"lowerbound")',
@@ -864,8 +864,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "simple_arithmetic_multiplication": {
         "test": StableModels(
             {
-                'integer("product.a")',
-                'integer("product.b")',
+                'numeric("product.a",int)',
+                'numeric("product.b",int)',
                 'part("product")',
                 'constraint(("root.a",1),"lowerbound")',
                 'constraint(("root.b",1),"lowerbound")',
@@ -891,7 +891,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "simple_arithmetic_plus_default_right": {
         "test": StableModels(
             {
-                'integer("product.a")',
+                'numeric("product.a",int)',
                 'part("product")',
                 'constraint(("root.a",1),"lowerbound")',
                 'index("root.a[0]",0)',
@@ -910,7 +910,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "simple_arithmetic_plus_default_left": {
         "test": StableModels(
             {
-                'integer("product.b")',
+                'numeric("product.b",int)',
                 'part("product")',
                 'constraint(("root.b",1),"lowerbound")',
                 'index("root.b[0]",0)',
@@ -929,7 +929,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "simple_arithmetic_minus_default_right": {
         "test": StableModels(
             {
-                'integer("product.a")',
+                'numeric("product.a",int)',
                 'part("product")',
                 'constraint(("root.a",1),"lowerbound")',
                 'index("root.a[0]",0)',
@@ -946,7 +946,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "simple_arithmetic_minus_default_left": {
         "test": StableModels(
             {
-                'integer("product.b")',
+                'numeric("product.b",int)',
                 'part("product")',
                 'constraint(("root.b",1),"lowerbound")',
                 'index("root.b[0]",0)',
@@ -956,6 +956,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'type("root","product")',
                 'type("root.b[0]","product.b")',
                 'range("product.b",1,3)',
+                'unary("-2","-","2")',
             }
         ),
         "files": ["simple_arithmetic_minus_default_left.lp"],
@@ -963,8 +964,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "parentheses": {
         "test": StableModels(
             {
-                'integer("product.a")',
-                'integer("product.b")',
+                'numeric("product.a",int)',
+                'numeric("product.b",int)',
                 'part("product")',
                 'constraint(("root.a",1),"lowerbound")',
                 'constraint(("root.b",1),"lowerbound")',
@@ -1016,7 +1017,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "sum": {
         "test": StableModels(
             {
-                'integer("product.x")',
+                'numeric("product.x",int)',
                 'part("product")',
                 'constraint(("root.x",0),"lowerbound")',
                 'constraint((0,"sum(root.x)<=10"),"boolean")',

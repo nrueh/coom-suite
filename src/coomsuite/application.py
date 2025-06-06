@@ -145,7 +145,7 @@ class COOMSolverApp(Application):
             ]
             output_symbols.extend(_get_valuation(model))
         else:
-            output_symbols = model.symbols(shown=True)
+            output_symbols = list(model.symbols(shown=True))
 
         print(_sym_to_prg(output_symbols, self._options["output_format"]))
 

@@ -76,7 +76,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            discrete("A").
+            discrete("A",str).
             domain("A","A1").
             domain("A","A2").
             index("root.a[0]",0).
@@ -90,7 +90,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            discrete("A").
+            discrete("A",str).
             domain("A","A1").
             domain("A","A2").
             index("root.a[0]",0).
@@ -108,7 +108,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             type("root","product").
             type("root.a[0]","A").
             type("root.a[1]","A").
-            discrete("A").
+            discrete("A",str).
             domain("A","A1").
             domain("A","A2").
             index("root.a[0]",0).
@@ -126,7 +126,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            integer("A").
+            numeric("A",int).
             range("A",1,2).
             index("root.a[0]",0).
             parent("root.a[0]","root").
@@ -145,7 +145,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            integer("A").
+            numeric("A",int).
             range("A",1,2).
             index("root.a[0]",0).
             parent("root.a[0]","root").
@@ -169,7 +169,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             type("root","product").
             type("root.a[0]","A").
             type("root.a[1]","A").
-            integer("A").
+            numeric("A",int).
             range("A",1,2).
             index("root.a[0]",0).
             index("root.a[1]",1).
@@ -186,7 +186,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            integer("A").
+            numeric("A",int).
             index("root.a[0]",0).
             parent("root.a[0]","root").
             constraint(("root.a",1),"lowerbound").
@@ -205,7 +205,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            integer("A").
+            numeric("A",int).
             range("A",#inf,2).
             index("root.a[0]",0).
             parent("root.a[0]","root").
@@ -222,7 +222,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            integer("A").
+            numeric("A",int).
             range("A",1,#sup).
             index("root.a[0]",0).
             parent("root.a[0]","root").
@@ -479,7 +479,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             part("product").
             type("root","product").
             type("root.a[0]","A").
-            discrete("A").
+            discrete("A",str).
             index("root.a[0]",0).
             parent("root.a[0]","root").
             constraint((0,"root"),"table").
@@ -692,7 +692,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "test": StableModels({'value("root.basket[0]","White")'}, {'value("root.basket[0]","Black")'}),
         "program": """
             part("product").
-            discrete("Basket").
+            discrete("Basket",str).
             domain("Basket","Black").
             domain("Basket","White").
             type("root.basket[0]","Basket").
@@ -705,7 +705,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            discrete("A").
+            discrete("A",str).
             domain("A","A1").
             domain("A","A2").
             index("root.a[0]",0).
@@ -721,7 +721,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            integer("A").
+            numeric("A",int).
             range("A",1,2).
             index("root.a[0]",0).
             parent("root.a[0]","root").
@@ -750,7 +750,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "test": StableModels({'value("root.color[0]","Red")'}),
         "program": """
             part("product").
-            discrete("Color").
+            discrete("Color",str).
             domain("Color","Red").
             type("root.color[0]","Color").
             parent("root.color[0]","root").
@@ -763,7 +763,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "test": StableModels({'value("root.size[0]",1)'}, {'value("root.size[0]",2)'}, {'value("root.size[0]",3)'}),
         "program": """
             part("product").
-            integer("product.size").
+            numeric("product.size",int).
             range("product.size",1,3).
             type("root","product").
             type("root.size[0]","product.size").
