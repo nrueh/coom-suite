@@ -7,9 +7,7 @@ assign(range,trang(NAME),CHECK) :- range(TYPE,MIN,MAX),
     EMIN = constant(int(MIN)),
     EMAX = constant(int(MAX)).
 
-
 violated((NAME,range)) :- range(TYPE,MIN,MAX), type(NAME,TYPE), value(trang(NAME),bool,false).
-
 
 assign(numbers,XN,constant(int(I)))    :- number(XN,I).
 assign(float,XN,constant(float(XN)))   :- float(XN).
