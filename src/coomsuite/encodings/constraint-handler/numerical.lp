@@ -17,3 +17,8 @@ violated((NAME,range)) :- range(TYPE,MIN,MAX), type(NAME,TYPE), value(trang(NAME
 
 assign(numbers,XN,val(int,I))         :- number(XN,I).
 assign(float,XN,val(float,float(XN))) :- float(XN).
+
+% Non-determinism for floats
+% { assign(dummy,X,E) } = 1 :- floatRange(X,MIN,MAX,INCR),
+%                              V = MIN*INCR..MAX*INCR,
+%                              E = operation(floatdiv,(val(int,V),(val(int,INCR),()))).
