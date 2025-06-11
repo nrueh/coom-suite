@@ -16,14 +16,14 @@ set_assign(adummy, SET, CHKEY) :-
     function(_,"count",SET),
     set(SET,KEY),
     include(KEY),
-    CHKEY = constant(str(KEY)).
+    CHKEY = val(str,KEY).
 
 multimap_declare(ddummy,MAP) :- function(_,"sum",MAP).
 multimap_assign(adummy, MAP, CHKEY, VALUE) :-
     function(_,"sum",MAP),
     set(MAP,KEY),
     include(KEY),
-    CHKEY = constant(str(KEY)),
+    CHKEY = val(str,KEY),
     VALUE = variable(KEY).
 
 violated((C,F)) :- constraint((C,F),"boolean"), value(F,bool,false).

@@ -4,4 +4,4 @@
 
 % Auxiliary values for (non-numeric) constants
 % value(P,P) :- constant(P).
-assign(constants,XN,constant(str(XN))) :- constant(XN).
+assign(constants,XN,val(str,XN)) :- constant(XN).
