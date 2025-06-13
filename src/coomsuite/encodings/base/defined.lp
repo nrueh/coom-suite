@@ -5,6 +5,7 @@
 #defined domain/2.
 #defined numeric/2.
 #defined range/3.
+#defined precision/2.
 
 #defined type/2.
 #defined index/2.

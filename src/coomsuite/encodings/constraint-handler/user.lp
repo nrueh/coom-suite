@@ -1,12 +1,5 @@
-% consistent(X)   :- user_include(X), type(X,_).
-% consistent(X,V) :- user_value(X,V), type(X,T), discrete(T), domain(T,V).
-% consistent(X,V) :- user_value(X,V), type(X,T), integer(T),     range(T,Min,Max), Min <= V <= Max.
-% consistent(X,V) :- user_value(X,V), type(X,T), integer(T), not range(T,_,_).
-
-% include(X) :- user_include(X), consistent(X).
-% include(X) :- user_value(X,V), consistent(X,V).
-% value(X,V) :- user_value(X,V), consistent(X,V).
-
+% Prohibit double assignments of a value to an attribute
+:- include(X), type(X,T), value(X,_,V1), value(X,_,V2), V1 != V2.
 
 consistent(X)   :- user_include(X), type(X,_).
 consistent(X,V,EV) :- user_value(X,V), type(X,T), discrete(T,CT), domain(T,V), convert(T,V,EV).
