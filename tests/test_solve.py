@@ -119,6 +119,12 @@ class TestClingo(TestCase):
         self.run_test("min")
         self.run_test("max")
 
+    def test_imply(self) -> None:
+        """
+        Test imply statements (clingo).
+        """
+        # self.run_test("simple_imply") # TODO: Add test
+
     def test_user_input(self) -> None:
         """
         Test solving user input (clingo).

@@ -157,7 +157,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         "test": StableModels(
             {
                 'discrete("Wheel",str)',
-                'numeric("Wheel.size",int)',
+                'discrete("Wheel.size",int)',
                 'part("product")',
                 'constraint(("root.wheel",1),"lowerbound")',
                 'constraint(("root.wheel[0].size",1),"lowerbound")',
@@ -174,7 +174,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'type("root.wheel[0].size[0]","Wheel.size")',
                 'allow("Wheel",(0,0),"W14")',
                 'allow("Wheel",(1,0),14)',
-                'range("Wheel.size",14,14)',
+                'domain("Wheel.size",14)',
                 'column(("Wheel","root.wheel[0]"),0,1,"root.wheel[0].size[0]")',
                 'column(("Wheel","root.wheel[0]"),0,0,"root.wheel[0]")',
             }
@@ -202,7 +202,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         "test": StableModels(
             {
                 'discrete("Wheel",str)',
-                'numeric("Wheel.size",int)',
+                'discrete("Wheel.size",int)',
                 'part("product")',
                 'constraint(("root.wheel",1),"lowerbound")',
                 'constraint(("root.wheel[0].size",1),"lowerbound")',
@@ -224,7 +224,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'allow("Wheel",(0,1),"W28")',
                 'allow("Wheel",(1,1),28)',
                 'allow("Wheel",(1,0),27)',
-                'range("Wheel.size",27,28)',
+                'domain("Wheel.size",27)',
+                'domain("Wheel.size",28)',
                 'binary("root.wheel[0].size[0]=27","root.wheel[0].size[0]","=","27")',
                 'column(("Wheel","root.wheel[0]"),0,1,"root.wheel[0].size[0]")',
                 'column(("Wheel","root.wheel[0]"),0,0,"root.wheel[0]")',
@@ -236,7 +237,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         "test": StableModels(
             {
                 'discrete("Wheel",str)',
-                'numeric("Wheel.size",int)',
+                'discrete("Wheel.size",int)',
                 'part("product")',
                 'constraint(("root.wheel",1),"lowerbound")',
                 'constraint(("root.wheel[0].size",1),"lowerbound")',
@@ -258,7 +259,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'allow("Wheel",(0,1),"W28")',
                 'allow("Wheel",(1,1),28)',
                 'allow("Wheel",(1,0),27)',
-                'range("Wheel.size",27,28)',
+                'domain("Wheel.size",27)',
+                'domain("Wheel.size",28)',
                 'binary("root.wheel[0].size[0]>=28","root.wheel[0].size[0]",">=","28")',
                 'column(("Wheel","root.wheel[0]"),0,1,"root.wheel[0].size[0]")',
                 'column(("Wheel","root.wheel[0]"),0,0,"root.wheel[0]")',
@@ -310,7 +312,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         "test": StableModels(
             {
                 'discrete("Wheel",str)',
-                'numeric("Wheel.size",int)',
+                'discrete("Wheel.size",int)',
                 'part("product")',
                 'constraint(("root.frontWheel",1),"lowerbound")',
                 'constraint(("root.rearWheel",1),"lowerbound")',
@@ -342,7 +344,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'allow("Wheel",(0,1),"W28")',
                 'allow("Wheel",(1,1),28)',
                 'allow("Wheel",(1,0),27)',
-                'range("Wheel.size",27,28)',
+                'domain("Wheel.size",27)',
+                'domain("Wheel.size",28)',
                 'binary("root.frontWheel[0].size[0]=root.rearWheel[0].size[0]","root.frontWheel[0].size[0]","=","root.rearWheel[0].size[0]")',
                 'column(("Wheel","root.frontWheel[0]"),0,1,"root.frontWheel[0].size[0]")',
                 'column(("Wheel","root.rearWheel[0]"),0,1,"root.rearWheel[0].size[0]")',
@@ -573,6 +576,50 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
             }
         ),
         "files": ["require_with_partonomy_multiple_instances.lp"],
+    },
+    "imply_undef": {
+        "test": StableModels({'number("5",5)', 'part("product")', 'type("root","product")'}),
+        "program": """
+            coom_structure("product").
+
+            coom_behavior(("product",0)).
+            coom_require(("product",0),"x=5").
+            coom_binary("x=5","x","=","5").
+            coom_path("x",0,"x").
+            coom_number("5",5).""",
+    },
+    "imply_with_number": {
+        "test": StableModels(
+            {
+                'part("product")',
+                'constraint(("root.wheel",1),"lowerbound")',
+                'constraint(("root.wheel[0].size",1),"lowerbound")',
+                'constraint(("Wheel","root.wheel[0]"),"table")',
+                'discrete("Wheel.size",int)',
+                'discrete("Wheel",str)',
+                'domain("Wheel.size",27)',
+                'domain("Wheel.size",28)',
+                'domain("Wheel","W27")',
+                'domain("Wheel","W28")',
+                'index("root.wheel[0]",0)',
+                'index("root.wheel[0].size[0]",0)',
+                'number("27",27)',
+                'parent("root.wheel[0]","root")',
+                'parent("root.wheel[0].size[0]","root.wheel[0]")',
+                'set("root.wheel","root.wheel[0]")',
+                'set("root.wheel[0].size","root.wheel[0].size[0]")',
+                'type("root","product")',
+                'type("root.wheel[0]","Wheel")',
+                'type("root.wheel[0].size[0]","Wheel.size")',
+                'allow("Wheel",(0,0),"W27")',
+                'allow("Wheel",(0,1),"W28")',
+                'allow("Wheel",(1,1),28)',
+                'allow("Wheel",(1,0),27)',
+                'column(("Wheel","root.wheel[0]"),0,1,"root.wheel[0].size[0]")',
+                'column(("Wheel","root.wheel[0]"),0,0,"root.wheel[0]")',
+            }
+        ),
+        "files": ["imply_with_number.lp"],
     },
     "combination": {
         "test": StableModels(

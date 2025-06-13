@@ -723,6 +723,10 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "ftest": StableModels({'value("root.x[0]",3)', 'value("root.x[1]",3)'}, fclingo=True),
         "files": ["max.lp"],
     },
+    "simple_imply": {
+        "test": TEST_EMPTY,
+        "program": "",
+    },
     "add_part": {
         "test": StableModels({'include("root.a[0]")'}),
         "program": """
