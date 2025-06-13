@@ -17,14 +17,18 @@ discrete(@join(T,A),int) :- coom_attribute(T,A,"num"), discrete.
 domain(@join(T,A),V) :- coom_attribute_value(T,_,A,V), coom_attribute(T,A,"num"), discrete.
 
 % Numeric features
-numeric(@join(Ctx,N),int)   :- coom_feature(Ctx,N,"num",_,_).
+numeric(@join(Ctx,N),int)   :- coom_feature(Ctx,N,"num",_,_), not coom_precision(Ctx,N,_). % Integers
+numeric(@join(Ctx,N),float) :- coom_feature(Ctx,N,"num",_,_),     coom_precision(Ctx,N,_). % Floats
+
 range(@join(Ctx,N),Min,Max) :- coom_feature(Ctx,N,"num",_,_), coom_range(Ctx,N,Min,Max).
+precision(@join(Ctx,N),P)   :- coom_feature(Ctx,N,"num",_,_), coom_precision(Ctx,N,P). % For floats
 
 #show discrete/2.
 #show domain/2.
 
 #show numeric/2.
 #show range/3.
+#show precision/2.
 
 % Instances (of structures, enumerations and attributes in COOM)
 type("root","product") :- coom_structure("product").
