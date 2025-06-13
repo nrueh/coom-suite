@@ -266,6 +266,26 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         ),
         "files": ["require_with_number_ge.lp"],
     },
+    "require_with_float": {
+        "test": StableModels(
+            {
+                'float("2.24")',
+                'part("product")',
+                'constraint(("root.a",1),"lowerbound")',
+                'constraint((0,"root.a[0]=2.24"),"boolean")',
+                'index("root.a[0]",0)',
+                'parent("root.a[0]","root")',
+                'set("root.a","root.a[0]")',
+                'type("root","product")',
+                'type("root.a[0]","product.a")',
+                'numeric("product.a",float)',
+                'range("product.a",0,10)',
+                'precision("product.a",2)',
+                'binary("root.a[0]=2.24","root.a[0]","=","2.24")',
+            }
+        ),
+        "files": ["require_with_float.lp"],
+    },
     "require_with_constant": {
         "test": StableModels(
             {
@@ -788,7 +808,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         ),
         "files": ["combination_at_part_multiple_instances.lp"],
     },
-    "simple_numeric_feature": {
+    "simple_numeric_integer_feature": {
         "test": StableModels(
             {
                 'numeric("product.size",int)',
@@ -806,6 +826,27 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
             coom_structure("product").
             coom_feature("product","size","num",1,1).
             coom_range("product","size",1,3).""",
+    },
+    "simple_numeric_float_feature": {
+        "test": StableModels(
+            {
+                'numeric("product.size",float)',
+                'part("product")',
+                'constraint(("root.size",1),"lowerbound")',
+                'index("root.size[0]",0)',
+                'parent("root.size[0]","root")',
+                'set("root.size","root.size[0]")',
+                'type("root","product")',
+                'type("root.size[0]","product.size")',
+                'range("product.size",1,3)',
+                'precision("product.size",2)',
+            }
+        ),
+        "program": """
+            coom_structure("product").
+            coom_feature("product","size","num",1,1).
+            coom_range("product","size",1,3).
+            coom_precision("product","size",2).""",
     },
     "simple_arithmetic_plus": {
         "test": StableModels(

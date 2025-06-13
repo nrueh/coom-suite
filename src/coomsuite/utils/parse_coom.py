@@ -120,7 +120,7 @@ class ASPModelVisitor(ModelVisitor):
                 self.output_asp.append(f'precision("{self.structure_name}","{feature_name}",{precision}).')
             if num.unit() is not None:
                 unit = str(num.unit().NAME())
-                self.output_asp.append(f'unit("{self.structure_name}","{feature_name}",{unit}).')
+                self.output_asp.append(f'unit("{self.structure_name}","{feature_name}","{unit}").')
 
             if num.min is not None or num.max is not None:
                 r_min = "#inf" if num.min.getText() == "-\u221e" else num.min.getText()  # negative infinity symbol

@@ -233,6 +233,32 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             binary("root.a[0]<3","root.a[0]","<","3").
             number("3",3).""",
     },
+    "simple_float": {
+        "test": StableModels(
+            {'value("root.a[0]","1.0")'},
+            {'value("root.a[0]","1.1")'},
+            {'value("root.a[0]","1.2")'},
+            {'value("root.a[0]","1.3")'},
+            {'value("root.a[0]","1.4")'},
+            {'value("root.a[0]","1.5")'},
+            {'value("root.a[0]","1.6")'},
+            {'value("root.a[0]","1.7")'},
+            {'value("root.a[0]","1.8")'},
+            {'value("root.a[0]","1.9")'},
+            {'value("root.a[0]","2.0")'},
+        ),
+        "program": """
+            type("root","product").
+            type("root.a[0]","A").
+            numeric("A",float).
+            range("A",1,2).
+            precision("A",1).
+            index("root.a[0]",0).
+            parent("root.a[0]","root").
+            constraint(("root.a",1),"lowerbound").
+            set("root.a","root.a[0]").
+            part("product").""",
+    },
     "eq_sat": {
         "test": TEST_EMPTY,
         "program": """
@@ -642,6 +668,26 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             binary("2+2","2","+","2").
             number("2",2).
             number("6",6).""",
+    },
+    "plus_sat_float": {
+        "test": TEST_EMPTY,
+        "program": """
+            constraint((0,"5.5=1.1+4.4"),"boolean").
+            binary("5.5=1.1+4.4","5.5","=","1.1+5.5").
+            binary("1.1+4.4","1.1","+","4.4").
+            float("1.1").
+            float("5.5").
+            float("4.4").""",
+    },
+    "plus_unsat_float": {
+        "test": TEST_UNSAT,
+        "program": """
+            constraint((0,"5.5=1.1+4.5"),"boolean").
+            binary("5.5=1.1+4.5","5.5","=","1.1+5.5").
+            binary("1.1+4.5","1.1","+","4.5").
+            float("1.1").
+            float("5.5").
+            float("4.5").""",
     },
     "count": {
         "test": StableModels({'include("root.x[0]")', 'include("root.x[1]")'}),

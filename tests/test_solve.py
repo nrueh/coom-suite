@@ -297,6 +297,8 @@ class TestConstraintHandler(TestCase):
         self.run_test("optional_integer")
         self.run_test("multiple_integer")
 
+        self.run_test("simple_float")  # Constraint handler only
+
     def test_boolean_constraints(self) -> None:
         """
         Test Boolean constraints (constraint handler).
@@ -365,14 +367,17 @@ class TestConstraintHandler(TestCase):
         self.run_test("precedence_unsat")
         self.run_test("precedence_par_unsat")
 
+        self.run_test("plus_sat_float")  # Constraint handler only
+        self.run_test("plus_unsat_float")  # Constraint handler only
+
     def test_aggregates(self) -> None:
         """
         Test aggregation functions (constraint handler).
         """
         self.run_test("count")
         self.run_test("sum")
-        # self.run_test("min")
-        # self.run_test("max")
+        # self.run_test("min") % Not yet implemented in the constraint handler
+        # self.run_test("max") % Not yet implemented in the constraint handler
 
     def test_user_input(self) -> None:
         """

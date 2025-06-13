@@ -47,6 +47,7 @@ class TestPreprocess(TestCase):
         self.run_test("require_with_number")
         self.run_test("require_with_number_ge")
         self.run_test("require_with_constant")
+        self.run_test("require_with_float")
         self.run_test("require_two_wheels")
         self.run_test("conditional_require_undef")
         self.run_test("conditional_require")
@@ -69,7 +70,8 @@ class TestPreprocess(TestCase):
         """
         Test preprocessing numeric features, arithmetics and numerical function in COOM.
         """
-        self.run_test("simple_numeric_feature")
+        self.run_test("simple_numeric_integer_feature")
+        self.run_test("simple_numeric_float_feature")
         self.run_test("simple_arithmetic_plus")
         self.run_test("simple_arithmetic_minus")
         self.run_test("simple_arithmetic_multiplication")
