@@ -1,6 +1,6 @@
 product {
     1..6 Semester semester
-    1..1 Specialization specialization // should be 1 or 2 different specializations allowed, missing syntax for constraint
+    1..2 Specialization specialization // should be 1 or 2 different specializations allowed, missing syntax for constraint
     // num totalECTS
     // Semester first
     // Semester second
@@ -58,10 +58,12 @@ enumeration Module {
 }
 
 behavior {
+    alldiff specialization
+
     require semester[i].type != semester[i+1].type
 
     // You cannot take a module twice (correct behavior?)
-    require semester.module != semester.module
+    alldiff semester.module != semester.module
 }
 
 behavior Semester {
@@ -70,7 +72,7 @@ behavior Semester {
     allow        ( Winter   (winter, each) )
 
     imply currentECTS = sum(root.semester.module if root.semester.id < id)
-} 
+}
 
 behavior Semester {
     condition currentECTS < 126
@@ -80,23 +82,25 @@ behavior Semester {
 behavior {
     require 180 = sum(semester.module.ects)
 
-    require 102 = sum(semester.module.ects if semester.module.group == i)
+    require 102 = sum(semester.module.ects if semester.module.group = i)
 
-    require 12 = sum(semester.module.ects if semester.module.group == ii)
+    require 12 = sum(semester.module.ects if semester.module.group = ii)
 
-    require 30 = sum(semester.module.ects if semester.module.group == x)
+    require 30 = sum(semester.module.ects if semester.module.group = x)
 
-    require 6 = sum(semester.module.ects if semester.module.group == v)
+    require 6 = sum(semester.module.ects if semester.module.group = v)
 
-    require 18 = sum(semester.module.ects if semester.module.group == vi)
+    require 18 = sum(semester.module.ects if semester.module.group = vi)
 
     exists Thesis in semester.module
 }
 
 behavior Module {
-    condition root.specialization = Bioinformatics && group = x
-    require specialization_group = b || specialization_group = ba
+    condition specialization_group = b || specialization_group = ba
+    exists Bioinformatics in root.specialization
+
+    condition specialization_group = c || specialization_group = ca
+    exists Chemistry in root.specialization
 
     // etc...
 }
-

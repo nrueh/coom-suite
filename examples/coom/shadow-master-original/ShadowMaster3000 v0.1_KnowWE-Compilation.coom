@@ -1,0 +1,509 @@
+// VM_minipema_constraints_Pfosten
+
+behavior Pfosten {
+
+    // Ausgangswerte für die Bestimmung der Pfosten
+    define eingabeBreite = unterposition.grundmerkmale.eingabeBreite
+    define montageHoehe = unterposition.grundmerkmale.montagehoehe
+    define durchgangshoehe = unterposition.grundmerkmale.durchgangshoehe
+    define neigungswinkel = unterposition.grundmerkmale.neigungswinkelAnlage
+
+    require ueberstand = eingabeBreite - km_mittePfosten
+
+    require km_gesamthoehe = durchgangshoehe + tan(neigungswinkel) * ueberstand
+
+}
+
+
+
+// VM_minipema_constraints_Pfosten
+
+behavior Pfosten {
+
+    require ueberstand > 105
+	require km_mittePfosten < 4000
+	require km_gesamthoehe > 1000
+	require km_gesamthoehe < 3200
+
+
+	condition km_gesamthoehe > 2200
+	require typPfosten != _Doppelpfosten
+
+	 // these defaults are only here for technical reasons -> currently COOM shows unsat if no default for constrained num values exists
+	default ueberstand = 150
+	default km_mittePfosten = 3000
+	default km_gesamthoehe = 2000
+}
+
+
+
+// VM_minipema_constraints_Unterposition
+
+behavior Unterposition {
+
+    // Nutzereingaben
+    define eingabeBreite = grundmerkmale.eingabeBreite
+    define montageHoehe = grundmerkmale.montagehoehe
+    define durchgangshoehe = grundmerkmale.durchgangshoehe
+
+    // Konstanten aus der Konstruktion
+    define UKKUKK = 8.82  // Unterkante Kasten zu Unterkante Konsole
+    define UKKKTW = 90 // Unterkante Kasten zu Achse TW
+    define ATWW = 125 // Achse TW zur Wand
+    define r = 48.4985 // Parallele Drehpunkt Pfosten zu Achse T
+    define FSCH_Hoehe = 80 // Dachdicke
+
+    // Berechnung von Hilfsvariablen
+    define debug_deltaHoehe = montageHoehe - UKKUKK + UKKKTW - durchgangshoehe
+    define debug_deltaBreite = ATWW - eingabeBreite
+
+    define debug_deltaHoehePow2 = debug_deltaHoehe^2
+    define debug_deltaBreitePow2 = debug_deltaBreite^2
+    define debug_sqrtValue = sqrt(debug_deltaHoehePow2 + debug_deltaBreitePow2 )
+
+
+
+
+    // Zu berechnende Zielvariablen
+    define bestellBreite = grundmerkmale.bestellBreite
+    define neigungswinkel = grundmerkmale.neigungswinkelAnlage
+
+    // Berechnung
+    define debug_atanArg = debug_deltaBreite / debug_deltaHoehe
+    define debug_acosArg = r / debug_sqrtValue
+    define debug_acosValue = acos(debug_acosArg)
+    define debug_atanValue = atan(debug_atanArg)
+    require neigungswinkel = debug_atanValue + debug_acosValue
+    require bestellBreite = eingabeBreite + tan(neigungswinkel) * FSCH_Hoehe
+    require grundmerkmale.flaeche = grundmerkmale.laenge * bestellBreite / 1000000 // mm x mm to m^2
+    require grundmerkmale.weight = grundmerkmale.flaeche * cover.weight / 1000 // gramm to Kg
+
+
+
+
+    // debug Ausgaben
+    require grundmerkmale.debugValues.deltaHoehe = debug_deltaHoehe
+    require grundmerkmale.debugValues.deltaBreite = debug_deltaBreite
+    require grundmerkmale.debugValues.deltaBreitePow2 = debug_deltaBreitePow2
+    require grundmerkmale.debugValues.deltaHoehePow2 = debug_deltaHoehePow2
+    require grundmerkmale.debugValues.sqrtValue = debug_sqrtValue
+    require grundmerkmale.debugValues.acosValue = debug_acosValue
+    require grundmerkmale.debugValues.atanValue = debug_atanValue
+    require grundmerkmale.debugValues.acosArg = debug_acosArg
+    require grundmerkmale.debugValues.atanArg = debug_atanArg
+
+}
+
+
+
+// VM_minipema_constraints_Unterposition
+behavior Unterposition {
+	imply konstruktion.pfostenLI.unterposition = this
+    imply konstruktion.pfostenRE.unterposition = this
+
+}
+
+
+
+// VM_minipema_terms_Unterposition
+behavior Unterposition {
+    default cover = _AcrylAllWeather
+}
+
+
+// VM_minipema_terms_Grundmerkmale
+behavior Grundmerkmale {
+readonly 	bestellBreite
+readonly    flaeche
+readonly    weight
+readonly 	debugValues.deltaHoehe
+readonly 	debugValues.deltaBreite
+readonly 	debugValues.deltaHoehePow2
+readonly 	debugValues.deltaBreitePow2
+readonly 	debugValues.sqrtValue
+readonly 	debugValues.atanValue
+readonly 	debugValues.acosValue
+readonly 	debugValues.atanArg
+readonly 	debugValues.acosArg
+readonly 	neigungswinkelAnlage
+}
+
+
+
+// VM_minipema_terms_Pfosten
+
+behavior Pfosten {
+    default typPfosten = _Starr
+}
+
+
+// VM_minipema_terms_Home
+product {
+//			Konfigurationskontext	konfigurationskontext
+
+	1..25	Unterposition    		unterposition
+
+//	1..25	Anlagenverbund			anlagenverbund
+}
+
+
+// VM_200_terms_Debug
+structure Debug {
+    			// some debug features
+			num.###/mm						deltaHoehe
+			num/mm							deltaBreite
+			num.###/mm						deltaHoehePow2
+			num/mm							deltaBreitePow2
+			num.###/mm						sqrtValue
+			num.##							atanValue
+			num.##							acosValue
+			num.######						atanArg
+			num.######						acosArg
+}
+
+
+// VM_200_terms_Grundmerkmale
+structure Grundmerkmale {
+
+	// static	Produkttyp						produkttyp
+	// static	Ausfuehrung						ausfuehrung
+
+			num/mm							montagehoehe
+		    num/mm			    			durchgangshoehe
+			num/mm							laenge
+			num.#/mm  		    			eingabeBreite
+			num.#/mm  		    			bestellBreite
+
+
+
+			Debug 					debugValues
+
+		    num/mm							ausfall
+
+    // --- BERECHNETE WERTE ---
+		    num.##/qm            			flaeche
+		    num.##/Grad						neigungswinkelGehaeuse
+		    num.##/Grad						neigungswinkelAnlage
+		    num.##/Kg						weight
+
+	// --- Werte für Neigungswinkel ---
+			num.#####						startWinkel
+			num.#####						yMassFSUebergangKonsole
+			num.#####						xMassFSUeberKonsole
+			num.#####						hkKonsoleDurchgangshoehe
+			num.#####						yMassP2
+			num.#####						winkelEndkappe
+			num.#####/Grad			 	  	neigungswinkelEndkappe
+			num.#####						alphaWinkel3
+			num.#####/Grad					alphaWinkel
+			num.####						yZuschlag
+			num.####						hilfsSehne
+			num.####						hilfsAlpha
+			num.####						gamma
+
+	// --- TEST BERECHNUNGEN ---
+		    num.######						Test1
+		    num.######						Test2
+		    num.######						Test3
+		    num.###### 						Test4
+		    num.######						Test5
+
+	// --- TEST KM ---
+			num/mm							posAnfangAktPos
+			num/mm							posEndeVorPos
+			num/mm							tempMass2
+
+
+}
+
+
+// KM_200_terms_Pfosten
+structure Pfosten {
+	//KM_Bauteil					km_pfosten
+	//KM_Bauteil					km_pfosten2
+	//KM_Bauteil					km_htRohr
+
+	num/mm						km_positionPfosten
+	num.####					km_pfostenHilfsmass
+	num.####/mm		0-400		km_verstellweg
+	num.####/mm					km_massX
+	num.####/mm					km_massX2
+	num.####/mm					km_grundZMass
+	num.####/mm					km_grundZMass2
+	num.####/mm					km_grundMassX2
+	num.####/mm					km_gesamthoehe
+
+	num.####					km_hilfsmass1
+	num.####					km_hkKonsoleMittePfosten
+	num.####					km_achseTWMittePfosten
+	num.####					km_hkKonsoleDurchgangshoehe
+	num.####					km_xMassEndkappe
+	num.####					km_yMassEndkappe
+	num.####					km_xMassHilfsbogen
+	num.####					km_yMassHilfsbogen
+	num.####					km_xMassSchnittpunkt
+	num.####					km_mittePfosten
+	num.####					km_radiusDrehpunktPfosten
+	num.####					km_winkel
+
+	num.####					km_hoehenunterschied
+	num.####					km_hoehenunterschiedES
+	num.####					km_teillaengeFS
+
+	num.####					km_hilfsmass2
+	num.####					km_hilfsmass3
+	num.####					km_hilfsmass4
+	num.####					km_hilfsmass5
+	num.####					km_hilfsmass6
+	num.####					ueberstand
+
+
+
+}
+
+
+// VM_200_terms_TypPfosten
+enumeration TypPfosten {
+	_Ohne
+	_Starr
+	_Hoehenverstellbar
+	_Doppelpfosten
+}
+
+
+// VM_200_terms_Cover
+enumeration Cover {
+attribute num/gramm weight
+	_AcrylLumera   = (1495)
+	_AcrylPerfora  = (1238)
+	 _AcrylAllWeather = (2600)
+	 _AcrylStandardFremd = (800)
+	 _AcrylUniQuer =  (599)
+	 _AcrylUniQuerFremd =(673)
+	 _KombiAcryl =(2598)
+	 _KombiSoltis = (2293)
+	 _Satinee = (1487)
+	 _Screen = (2499)
+ } \\
+
+
+// VM_200_terms_Konstruktion
+structure Konstruktion {
+		//	Gehaeuse				gehaeuse
+		//	Fuehrung				fuehrung
+		//	Absturzsicherung		absturzsicherung
+			Pfosten					pfostenLI
+			Pfosten					pfostenRE
+		//	Regenschutz				regenschutz
+		//	Verstaerkungsprofil		verstaerkungsprofil1
+		//	Verstaerkungsprofil		verstaerkungsprofil2
+}
+
+
+// VM_200_terms_Unterposition
+structure Unterposition {
+					string					id
+
+	//reference		Antriebsverbund			antriebsverbund
+	//reference       Gehaeuseverbund			gehaeuseverbund
+	//reference		Anlagenverbund			anlagenverbund
+
+	// --- VORGAENGER/NACHGAENGER VERZEIGERUNG ---
+	reference		Unterposition			previous
+	reference		Unterposition           next
+
+
+	//				Systemmerkmale			systemmerkmale
+	//				Konstanten				konstanten
+					Grundmerkmale			grundmerkmale
+	//				Sonnenschutzkomponente	sonnenschutzkomponente
+	//				Antrieb					antrieb
+					Konstruktion			konstruktion
+	//				Montage 				montage
+	//				Oberflaechen			oberflaechen
+	//				Zusatzausstattung		zusatzausstattung
+	//				Preise					preise
+					Cover 					cover
+
+}
+
+
+// VM_200_terms_Pfosten
+structure Pfosten {
+//Unterposition
+	reference		Unterposition		unterposition
+//	reference		Fuehrungsschiene	fuehrungsschiene
+
+	//num/mm						laengePfostenLI
+	num/mm			0-2500			bodeneinstand
+//	Ausrichtung						seiteEntwaesserung
+	num/mm							hoeheEntwaesserung
+//	FormEntwaesserung				formEntwaesserung
+	//num/mm		100-1750		hoeheEntwaesserung
+	TypPfosten						typPfosten
+}
+
+
+// VM_200_ui_Unterposition
+behavior {
+	readonly	unterposition[0].id
+}
+
+
+// VM_minipema_constraints_Pfosten
+
+behavior Pfosten {
+
+    // Ausgangswerte für die Bestimmung der Pfosten
+    define eingabeBreite = unterposition.grundmerkmale.eingabeBreite
+    define montageHoehe = unterposition.grundmerkmale.montagehoehe
+    define durchgangshoehe = unterposition.grundmerkmale.durchgangshoehe
+    define neigungswinkel = unterposition.grundmerkmale.neigungswinkelAnlage
+
+    require ueberstand = eingabeBreite - km_mittePfosten
+
+    require km_gesamthoehe = durchgangshoehe + tan(neigungswinkel) * ueberstand
+
+}
+
+
+
+// VM_minipema_constraints_Pfosten
+
+behavior Pfosten {
+
+    require ueberstand > 105
+	require km_mittePfosten < 4000
+	require km_gesamthoehe > 1000
+	require km_gesamthoehe < 3200
+
+
+	condition km_gesamthoehe > 2200
+	require typPfosten != _Doppelpfosten
+
+	 // these defaults are only here for technical reasons -> currently COOM shows unsat if no default for constrained num values exists
+	default ueberstand = 150
+	default km_mittePfosten = 3000
+	default km_gesamthoehe = 2000
+}
+
+
+
+// VM_minipema_constraints_Unterposition
+
+behavior Unterposition {
+
+    // Nutzereingaben
+    define eingabeBreite = grundmerkmale.eingabeBreite
+    define montageHoehe = grundmerkmale.montagehoehe
+    define durchgangshoehe = grundmerkmale.durchgangshoehe
+
+    // Konstanten aus der Konstruktion
+    define UKKUKK = 8.82  // Unterkante Kasten zu Unterkante Konsole
+    define UKKKTW = 90 // Unterkante Kasten zu Achse TW
+    define ATWW = 125 // Achse TW zur Wand
+    define r = 48.4985 // Parallele Drehpunkt Pfosten zu Achse T
+    define FSCH_Hoehe = 80 // Dachdicke
+
+    // Berechnung von Hilfsvariablen
+    define debug_deltaHoehe = montageHoehe - UKKUKK + UKKKTW - durchgangshoehe
+    define debug_deltaBreite = ATWW - eingabeBreite
+
+    define debug_deltaHoehePow2 = debug_deltaHoehe^2
+    define debug_deltaBreitePow2 = debug_deltaBreite^2
+    define debug_sqrtValue = sqrt(debug_deltaHoehePow2 + debug_deltaBreitePow2 )
+
+
+
+
+    // Zu berechnende Zielvariablen
+    define bestellBreite = grundmerkmale.bestellBreite
+    define neigungswinkel = grundmerkmale.neigungswinkelAnlage
+
+    // Berechnung
+    define debug_atanArg = debug_deltaBreite / debug_deltaHoehe
+    define debug_acosArg = r / debug_sqrtValue
+    define debug_acosValue = acos(debug_acosArg)
+    define debug_atanValue = atan(debug_atanArg)
+    require neigungswinkel = debug_atanValue + debug_acosValue
+    require bestellBreite = eingabeBreite + tan(neigungswinkel) * FSCH_Hoehe
+    require grundmerkmale.flaeche = grundmerkmale.laenge * bestellBreite / 1000000 // mm x mm to m^2
+    require grundmerkmale.weight = grundmerkmale.flaeche * cover.weight / 1000 // gramm to Kg
+
+
+
+
+    // debug Ausgaben
+    require grundmerkmale.debugValues.deltaHoehe = debug_deltaHoehe
+    require grundmerkmale.debugValues.deltaBreite = debug_deltaBreite
+    require grundmerkmale.debugValues.deltaBreitePow2 = debug_deltaBreitePow2
+    require grundmerkmale.debugValues.deltaHoehePow2 = debug_deltaHoehePow2
+    require grundmerkmale.debugValues.sqrtValue = debug_sqrtValue
+    require grundmerkmale.debugValues.acosValue = debug_acosValue
+    require grundmerkmale.debugValues.atanValue = debug_atanValue
+    require grundmerkmale.debugValues.acosArg = debug_acosArg
+    require grundmerkmale.debugValues.atanArg = debug_atanArg
+
+}
+
+
+
+// VM_minipema_constraints_Unterposition
+behavior Unterposition {
+	imply konstruktion.pfostenLI.unterposition = this
+    imply konstruktion.pfostenRE.unterposition = this
+
+}
+
+
+
+// VM_minipema_terms_Unterposition
+behavior Unterposition {
+    default cover = _AcrylAllWeather
+}
+
+
+// VM_minipema_terms_Grundmerkmale
+behavior Grundmerkmale {
+readonly 	bestellBreite
+readonly    flaeche
+readonly    weight
+readonly 	debugValues.deltaHoehe
+readonly 	debugValues.deltaBreite
+readonly 	debugValues.deltaHoehePow2
+readonly 	debugValues.deltaBreitePow2
+readonly 	debugValues.sqrtValue
+readonly 	debugValues.atanValue
+readonly 	debugValues.acosValue
+readonly 	debugValues.atanArg
+readonly 	debugValues.acosArg
+readonly 	neigungswinkelAnlage
+}
+
+
+
+// VM_minipema_terms_Pfosten
+
+behavior Pfosten {
+    default typPfosten = _Starr
+}
+
+
+// VM_minipema_terms_Home
+product {
+//			Konfigurationskontext	konfigurationskontext
+
+	1..25	Unterposition    		unterposition
+
+//	1..25	Anlagenverbund			anlagenverbund
+}
+
+
+// VM_minipema_terms_Home
+product {
+//			Konfigurationskontext	konfigurationskontext
+
+	1..25	Unterposition    		unterposition
+
+//	1..25	Anlagenverbund			anlagenverbund
+}

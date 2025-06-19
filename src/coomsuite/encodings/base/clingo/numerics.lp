@@ -1,6 +1,12 @@
+% Define subset based on a satisfied condition
+subset(S,(C,V),X) :- set(S,X), condition(_,C,V), property(S,X,C,CX), value(CX,V).
+
 % Evaluate aggregates
-value(F,V) :- function(F,"count",P), V = #count{ X    : set(P,X), include(X) }.
-value(F,V) :- function(F,"sum",  P), V = #sum  { V',X : set(P,X), value(X,V')   }.
+% value(F,V) :- function(F,"count",P), condition(F,C,CV), V = #count{ X    : set(P,X), include(X),  property(P,X,C,CX), value(CX,CV) }.
+% value(F,V) :- function(F,"sum",  P), condition(F,C,CV), V = #sum  { V',X : set(P,X), value(X,V'), property(P,X,C,CX), value(CX,CV) }.
+value(F,V) :- function(F,"count",P), condition(F,C,CV), V = #count{ X    : subset(P,(C,CV),X), include(X)  }.
+value(F,V) :- function(F,"sum",  P), condition(F,C,CV), V = #sum  { V',X : subset(P,(C,CV),X), value(X,V') }.
+
 value(F,V) :- function(F,"min",  P), V = #min  { V',X : set(P,X), value(X,V')   }.
 value(F,V) :- function(F,"max",  P), V = #max  { V',X : set(P,X), value(X,V')   }.
 

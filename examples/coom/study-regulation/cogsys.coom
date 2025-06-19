@@ -3,20 +3,11 @@ product {
 }
 
 structure Semester {
-    // num 1-4 id
          Type type
     0..5 Module module
     num currentECTS
 }
 
-// enumeration ID {
-//     attribute num id
-
-//     first  = ( 1 )
-//     second = ( 2 )
-//     third  = ( 3 )
-//     fourth = ( 4 )
-// }
 
 enumeration Type {
     Summer
@@ -47,9 +38,15 @@ enumeration Module {
 behavior {
     // require alldiff(semester.id)
 
-    require semester[i].type != semester[i+1].type
+    require semester[0].type != semester[1].type
 
-    require alldiff(semester.module)
+    require semester[1].type != semester[2].type
+
+    require semester[2].type != semester[3].type
+
+    require semester[3].type != semester[4].type
+
+    alldiff semester.module
 }
 
 behavior Semester {
@@ -76,12 +73,3 @@ behavior {
 
     exists Thesis in semester.module
 }
-
-
-// exists("root.semester.module","Thesis").
-// set("root.semester.module","root.semester[0].module[0]").
-// set("root.semester.module","root.semester[0].module[1]").
-// set("root.semester.module","root.semester[0].module[2]").
-// set("root.semester.module","root.semester[1].module[0]").
-
-// satisfied :- exists(S,V), set(S,X), value(X,V).

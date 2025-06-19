@@ -1,0 +1,27 @@
+product {
+    3..3 Module module
+}
+
+
+
+enumeration Module {
+    attribute num ects
+    attribute str group
+
+    BM1 = ( 9, b )
+    BM2 = ( 9, b )
+    AM1 = ( 6, a )
+    AM2 = ( 6, a )
+    AM3 = ( 6, a )
+}
+
+behavior {
+    alldiff module
+}
+
+
+behavior {
+    require 9 = sum(module.ects if module.group = b)
+
+    require 12 = sum(module.ects if module.group = a)
+}
