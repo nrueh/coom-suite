@@ -91,11 +91,12 @@ set(@join(X,P),X')                       :- function(X,_,_,P), path_to(X,P,X').
 #show function/3.
 #show set/2.
 
+
 % Partonomy and cardinality constraints
 part(T) :- coom_structure(T).
 
 constraint((@join(X,N),Min),"lowerbound") :- cardinality_aux(X,N,Min).
-set(@join(X,N),X')                       :- cardinality_aux(X,N,_), path_to(X,N,X').
+set(@join(X,N),X')                        :- cardinality_aux(X,N,_), path_to(X,N,X').
 
 #show part/1.
 

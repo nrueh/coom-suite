@@ -3,7 +3,12 @@
 % (maximum does not need to be checked)
 violated((X',P)) :- constraint((P,Min),"lowerbound"), set(P,X), index(X,Min-1), not include(X), parent(X,X'), include(X').
 
+% Exists constraints
+satisfied((S,V)) :- constraint((S,V),"exists"), set(S,X), value(X,V).
+violated(C) :- constraint(C,"exists"), not satisfied(C).
+
+% All-different constraints
+violated((S,(X,X'))) :- constraint(S,"alldiff"), set(S,X), set(S,X'), X != X', value(X,V), value(X',V). % Needs to go into clingo encoding
+
 % Constraints cannot be violated
 :- violated(C).
-
-violated((S,(X,X'))) :- alldiff(S), set(P,X), set(P,X'), X != X', value(X,V), value(X',V).

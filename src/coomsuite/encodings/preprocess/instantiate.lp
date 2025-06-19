@@ -42,6 +42,7 @@ path_start(X,P)  :- coom_combinations(C,_,P), coom_path(P,0,_), type_aux(X,Ctx),
 path_start(X,P)  :- coom_function(Ctx,_,_,P), coom_path(P,0,_), type_aux(X,Ctx).
 path_start(X,P)  :- coom_imply(C,P,_),        coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
 path_start(X,P)  :- coom_imply(C,_,P),        coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
+path_start(X,P)  :- coom_exists(C,P,_),       coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
 
 % Determine all ground paths
 path_to(X,P,0,X')  :- coom_path(P,0,N),

@@ -25,11 +25,6 @@ parent("root.semester[1].id[0]","root.semester[1]").
 parent("root.semester[0].id[0]","root.semester[0]").
 parent("root.semester[2].id[0]","root.semester[2]").
 
-alldiff("root.semester.id").
-set("root.semester.id","root.semester[2].id[0]").
-set("root.semester.id","root.semester[1].id[0]").
-set("root.semester.id","root.semester[0].id[0]").
-
 constraint(("root.semester",3),"lowerbound").
 constraint(("root.semester[0].id",1),"lowerbound").
 constraint(("root.semester[1].id",1),"lowerbound").
@@ -40,3 +35,8 @@ set("root.semester","root.semester[2]").
 set("root.semester[0].id","root.semester[0].id[0]").
 set("root.semester[1].id","root.semester[1].id[0]").
 set("root.semester[2].id","root.semester[2].id[0]").
+
+constraint("root.semester.id","alldiff").
+set("root.semester.id","root.semester[2].id[0]").
+set("root.semester.id","root.semester[1].id[0]").
+set("root.semester.id","root.semester[0].id[0]").
