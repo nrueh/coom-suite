@@ -5,3 +5,5 @@ violated((X',P)) :- constraint((P,Min),"lowerbound"), set(P,X), index(X,Min-1), 
 
 % Constraints cannot be violated
 :- violated(C).
+
+violated((S,(X,X'))) :- alldiff(S), set(P,X), set(P,X'), X != X', value(X,V), value(X',V).

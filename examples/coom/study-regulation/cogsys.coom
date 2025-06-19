@@ -1,27 +1,22 @@
 product {
-    1..8 Semester semester
-    // num totalECTS
-    // Semester first
-    // Semester second
-    // Semester third
-    // Semester fourth
+    1..4 Semester semester
 }
 
 structure Semester {
-        ID id
+    // num 1-4 id
          Type type
     0..5 Module module
     num currentECTS
 }
 
-enumeration ID {
-    attribute num id
+// enumeration ID {
+//     attribute num id
 
-    first = ( 1 )
-    second = ( 2 )
-    third = ( 3 )
-    fourth = ( 4 )
-}
+//     first  = ( 1 )
+//     second = ( 2 )
+//     third  = ( 3 )
+//     fourth = ( 4 )
+// }
 
 enumeration Type {
     Summer
@@ -50,10 +45,11 @@ enumeration Module {
 }
 
 behavior {
+    // require alldiff(semester.id)
+
     require semester[i].type != semester[i+1].type
 
-    // You cannot take a module twice (correct behavior?)
-    require semester.module != semester.module
+    require alldiff(semester.module)
 }
 
 behavior Semester {
@@ -75,10 +71,6 @@ behavior {
     require 24 = sum(semester.module.ects if semester.module.group == a)
 
     require 24 = sum(semester.module.ects if semester.module.group == p)
-
-    // exists BM1 in semester.module
-    // exists BM2 in semester.module
-    // exists BM3 in semester.module
 
     exists IM in semester.module
 
