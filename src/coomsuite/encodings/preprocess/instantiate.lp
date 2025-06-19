@@ -41,6 +41,7 @@ path_start(X,P)  :- coom_unary(F,_,P),        coom_path(P,0,_), type_aux(X,Ctx),
 path_start(X,P)  :- coom_combinations(C,_,P), coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
 path_start(X,P)  :- coom_function(Ctx,_,_,P), coom_path(P,0,_), type_aux(X,Ctx).
 path_start(X,P)  :- coom_imply(C,P,_),        coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
+path_start(X,P)  :- coom_imply(C,_,P),        coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
 
 % Determine all ground paths
 path_to(X,P,0,X')  :- coom_path(P,0,N),
@@ -60,9 +61,11 @@ path_to(X,P,P) :- coom_unary(F,_,P),    coom_constant(P), formula_context(F,T), 
 path_to(X,P,P) :- coom_binary(F,_,_,P), coom_number(P,_), formula_context(F,T), type_aux(X,T).
 path_to(X,P,P) :- coom_binary(F,P,_,_), coom_number(P,_), formula_context(F,T), type_aux(X,T).
 path_to(X,P,P) :- coom_unary(F,_,P),    coom_number(P,_), formula_context(F,T), type_aux(X,T).
+path_to(X,P,P) :- coom_imply(C,_,P),    coom_number(P,_), coom_context(C,T),    type_aux(X,T).
 path_to(X,P,P) :- coom_binary(F,_,_,P), coom_float(P),    formula_context(F,T), type_aux(X,T).
 path_to(X,P,P) :- coom_binary(F,P,_,_), coom_float(P),    formula_context(F,T), type_aux(X,T).
 path_to(X,P,P) :- coom_unary(F,_,P),    coom_float(P),    formula_context(F,T), type_aux(X,T).
+path_to(X,P,P) :- coom_imply(C,_,P),    coom_float(P),    coom_context(C,T),    type_aux(X,T).
 
 % Instantiate binaries and unaries
 binary(X,F,@binary(XL,Op,XR),XL,Op,XR) :- coom_binary(F,L,Op,R),
@@ -73,8 +76,8 @@ unary(X,F,@unary(X',Op),Op,X') :- coom_unary(F,Op,F'),
                                   formula_context(F,C),
                                   type_aux(X,C), path_to(X,F',X').
 
-ground_formula(X,F,G)  :- binary(X,F,G,_,_,_).
-ground_formula(X,F,G)  :- unary(X,F,G,_,_).
+ground_formula(X,F,G) :- binary(X,F,G,_,_,_).
+ground_formula(X,F,G) :- unary(X,F,G,_,_).
 
 % Default binaries for arithmetics if one side is undefined
 % TODO: Does this always give desired behavior?
@@ -122,6 +125,7 @@ in_tuple(CT,X)          :- in_tuple(CT,_,X).
 % Instantiate imply statements
 imply(C,X',G)                  :- coom_imply(C,P,F), coom_context(C,Ctx), type_aux(X,Ctx), path_to(X,P,X'), ground_formula(X,F,G).
 imply(C,X',@aggregate(T,X,P')) :- coom_imply(C,P,F), coom_context(C,Ctx), type_aux(X,Ctx), path_to(X,P,X'), function(X,F,T,P').
+imply(C,X',G)                  :- coom_imply(C,P,F), coom_context(C,Ctx), type_aux(X,Ctx), path_to(X,P,X'), path_to(X,F,G), not ground_formula(X,F,G). % TODO: Check if this is enough if there are aggreagates
 
 % Instantiate attribute constraints
 attribute_constraint((T,@dotpath(X)))  :- coom_attribute(T,_,_), type_aux(X,T).

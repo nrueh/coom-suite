@@ -79,6 +79,7 @@ allow(T,(Col,Row),V) :- attribute_constraint((T,_)), allow(T,(0,Row),O), coom_at
 % Imply statements
 % constraint((C,@binary(X',"=",G)),"boolean") :- imply(C,X',G).
 % binary(@binary(X',"=",G),X',"=",G)          :- imply(C,X',G).
+
 imply(X',G) :- imply(_,X',G).
 
 #show imply/2.
