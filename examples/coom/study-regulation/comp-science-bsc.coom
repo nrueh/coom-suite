@@ -1,0 +1,102 @@
+product {
+    1..6 Semester semester
+    1..1 Specialization specialization // should be 1 or 2 different specializations allowed, missing syntax for constraint
+    // num totalECTS
+    // Semester first
+    // Semester second
+    // Semester third
+    // Semester fourth
+}
+
+structure Semester {
+        ID id
+        Type type
+    0..5 Module module
+    num currentECTS
+}
+
+enumeration ID {
+    attribute num id
+
+    first = ( 1 )
+    second = ( 2 )
+    third = ( 3 )
+    fourth = ( 4 )
+    fifth = ( 5 )
+    sixth = ( 6 )
+}
+
+enumeration Type {
+    Summer
+    Winter
+}
+
+enumeration Specialization {
+    Bioinformatics
+    Chemistry
+    Geoscience
+    CognitiveScience
+    Physics
+}
+
+enumeration Module {
+    attribute num ects
+    attribute str type
+    attribute str specialization_group
+    attribute str group
+
+    Biobm105 = ( 6, winter, b,  x )
+    Biobm107 = ( 6, summer, ba, x )
+    Biobm108 = ( 6, summer, ba, x )
+    Bioam212 = ( 6, summer, ba, x )
+    Bioam302 = ( 6, each,   ba, x )
+    Bioam314 = ( 6, winter, ba, x )
+
+    Matd230cs = ( 6, winter, none, v)
+
+    // etc...
+}
+
+behavior {
+    require semester[i].type != semester[i+1].type
+
+    // You cannot take a module twice (correct behavior?)
+    require semester.module != semester.module
+}
+
+behavior Semester {
+    combinations ( type     module.type    )
+    allow        ( Summer   (summer, each) )
+    allow        ( Winter   (winter, each) )
+
+    imply currentECTS = sum(root.semester.module if root.semester.id < id)
+} 
+
+behavior Semester {
+    condition currentECTS < 126
+    require module != Thesis
+}
+
+behavior {
+    require 180 = sum(semester.module.ects)
+
+    require 102 = sum(semester.module.ects if semester.module.group == i)
+
+    require 12 = sum(semester.module.ects if semester.module.group == ii)
+
+    require 30 = sum(semester.module.ects if semester.module.group == x)
+
+    require 6 = sum(semester.module.ects if semester.module.group == v)
+
+    require 18 = sum(semester.module.ects if semester.module.group == vi)
+
+    exists Thesis in semester.module
+}
+
+behavior Module {
+    condition root.specialization = Bioinformatics && group = x
+    require specialization_group = b || specialization_group = ba
+
+    // etc...
+}
+

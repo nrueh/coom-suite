@@ -51,6 +51,9 @@ enumeration Module {
 
 behavior {
     require semester[i].type != semester[i+1].type
+
+    // You cannot take a module twice (correct behavior?)
+    require semester.module != semester.module
 }
 
 behavior Semester {
@@ -80,9 +83,13 @@ behavior {
     exists IM in semester.module
 
     exists Thesis in semester.module
-
-    // imply totalECTS =
-
-    // You cannot take a module twice
-    require semester.module != semester.module
 }
+
+
+// exists("root.semester.module","Thesis").
+// set("root.semester.module","root.semester[0].module[0]").
+// set("root.semester.module","root.semester[0].module[1]").
+// set("root.semester.module","root.semester[0].module[2]").
+// set("root.semester.module","root.semester[1].module[0]").
+
+// satisfied :- exists(S,V), set(S,X), value(X,V).
