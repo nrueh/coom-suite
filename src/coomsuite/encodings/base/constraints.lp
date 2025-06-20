@@ -8,7 +8,7 @@ satisfied((S,V)) :- constraint((S,V),"exists"), set(S,X), value(X,V).
 violated(C) :- constraint(C,"exists"), not satisfied(C).
 
 % All-different constraints
-violated((S,(X,X'))) :- constraint(S,"alldiff"), set(S,X), set(S,X'), X != X', value(X,V), value(X',V). % Needs to go into clingo encoding
+violated((S,(X1,X2))) :- constraint(S,"alldiff"), set(S,X1), set(S,X2), X1 != X2, value(X1,V), value(X2,V). % Needs to go into clingo encoding
 
 % Constraints cannot be violated
 :- violated(C).
