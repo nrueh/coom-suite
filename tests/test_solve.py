@@ -123,7 +123,11 @@ class TestClingo(TestCase):
         """
         Test imply statements (clingo).
         """
-        # self.run_test("simple_imply") # TODO: Add test
+        self.run_test("imply_with_number")
+        self.run_test("imply_with_variable")
+        self.run_test("imply_with_binary")
+        self.run_test("imply_with_unary")
+        self.run_test("imply_with_sum")
 
     def test_user_input(self) -> None:
         """
@@ -252,6 +256,16 @@ class TestFclingo(TestCase):
         self.run_test("sum")
         self.run_test("min")
         self.run_test("max")
+
+    def test_imply(self) -> None:
+        """
+        Test imply statements (fclingo).
+        """
+        self.run_test("imply_with_number")
+        self.run_test("imply_with_variable")
+        self.run_test("imply_with_binary")
+        self.run_test("imply_with_unary")
+        self.run_test("imply_with_sum")
 
     def test_user_input(self) -> None:
         """
@@ -384,6 +398,17 @@ class TestConstraintHandler(TestCase):
         self.run_test("sum")
         # self.run_test("min") % Not yet implemented in the constraint handler
         # self.run_test("max") % Not yet implemented in the constraint handler
+
+    def test_imply(self) -> None:
+        """
+        Test imply statements (constraint handler).
+        """
+        self.run_test("imply_with_number")
+        self.run_test("imply_with_float")
+        self.run_test("imply_with_variable")
+        self.run_test("imply_with_binary")
+        self.run_test("imply_with_unary")
+        self.run_test("imply_with_sum")
 
     def test_user_input(self) -> None:
         """
