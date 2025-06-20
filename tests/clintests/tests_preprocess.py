@@ -192,7 +192,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         "program": """
             coom_structure("product").
 
-            coom_behavior(("product",0)).
+            coom_behavior(0).
+            coom_context(0,"product").
             coom_require(("product",0),"color=Silver").
             coom_binary("color=Silver","color","=","Silver").
             coom_path("color",0,"color").
@@ -582,8 +583,9 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         "program": """
             coom_structure("product").
 
-            coom_behavior(("product",0)).
-            coom_require(("product",0),"x=5").
+            coom_behavior(0).
+            coom_context(0,"product").
+            coom_imply(0,"x","5").
             coom_binary("x=5","x","=","5").
             coom_path("x",0,"x").
             coom_number("5",5).""",

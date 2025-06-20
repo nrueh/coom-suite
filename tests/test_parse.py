@@ -375,6 +375,17 @@ class TestCOOMModelParser(TestCase):
             ],
         )
 
+        self.assertEqual(
+            parse_coom("behavior{imply a = 5}"),
+            [
+                "behavior(0).",
+                'context(0,"product").',
+                'imply(0,"a","5").',
+                'path("a",0,"a").',
+                'number("5",5).',
+            ],
+        )
+
         self.assertEqual(parse_coom("behavior{readonly totalWeight}"), [])
 
     def test_condition(self) -> None:
