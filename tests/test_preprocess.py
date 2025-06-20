@@ -62,9 +62,13 @@ class TestPreprocess(TestCase):
         Test preprocessing COOM imply constraints.
         """
         self.run_test("imply_undef")
-        # self.run_test("imply_with_number") # TODO: Update preprocess encoding
-        # self.run_test("imply_with_float") # TODO: Add test
-        # self.run_test("imply_sum")
+        self.run_test("imply_undef_formula")
+        self.run_test("imply_with_number")
+        self.run_test("imply_with_float")
+        self.run_test("imply_with_variable")
+        self.run_test("imply_with_binary")
+        self.run_test("imply_with_unary")
+        self.run_test("imply_with_sum")
 
     def test_combinations_table(self) -> None:
         """
