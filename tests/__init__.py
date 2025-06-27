@@ -76,7 +76,7 @@ def run_test(
     ctl_args = [] if ctl_args is None else ctl_args
 
     if is_preprocess:
-        solver = Clingo(program="".join(preprocess(file_paths, discrete=False)))
+        solver = Clingo(program="".join(preprocess(file_paths, fclingo=False)))
     else:
         coom_app = COOMSolverApp(options=options, istest=True)
         solver = AppSolver(application=coom_app, files=file_paths, arguments=ctl_args)

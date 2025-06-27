@@ -50,9 +50,9 @@ behavior {
     require count(dvdPlayer) > 1
 
     explanation "The total power consumption of the bus is the sum of the power consumption of all devices."
-    require totalPowerConsumption = sum(dvdPlayer.powerConsumption) + sum(seat.lamp.powerConsumption) + sum(display.powerConsumption)
+    imply totalPowerConsumption = sum(dvdPlayer.powerConsumption) + sum(seat.lamp.powerConsumption) + sum(display.powerConsumption)
 
-    require seatCount = count(seat)
+    imply seatCount = count(seat)
 }
 
 // User requirements

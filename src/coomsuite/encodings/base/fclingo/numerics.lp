@@ -17,3 +17,6 @@
 &sus{  X } =: F :- unary(F,"()",X). % Definedness check because there exist parenthesis around Boolean formulas as well
 &sum{  X } = F :- unary(F,"+", X).
 &sum{ -X } = F :- unary(F,"-", X).
+
+% Assign values of imply statements if object is included
+&sum{F} = X :- imply(X,F), include(X).

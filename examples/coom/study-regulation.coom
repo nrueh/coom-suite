@@ -24,7 +24,7 @@ enumeration ID {
 }
 
 enumeration Type {
-    Summer 
+    Summer
     Winter
 }
 
@@ -81,10 +81,8 @@ behavior {
 
     exists Thesis in semester.module
 
-    // imply totalECTS = 
+    // imply totalECTS =
 
     // You cannot take a module twice
     require semester.module != semester.module
 }
-
-

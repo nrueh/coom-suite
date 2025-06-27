@@ -115,6 +115,13 @@ class ASPModelVisitor(ModelVisitor):
         self.output_asp.append(f'feature("{self.structure_name}","{feature_name}","{type_name}",{c_min},{c_max}).')
         if type_name == "num":
             num: ModelParser.Number_defContext = field.number_def()
+            if num.fraction() is not None:
+                precision = str(num.fraction().HASHES()).count("#")
+                self.output_asp.append(f'precision("{self.structure_name}","{feature_name}",{precision}).')
+            if num.unit() is not None:
+                unit = str(num.unit().NAME())
+                self.output_asp.append(f'unit("{self.structure_name}","{feature_name}","{unit}").')
+
             if num.min is not None or num.max is not None:
                 r_min = "#inf" if num.min.getText() == "-\u221e" else num.min.getText()  # negative infinity symbol
                 r_max = "#sup" if num.max.getText() == "\u221e" else num.max.getText()  # infinity symbol

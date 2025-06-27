@@ -118,6 +118,28 @@ class TestCOOMModelParser(TestCase):
             ],
         )
 
+        self.assertEqual(
+            parse_coom("product{num	.#/m 1-100 length}"),
+            [
+                'structure("product").',
+                'feature("product","length","num",1,1).',
+                'precision("product","length",1).',
+                'unit("product","length","m").',
+                'range("product","length",1,100).',
+            ],
+        )
+
+        self.assertEqual(
+            parse_coom("product{num	.##/kg 1-100 weight}"),
+            [
+                'structure("product").',
+                'feature("product","weight","num",1,1).',
+                'precision("product","weight",2).',
+                'unit("product","weight","kg").',
+                'range("product","weight",1,100).',
+            ],
+        )
+
         self.assertEqual(parse_coom("product{string id}"), ['structure("product").'])
 
     def test_enumeration(self) -> None:
@@ -350,6 +372,17 @@ class TestCOOMModelParser(TestCase):
                 'imply(0,"a","b").',
                 'path("a",0,"a").',
                 'path("b",0,"b").',
+            ],
+        )
+
+        self.assertEqual(
+            parse_coom("behavior{imply a = 5}"),
+            [
+                "behavior(0).",
+                'context(0,"product").',
+                'imply(0,"a","5").',
+                'path("a",0,"a").',
+                'number("5",5).',
             ],
         )
 

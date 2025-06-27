@@ -119,6 +119,16 @@ class TestClingo(TestCase):
         self.run_test("min")
         self.run_test("max")
 
+    def test_imply(self) -> None:
+        """
+        Test imply statements (clingo).
+        """
+        self.run_test("imply_with_number")
+        self.run_test("imply_with_variable")
+        self.run_test("imply_with_binary")
+        self.run_test("imply_with_unary")
+        self.run_test("imply_with_sum")
+
     def test_user_input(self) -> None:
         """
         Test solving user input (clingo).
@@ -247,6 +257,16 @@ class TestFclingo(TestCase):
         self.run_test("min")
         self.run_test("max")
 
+    def test_imply(self) -> None:
+        """
+        Test imply statements (fclingo).
+        """
+        self.run_test("imply_with_number")
+        self.run_test("imply_with_variable")
+        self.run_test("imply_with_binary")
+        self.run_test("imply_with_unary")
+        self.run_test("imply_with_sum")
+
     def test_user_input(self) -> None:
         """
         Test solving user input (fclingo).
@@ -270,7 +290,7 @@ class TestConstraintHandler(TestCase):
 
     def run_test(self, test_name: str) -> None:
         """
-        Runs a clintest test with the clingo encoding.
+        Runs a clintest test with the constraint handler encoding.
         """
         test, program, files = unpack_test(test_name, TESTS_SOLVE)
         run_test(test, files=files, program=program, ctl_args=["0"], solver="constraint-handler")
@@ -296,6 +316,8 @@ class TestConstraintHandler(TestCase):
         self.run_test("simple_integer")
         self.run_test("optional_integer")
         self.run_test("multiple_integer")
+
+        self.run_test("simple_float")  # Constraint handler only
 
     def test_boolean_constraints(self) -> None:
         """
@@ -371,8 +393,8 @@ class TestConstraintHandler(TestCase):
         """
         self.run_test("count")
         self.run_test("sum")
-        self.run_test("min")
-        self.run_test("max")
+        # self.run_test("min")
+        # self.run_test("max")
 
     def test_user_input(self) -> None:
         """

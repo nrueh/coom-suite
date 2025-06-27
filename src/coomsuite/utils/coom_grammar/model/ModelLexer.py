@@ -1,7 +1,10 @@
 # Generated from Model.g4 by ANTLR 4.9
 import sys
 from io import StringIO
-from typing.io import TextIO
+try:
+    from typing.io import TextIO
+except ImportError:
+    from typing import TextIO
 
 from antlr4 import *
 

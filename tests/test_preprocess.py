@@ -47,6 +47,7 @@ class TestPreprocess(TestCase):
         self.run_test("require_with_number")
         self.run_test("require_with_number_ge")
         self.run_test("require_with_constant")
+        self.run_test("require_with_float")
         self.run_test("require_two_wheels")
         self.run_test("conditional_require_undef")
         self.run_test("conditional_require")
@@ -55,6 +56,19 @@ class TestPreprocess(TestCase):
         self.run_test("require_with_partonomy")
         self.run_test("require_with_partonomy2")
         self.run_test("require_with_partonomy_multiple_instances")
+
+    def test_imply(self) -> None:
+        """
+        Test preprocessing COOM imply constraints.
+        """
+        self.run_test("imply_undef")
+        self.run_test("imply_undef_formula")
+        self.run_test("imply_with_number")
+        self.run_test("imply_with_float")
+        self.run_test("imply_with_variable")
+        self.run_test("imply_with_binary")
+        self.run_test("imply_with_unary")
+        self.run_test("imply_with_sum")
 
     def test_combinations_table(self) -> None:
         """
@@ -69,7 +83,8 @@ class TestPreprocess(TestCase):
         """
         Test preprocessing numeric features, arithmetics and numerical function in COOM.
         """
-        self.run_test("simple_numeric_feature")
+        self.run_test("simple_numeric_integer_feature")
+        self.run_test("simple_numeric_float_feature")
         self.run_test("simple_arithmetic_plus")
         self.run_test("simple_arithmetic_minus")
         self.run_test("simple_arithmetic_multiplication")

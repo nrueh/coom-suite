@@ -92,7 +92,7 @@ structure Application {
 }
 
 behavior {
-    require price = sum(hdunit.price) + motherboard.price + sum(motherboard.cpu.price)
+    imply price = sum(hdunit.price) + motherboard.price + sum(motherboard.cpu.price)
                   + os.price + sum(screen.price) + sum(applications.price)
 
     require price <= maxPrice
@@ -115,7 +115,7 @@ behavior {
 }
 
 behavior HDUnit {
-    require price = sum(hdisk.price) + sum(hdcontroller.price)
+    imply price = sum(hdisk.price) + sum(hdcontroller.price)
 }
 
 behavior Motherboard {

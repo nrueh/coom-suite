@@ -233,6 +233,32 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             binary("root.a[0]<3","root.a[0]","<","3").
             number("3",3).""",
     },
+    "simple_float": {
+        "test": StableModels(
+            {'value("root.a[0]","1.0")'},
+            {'value("root.a[0]","1.1")'},
+            {'value("root.a[0]","1.2")'},
+            {'value("root.a[0]","1.3")'},
+            {'value("root.a[0]","1.4")'},
+            {'value("root.a[0]","1.5")'},
+            {'value("root.a[0]","1.6")'},
+            {'value("root.a[0]","1.7")'},
+            {'value("root.a[0]","1.8")'},
+            {'value("root.a[0]","1.9")'},
+            {'value("root.a[0]","2.0")'},
+        ),
+        "program": """
+            type("root","product").
+            type("root.a[0]","A").
+            numeric("A",float).
+            range("A",1,2).
+            precision("A",1).
+            index("root.a[0]",0).
+            parent("root.a[0]","root").
+            constraint(("root.a",1),"lowerbound").
+            set("root.a","root.a[0]").
+            part("product").""",
+    },
     "eq_sat": {
         "test": TEST_EMPTY,
         "program": """
@@ -643,6 +669,26 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             number("2",2).
             number("6",6).""",
     },
+    "plus_sat_float": {
+        "test": TEST_EMPTY,
+        "program": """
+            constraint((0,"5.5=1.1+4.4"),"boolean").
+            binary("5.5=1.1+4.4","5.5","=","1.1+5.5").
+            binary("1.1+4.4","1.1","+","4.4").
+            float("1.1").
+            float("5.5").
+            float("4.4").""",
+    },
+    "plus_unsat_float": {
+        "test": TEST_UNSAT,
+        "program": """
+            constraint((0,"5.5=1.1+4.5"),"boolean").
+            binary("5.5=1.1+4.5","5.5","=","1.1+5.5").
+            binary("1.1+4.5","1.1","+","4.5").
+            float("1.1").
+            float("5.5").
+            float("4.5").""",
+    },
     "count": {
         "test": StableModels({'include("root.x[0]")', 'include("root.x[1]")'}),
         "files": ["count.lp"],
@@ -676,6 +722,72 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "test": StableModels({'value("root.x[0]",3)', 'value("root.x[1]",3)'}),
         "ftest": StableModels({'value("root.x[0]",3)', 'value("root.x[1]",3)'}, fclingo=True),
         "files": ["max.lp"],
+    },
+    "imply_with_number": {
+        "test": StableModels({'value("root.wheel[0]","W27")', 'value("root.wheel[0].size[0]",27)'}),
+        "files": ["imply_with_number.lp"],
+    },
+    "imply_with_float": {  # Constraint handler only
+        "test": StableModels({'value("root.a[0]","2.24")'}),
+        "files": ["imply_with_float.lp"],
+    },
+    "imply_with_variable": {
+        "test": StableModels(
+            {'value("root.a[0]",1)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",2)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",3)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.a[0]",1)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",2)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",3)'},
+            fclingo=True,
+        ),
+        "files": ["imply_with_variable.lp"],
+    },
+    "imply_with_binary": {
+        "test": StableModels(
+            {'value("root.a[0]",4)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",5)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",6)', 'value("root.b[0]",3)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.a[0]",4)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",5)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",6)', 'value("root.b[0]",3)'},
+            fclingo=True,
+        ),
+        "files": ["imply_with_binary.lp"],
+    },
+    "imply_with_unary": {
+        "test": StableModels(
+            {'value("root.a[0]",-1)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",-2)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",-3)', 'value("root.b[0]",3)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.a[0]",-1)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",-2)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",-3)', 'value("root.b[0]",3)'},
+            fclingo=True,
+        ),
+        "files": ["imply_with_unary.lp"],
+    },
+    "imply_with_sum": {
+        "test": StableModels(
+            {'value("root.a[0]",2)', 'value("root.b[0]",1)', 'value("root.b[1]",1)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",2)', 'value("root.b[1]",1)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",1)', 'value("root.b[1]",2)'},
+            {'value("root.a[0]",4)', 'value("root.b[0]",2)', 'value("root.b[1]",2)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.a[0]",2)', 'value("root.b[0]",1)', 'value("root.b[1]",1)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",2)', 'value("root.b[1]",1)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",1)', 'value("root.b[1]",2)'},
+            {'value("root.a[0]",4)', 'value("root.b[0]",2)', 'value("root.b[1]",2)'},
+            fclingo=True,
+        ),
+        "files": ["imply_with_sum.lp"],
     },
     "add_part": {
         "test": StableModels({'include("root.a[0]")'}),

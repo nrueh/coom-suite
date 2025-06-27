@@ -7,24 +7,28 @@ domain(T,V) :- coom_option(T,V).
 discrete(@join(T,A),str) :- coom_attribute(T,A,"str").
 domain(@join(T,A),V) :- coom_attribute_value(T,_,A,V), coom_attribute(T,A,"str").
 
-numeric(@join(T,A),int)   :- coom_attribute(T,A,"num"), not discrete.
-range(@join(T,A),Min,Max) :- coom_attribute(T,A,"num"), not discrete,
+numeric(@join(T,A),int)   :- coom_attribute(T,A,"num"), fclingo.
+range(@join(T,A),Min,Max) :- coom_attribute(T,A,"num"), fclingo,
                              Min = #min { V: coom_attribute_value(T,_,A,V) },
                              Max = #max { V: coom_attribute_value(T,_,A,V) }.
 
 % Temporary fix: For clingo, huge ranges might make grounding to large, translate numeric attributes to discrete attributes
-discrete(@join(T,A),int) :- coom_attribute(T,A,"num"), discrete.
-domain(@join(T,A),V) :- coom_attribute_value(T,_,A,V), coom_attribute(T,A,"num"), discrete.
+discrete(@join(T,A),int) :- coom_attribute(T,A,"num"),                            not fclingo.
+domain(@join(T,A),V) :- coom_attribute_value(T,_,A,V), coom_attribute(T,A,"num"), not fclingo.
 
 % Numeric features
-numeric(@join(Ctx,N),int)   :- coom_feature(Ctx,N,"num",_,_).
+numeric(@join(Ctx,N),int)   :- coom_feature(Ctx,N,"num",_,_), not coom_precision(Ctx,N,_). % Integers
+numeric(@join(Ctx,N),float) :- coom_feature(Ctx,N,"num",_,_),     coom_precision(Ctx,N,_). % Floats
+
 range(@join(Ctx,N),Min,Max) :- coom_feature(Ctx,N,"num",_,_), coom_range(Ctx,N,Min,Max).
+precision(@join(Ctx,N),P)   :- coom_feature(Ctx,N,"num",_,_), coom_precision(Ctx,N,P). % For floats
 
 #show discrete/2.
 #show domain/2.
 
 #show numeric/2.
 #show range/3.
+#show precision/2.
 
 % Instances (of structures, enumerations and attributes in COOM)
 type("root","product") :- coom_structure("product").
@@ -75,6 +79,7 @@ allow(T,(Col,Row),V) :- attribute_constraint((T,_)), allow(T,(0,Row),O), coom_at
 % Imply statements
 % constraint((C,@binary(X',"=",G)),"boolean") :- imply(C,X',G).
 % binary(@binary(X',"=",G),X',"=",G)          :- imply(C,X',G).
+
 imply(X',G) :- imply(_,X',G).
 
 #show imply/2.

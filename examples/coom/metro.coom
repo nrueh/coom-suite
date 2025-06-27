@@ -36,7 +36,7 @@ behavior {
     allow           ( Special       -*-      )
 
     explanation "The number of passengers is equal to the number of seats plus standing room."
-    require num_passengers = count(seat) + standing_room
+    imply num_passengers = count(seat) + standing_room
 }
 
 behavior Seat {
