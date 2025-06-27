@@ -1,11 +1,13 @@
 product {
     1..4 Semester semester
+    num totalECTS
 }
 
 structure Semester {
          Type type
     0..5 Module module
-    num currentECTS
+    num semesterECTS
+    num previousECTS
 }
 
 
@@ -38,6 +40,10 @@ enumeration Module {
 behavior {
     // require alldiff(semester.id)
 
+    imply totalECTS = sum(s.semesterECTS for s in semester)
+
+    // require semester[i].type != semester[i+1].type
+
     require semester[0].type != semester[1].type
 
     require semester[1].type != semester[2].type
@@ -54,22 +60,24 @@ behavior Semester {
     allow        ( Summer   (summer, each) )
     allow        ( Winter   (winter, each) )
 
-    imply currentECTS = sum(root.semester.module if root.semester.id < id)
+    imply semesterECTS = sum(m.ects for m in module)
 
-    condition currentECTS < 90
+    imply previousECTS = sum(s.ects for s in root.semester if s.id < id)
+
+    condition previousECTS < 90
     require module != Thesis
 }
 
 behavior {
-    require 120 = sum(semester.module.ects)
+    require 120 = totalECTS
 
-    require 27 = sum(semester.module.ects if semester.module.group == b)
+    require 27 = sum(m.ects for m in semester.module if m.group == b)
 
-    require 24 = sum(semester.module.ects if semester.module.group == a)
+    require 24 = sum(m.ects for m in semester.module if m.group == a)
 
-    require 24 = sum(semester.module.ects if semester.module.group == p)
+    require 24 = sum(m.ects for m in semester.module if m.group == p)
 
-    exists IM in semester.module
+    exists m in semester.module { m = IM}
 
-    exists Thesis in semester.module
+    exists m in semester.module { m = Thesis }
 }

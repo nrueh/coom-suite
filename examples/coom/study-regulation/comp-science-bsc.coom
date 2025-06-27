@@ -1,6 +1,7 @@
 product {
     1..6 Semester semester
     1..2 Specialization specialization // should be 1 or 2 different specializations allowed, missing syntax for constraint
+    num totalECTS
     // num totalECTS
     // Semester first
     // Semester second
@@ -12,7 +13,8 @@ structure Semester {
         ID id
         Type type
     0..5 Module module
-    num currentECTS
+    num semesterECTS
+    num previousECTS
 }
 
 enumeration ID {
@@ -60,10 +62,12 @@ enumeration Module {
 behavior {
     alldiff specialization
 
+    imply totalECTS = sum(s.semesterECTS for s in semester)
+
     require semester[i].type != semester[i+1].type
 
     // You cannot take a module twice (correct behavior?)
-    alldiff semester.module != semester.module
+    alldiff semester.module
 }
 
 behavior Semester {
@@ -71,7 +75,9 @@ behavior Semester {
     allow        ( Summer   (summer, each) )
     allow        ( Winter   (winter, each) )
 
-    imply currentECTS = sum(root.semester.module if root.semester.id < id)
+    imply semesterECTS = sum(m.ects for m in module)
+
+    imply previousECTS = sum(s.ects for s in root.semester if s.id < id)
 }
 
 behavior Semester {
@@ -80,19 +86,19 @@ behavior Semester {
 }
 
 behavior {
-    require 180 = sum(semester.module.ects)
+    require 180 = totalECTS
 
-    require 102 = sum(semester.module.ects if semester.module.group = i)
+    require 102 = sum(m.ects for m in semester.module if m.group = i)
 
-    require 12 = sum(semester.module.ects if semester.module.group = ii)
+    require 12 = sum(m.ects for m in semester.module if m.group = ii)
 
-    require 30 = sum(semester.module.ects if semester.module.group = x)
+    require 30 = sum(m.ects for m in semester.module if m.group = x)
 
-    require 6 = sum(semester.module.ects if semester.module.group = v)
+    require 6 = sum(m.ects for m in semester.module if m.group = v)
 
-    require 18 = sum(semester.module.ects if semester.module.group = vi)
+    require 18 = sum(m.ects for m in semester.module if m.group = vi)
 
-    exists Thesis in semester.module
+    exists m in semester.module { m = Thesis }
 }
 
 behavior Module {
