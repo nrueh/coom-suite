@@ -82,7 +82,8 @@ allow(T,(Col,Row),V) :- attribute_constraint((T,_)), allow(T,(0,Row),O), coom_at
 % constraint((C,@binary(X',"=",G)),"boolean") :- imply(C,X',G).
 % binary(@binary(X',"=",G),X',"=",G)          :- imply(C,X',G).
 
-imply((C,X'),G)       :- imply((C,_),X',G).
+imply((C,X'),G)       :- imply((C,_),X',G), not coom_condition(C,_,_).
+imply((C,X'),G)       :- imply((C,X),X',G), ground_condition(C,X,_,_).
 condition((C,X'),Con) :- imply((C,X),X',_), ground_condition(C,X,_,Con).
 
 #show imply/2.

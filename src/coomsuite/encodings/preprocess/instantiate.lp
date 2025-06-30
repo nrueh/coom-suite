@@ -58,6 +58,7 @@ path_to(X,P,@dotpath(X')) :- not coom_path(P,I+1,_), path_to(X,P,I,X').
 path_to(X,P,P) :- coom_binary(F,_,_,P), coom_constant(P), formula_context(F,T), type_aux(X,T).
 path_to(X,P,P) :- coom_binary(F,P,_,_), coom_constant(P), formula_context(F,T), type_aux(X,T).
 path_to(X,P,P) :- coom_unary(F,_,P),    coom_constant(P), formula_context(F,T), type_aux(X,T).
+path_to(X,P,P) :- coom_imply(C,_,P),    coom_constant(P), coom_context(C,T),    type_aux(X,T).
 path_to(X,P,P) :- coom_binary(F,_,_,P), coom_number(P,_), formula_context(F,T), type_aux(X,T).
 path_to(X,P,P) :- coom_binary(F,P,_,_), coom_number(P,_), formula_context(F,T), type_aux(X,T).
 path_to(X,P,P) :- coom_unary(F,_,P),    coom_number(P,_), formula_context(F,T), type_aux(X,T).
