@@ -1,7 +1,7 @@
 part("product").
 constraint(("root.a",1),"lowerbound").
 constraint(("root.b",1),"lowerbound").
-imply("root.a[0]","root.b[0]").
+imply((0,"root.a[0]"),"root.b[0]").
 index("root.a[0]",0).
 index("root.b[0]",0).
 numeric("product.a",int).

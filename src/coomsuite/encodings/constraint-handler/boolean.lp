@@ -8,7 +8,8 @@ assign(b(NRES),NRES,operation(OP,(X1,(X2,())))) :- binary(NRES,XN1,SOP,XN2),
     operatorMap2(SOP,OP),
     X1 = variable(XN1), X2 = variable(XN2).
 
-assign(i(NRES),NRES,variable(NEXP)) :- imply(NRES,NEXP).
+assign(i(NRES),NRES,variable(NEXP)) :- imply((C,NRES),NEXP), include(NRES),
+    value(Con,bool,true) : condition((C,NRES),Con).
 
 
 set_declare(ddummy,MAP) :- function(_,_,MAP).

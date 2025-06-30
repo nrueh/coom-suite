@@ -9,4 +9,4 @@ type("root.a[0]","product.a").
 numeric("product.a",float).
 range("product.a",0,10).
 precision("product.a",2).
-imply("root.a[0]","2.24").
+imply((0,"root.a[0]"),"2.24").
