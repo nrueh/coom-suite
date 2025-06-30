@@ -113,20 +113,20 @@ constraint((4,"root.pfosten[0].km_gesamthoehe[0]>1000"),"boolean").
 constraint((5,"root.pfosten[0].km_gesamthoehe[0]<3200"),"boolean").
 
 % constraint((0,"root.pfosten[0].ueberstand[0]=(root.grundmerkmale[0].eingabeBreite[0]-root.pfosten[0].km_mittePfosten[0])"),"boolean").
-imply("root.pfosten[0].ueberstand[0]", "(root.grundmerkmale[0].eingabeBreite[0]-root.pfosten[0].km_mittePfosten[0])").
+imply((0,"root.pfosten[0].ueberstand[0]"), "(root.grundmerkmale[0].eingabeBreite[0]-root.pfosten[0].km_mittePfosten[0])").
 
 % constraint((10,"root.grundmerkmale[0].weight[0]=(root.grundmerkmale[0].flaeche[0]*(root.cover[0].weight[0]/1000))"),"boolean").
-imply("root.grundmerkmale[0].weight[0]","(root.grundmerkmale[0].flaeche[0]*(root.cover[0].weight[0]/1000))").
+imply((10,"root.grundmerkmale[0].weight[0]"),"(root.grundmerkmale[0].flaeche[0]*(root.cover[0].weight[0]/1000))").
 unary("(root.grundmerkmale[0].flaeche[0]*(root.cover[0].weight[0]/1000))","()","root.grundmerkmale[0].flaeche[0]*(root.cover[0].weight[0]/1000)").
 binary("root.grundmerkmale[0].flaeche[0]*(root.cover[0].weight[0]/1000)","root.grundmerkmale[0].flaeche[0]","*","(root.cover[0].weight[0]/1000)").
 unary("(root.cover[0].weight[0]/1000)","()","root.cover[0].weight[0]/1000").
 binary("root.cover[0].weight[0]/1000","root.cover[0].weight[0]","/","1000").
 
 % constraint((9,"root.grundmerkmale[0].flaeche[0]=(root.grundmerkmale[0].laenge[0]*(root.grundmerkmale[0].bestellBreite[0]/1000000))"),"boolean").
-imply("root.grundmerkmale[0].flaeche[0]","(root.grundmerkmale[0].laenge[0]*(root.grundmerkmale[0].bestellBreite[0]/1000000))").
+imply((9,"root.grundmerkmale[0].flaeche[0]"),"(root.grundmerkmale[0].laenge[0]*(root.grundmerkmale[0].bestellBreite[0]/1000000))").
 
 % constraint((8,"root.grundmerkmale[0].bestellBreite[0]=(root.grundmerkmale[0].eingabeBreite[0]+(tan(root.grundmerkmale[0].neigungswinkelAnlage[0])*80))"),"boolean").
-imply("root.grundmerkmale[0].bestellBreite[0]","(root.grundmerkmale[0].eingabeBreite[0]+(tan(root.grundmerkmale[0].neigungswinkelAnlage[0])*80))").
+imply((8,"root.grundmerkmale[0].bestellBreite[0]"),"(root.grundmerkmale[0].eingabeBreite[0]+(tan(root.grundmerkmale[0].neigungswinkelAnlage[0])*80))").
 unary("(root.grundmerkmale[0].eingabeBreite[0]+(tan(root.grundmerkmale[0].neigungswinkelAnlage[0])*80))","()","root.grundmerkmale[0].eingabeBreite[0]+(tan(root.grundmerkmale[0].neigungswinkelAnlage[0])*80)").
 binary("root.grundmerkmale[0].eingabeBreite[0]+(tan(root.grundmerkmale[0].neigungswinkelAnlage[0])*80)","root.grundmerkmale[0].eingabeBreite[0]","+","(tan(root.grundmerkmale[0].neigungswinkelAnlage[0])*80)").
 unary("(tan(root.grundmerkmale[0].neigungswinkelAnlage[0])*80)","()","tan(root.grundmerkmale[0].neigungswinkelAnlage[0])*80").
@@ -134,10 +134,10 @@ binary("tan(root.grundmerkmale[0].neigungswinkelAnlage[0])*80","tan(root.grundme
 unary("tan(root.grundmerkmale[0].neigungswinkelAnlage[0])","tan","root.grundmerkmale[0].neigungswinkelAnlage[0]").
 
 % constraint((1,"root.pfosten[0].km_gesamthoehe[0]=(root.grundmerkmale[0].durchgangshoehe[0]+(tan(root.grundmerkmale[0].neigungswinkelAnlage[0])*root.pfosten[0].ueberstand[0]))"),"boolean").
-imply("root.pfosten[0].km_gesamthoehe[0]","(root.grundmerkmale[0].durchgangshoehe[0]+(tan(root.grundmerkmale[0].neigungswinkelAnlage[0])*root.pfosten[0].ueberstand[0]))").
+imply((1,"root.pfosten[0].km_gesamthoehe[0]"),"(root.grundmerkmale[0].durchgangshoehe[0]+(tan(root.grundmerkmale[0].neigungswinkelAnlage[0])*root.pfosten[0].ueberstand[0]))").
 
 % constraint((7,"root.grundmerkmale[0].neigungswinkelAnlage[0]=(atan(((125-root.grundmerkmale[0].eingabeBreite[0])/((root.grundmerkmale[0].montagehoehe[0]-8.82)+(90-root.grundmerkmale[0].durchgangshoehe[0]))))+acos((48.4985/sqrt(((((root.grundmerkmale[0].montagehoehe[0]-8.82)+(90-root.grundmerkmale[0].durchgangshoehe[0]))^2)+((125-root.grundmerkmale[0].eingabeBreite[0])^2))))))"),"boolean").
-imply("root.grundmerkmale[0].neigungswinkelAnlage[0]","(atan(((125-root.grundmerkmale[0].eingabeBreite[0])/((root.grundmerkmale[0].montagehoehe[0]-8.82)+(90-root.grundmerkmale[0].durchgangshoehe[0]))))+acos((48.4985/sqrt(((((root.grundmerkmale[0].montagehoehe[0]-8.82)+(90-root.grundmerkmale[0].durchgangshoehe[0]))^2)+((125-root.grundmerkmale[0].eingabeBreite[0])^2))))))").
+imply((7,"root.grundmerkmale[0].neigungswinkelAnlage[0]"),"(atan(((125-root.grundmerkmale[0].eingabeBreite[0])/((root.grundmerkmale[0].montagehoehe[0]-8.82)+(90-root.grundmerkmale[0].durchgangshoehe[0]))))+acos((48.4985/sqrt(((((root.grundmerkmale[0].montagehoehe[0]-8.82)+(90-root.grundmerkmale[0].durchgangshoehe[0]))^2)+((125-root.grundmerkmale[0].eingabeBreite[0])^2))))))").
 
 
 binary("root.grundmerkmale[0].montagehoehe[0]-8.82","root.grundmerkmale[0].montagehoehe[0]","-","8.82").

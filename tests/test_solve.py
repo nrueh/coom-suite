@@ -128,6 +128,8 @@ class TestClingo(TestCase):
         self.run_test("imply_with_binary")
         self.run_test("imply_with_unary")
         self.run_test("imply_with_sum")
+        self.run_test("conditional_imply")
+        self.run_test("multiple_conditions_imply")
 
     def test_user_input(self) -> None:
         """

@@ -80,7 +80,7 @@ number("4",4).
 explanation(1,"The total volume is equal to the sum of the volumes of all bags on the carrier and the frame.").
 % constraint((1,"root.totalVolume[0]=sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)"),"boolean").
 % binary("root.totalVolume[0]=sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)","root.totalVolume[0]","=","sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)").
-imply("root.totalVolume[0]","sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)").
+imply((1,"root.totalVolume[0]"),"sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)").
 binary("sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)","sum(root.carrier.bag.volume)","+","sum(root.frame.bag.volume)").
 function("sum(root.carrier.bag.volume)","sum","root.carrier.bag.volume").
 set("root.carrier.bag.volume","root.carrier[0].bag[0].volume[0]").
