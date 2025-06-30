@@ -2,6 +2,8 @@
 Test cases for solving.
 """
 
+# pylint: disable=R0801
+
 from unittest import TestCase
 
 from . import run_test, unpack_test
@@ -268,6 +270,8 @@ class TestFclingo(TestCase):
         self.run_test("imply_with_binary")
         self.run_test("imply_with_unary")
         self.run_test("imply_with_sum")
+        self.run_test("conditional_imply")
+        self.run_test("multiple_conditions_imply")
 
     def test_user_input(self) -> None:
         """
@@ -397,6 +401,18 @@ class TestConstraintHandler(TestCase):
         self.run_test("sum")
         # self.run_test("min")
         # self.run_test("max")
+
+    def test_imply(self) -> None:
+        """
+        Test imply statements (fclingo).
+        """
+        self.run_test("imply_with_number")
+        self.run_test("imply_with_variable")
+        self.run_test("imply_with_binary")
+        self.run_test("imply_with_unary")
+        self.run_test("imply_with_sum")
+        self.run_test("conditional_imply")
+        self.run_test("multiple_conditions_imply")
 
     def test_user_input(self) -> None:
         """

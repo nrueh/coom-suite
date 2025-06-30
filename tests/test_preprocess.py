@@ -2,6 +2,8 @@
 Test cases for preprocessing the serialized fact format.
 """
 
+# pylint: disable=R0801
+
 from unittest import TestCase
 
 from . import run_test, unpack_test

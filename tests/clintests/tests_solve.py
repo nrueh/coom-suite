@@ -794,6 +794,11 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             {'value("root.color[0]","Blue")', 'value("root.option[0]",2)'},
             {'value("root.color[0]","Red")', 'value("root.option[0]",1)'},
         ),
+        "ftest": StableModels(
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)'},
+            fclingo=True,
+        ),
         "files": ["conditional_imply.lp"],
     },
     "multiple_conditions_imply": {
@@ -804,6 +809,15 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
             {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
             {'value("root.color[0]","Red")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
+        ),
+        "ftest": StableModels(
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
+            fclingo=True,
         ),
         "files": ["multiple_conditions_imply.lp"],
     },
