@@ -1,11 +1,11 @@
 product {
-	//    1..3	Bean_Container			bean_container
+	   1..3	Bean_Container			bean_container
 	       	Water_Tank				water_tank
-	//        	Grinding_Unit			grinding_unit
-	//        	Brew_Unit				brew_unit
-	//    0..1	Milk_System				milk_system
-	//        	Cup_Warmer				cup_warmer
-	//        	Additional_Equipment	additional_equipment
+	       	Grinding_Unit			grinding_unit
+	       	Brew_Unit				brew_unit
+	   0..1	Milk_System				milk_system
+	       	Cup_Warmer				cup_warmer
+	       	Additional_Equipment	additional_equipment
 }
 
 structure Bean_Container {
@@ -39,7 +39,7 @@ structure Grinding_Unit {
 	Grinding_Type		type
 	Frame				grinding_frame
 	Grinder_Material	material
-	// num					weight
+	num					weight
 }
 
 structure BOM_GU {
@@ -442,125 +442,125 @@ behavior Water_Tank {
 // 	imply steam_exit_velocity = sqrt(((2 * pressure_tank.pressure) / heating_system.steamDensity))
 // }
 
+// behavior Brew_Unit {
+// 	explanation "KM"
+// 	combinations ( brew_pump brewing_chamber heating_system pressure_tank)
+// 	allow			( M			(M,L)				H16				P30)
+// 	allow 			( L			L					H20 			P40)
+// 	allow			( (L,M)		XL					H16 			P40)
+// 	allow			( L			M					H20 			P30)
+// 	allow			( XL		L					H22 			P50)
+// 	allow			( XL		M					H20 			P40)
+// 	allow			( XL		XL					H22 			P50)
+// }
+
 behavior Brew_Unit {
 	explanation "KM"
-	combinations ( brew_pump brewing_chamber heating_system pressure_tank)
-	allow			( M			(M,L)				H16				P30)
-	allow 			( L			L					H20 			P40)
-	allow			( (L,M)		XL					H16 			P40)
-	allow			( L			M					H20 			P30)
-	allow			( XL		L					H22 			P50)
-	allow			( XL		M					H20 			P40)
-	allow			( XL		XL					H22 			P50)
-
+	condition brew_pump = M
+	condition (brewing_chamber = M || brewing_chamber = L)
+	require heating_system = H16
 }
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition brew_pump = M
-// 	condition (brewing_chamber = M || brewing_chamber = L)
-// 	require heating_system = H16
-// }
 
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition brew_pump = M
-// 	condition (brewing_chamber = M || brewing_chamber = L)
-// 	require pressure_tank = P30
-// }
+behavior Brew_Unit {
+	explanation "KM"
+	condition brew_pump = M
+	condition (brewing_chamber = M || brewing_chamber = L)
+	require pressure_tank = P30
+}
 
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition brew_pump = L
-// 	condition brewing_chamber = L
-// 	require heating_system = H20
-// }
+behavior Brew_Unit {
+	explanation "KM"
+	condition brew_pump = L
+	condition brewing_chamber = L
+	require heating_system = H20
+}
 
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition brew_pump = L
-// 	condition brewing_chamber = L
-// 	require pressure_tank = P40
-// }
+behavior Brew_Unit {
+	explanation "KM"
+	condition brew_pump = L
+	condition brewing_chamber = L
+	require pressure_tank = P40
+}
 
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition brew_pump = XL
-// 	condition brewing_chamber = L
-// 	require heating_system = H22
-// }
+behavior Brew_Unit {
+	explanation "KM"
+	condition brew_pump = XL
+	condition brewing_chamber = L
+	require heating_system = H22
+}
 
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition brew_pump = XL
-// 	condition brewing_chamber = L
-// 	require pressure_tank = P50
-// }
+behavior Brew_Unit {
+	explanation "KM"
+	condition brew_pump = XL
+	condition brewing_chamber = L
+	require pressure_tank = P50
+}
 
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition brew_pump = XL
-// 	condition brewing_chamber = M
-// 	require heating_system = H20
-// }
+behavior Brew_Unit {
+	explanation "KM"
+	condition brew_pump = XL
+	condition brewing_chamber = M
+	require heating_system = H20
+}
 
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition brew_pump = XL
-// 	condition brewing_chamber = M
-// 	require pressure_tank = P40
-// }
+behavior Brew_Unit {
+	explanation "KM"
+	condition brew_pump = XL
+	condition brewing_chamber = M
+	require pressure_tank = P40
+}
 
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition brew_pump = XL
-// 	condition brewing_chamber = XL
-// 	require heating_system = H22
-// }
+behavior Brew_Unit {
+	explanation "KM"
+	condition brew_pump = XL
+	condition brewing_chamber = XL
+	require heating_system = H22
+}
 
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition brew_pump = XL
-// 	condition brewing_chamber = XL
-// 	require pressure_tank = P50
-// }
+behavior Brew_Unit {
+	explanation "KM"
+	condition brew_pump = XL
+	condition brewing_chamber = XL
+	require pressure_tank = P50
+}
 
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition (brew_pump = L || brew_pump = M)
-// 	condition brewing_chamber = XL
-// 	require heating_system = H16
-// }
+behavior Brew_Unit {
+	explanation "KM"
+	condition (brew_pump = L || brew_pump = M)
+	condition brewing_chamber = XL
+	require heating_system = H16
+}
 
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition (brew_pump = L || brew_pump = M)
-// 	condition brewing_chamber = XL
-// 	require pressure_tank = P40
-// }
+behavior Brew_Unit {
+	explanation "KM"
+	condition (brew_pump = L || brew_pump = M)
+	condition brewing_chamber = XL
+	require pressure_tank = P40
+}
 
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition brew_pump = L
-// 	condition brewing_chamber = M
-// 	require heating_system = H20
-// }
+behavior Brew_Unit {
+	explanation "KM"
+	condition brew_pump = L
+	condition brewing_chamber = M
+	require heating_system = H20
+}
 
-// behavior Brew_Unit {
-// 	explanation "KM"
-// 	condition brew_pump = L
-// 	condition brewing_chamber = M
-// 	require pressure_tank = P30
-// }
+behavior Brew_Unit {
+	explanation "KM"
+	condition brew_pump = L
+	condition brewing_chamber = M
+	require pressure_tank = P30
+}
 
-// behavior Grinding_Unit {
-// 	explanation "KM"
-// 	default 	grinding_frame = FR_20_3453897
-// }
+behavior Grinding_Unit {
+	explanation "KM"
+	default 	grinding_frame = FR_20_3453897
+}
 
-// behavior Grinding_Unit {
-// 	explanation "KM"
-// 	default 	grinding_frame = FR_20_4758238
-// }
+behavior Grinding_Unit {
+	explanation "KM"
+	default 	grinding_frame = FR_20_4758238
+}
 
 behavior Additional_Equipment {
 	explanation "KM"
@@ -783,26 +783,26 @@ behavior Grinding_Unit {
 	require (grinding_frame = FR_20_4758238 || grinding_frame = FR_22_9384577)
 }
 
-// behavior Water_Tank {
-// 	explanation "KM"
-// 	condition water_pipe_connection = True
-// 	condition tank_volume = S
-// 	imply water_pump.required_water_pressure = 2
-// }
+behavior Water_Tank {
+	explanation "KM"
+	condition water_pipe_connection = True
+	condition tank_volume = S
+	imply water_pump.required_water_pressure = 2
+}
 
-// behavior Water_Tank {
-// 	explanation "KM"
-// 	condition water_pipe_connection = True
-// 	condition tank_volume = M
-// 	imply water_pump.required_water_pressure = 4
-// }
+behavior Water_Tank {
+	explanation "KM"
+	condition water_pipe_connection = True
+	condition tank_volume = M
+	imply water_pump.required_water_pressure = 4
+}
 
-// behavior Water_Tank {
-// 	explanation "KM"
-// 	condition water_pipe_connection = True
-// 	condition tank_volume = L
-// 	imply water_pump.required_water_pressure = 6
-// }
+behavior Water_Tank {
+	explanation "KM"
+	condition water_pipe_connection = True
+	condition tank_volume = L
+	imply water_pump.required_water_pressure = 6
+}
 
 // behavior Brew_Unit {
 // 	message KM
