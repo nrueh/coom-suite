@@ -100,7 +100,7 @@ class ASPModelVisitor(ModelVisitor):
         elif field.string_def() is not None:
             return  # ignore string features
         elif field.type_ref is not None:
-            type_name = field.type_ref.NAME()
+            type_name = str(field.type_ref.NAME()).replace("bool", "Bool")
         # else:
         #     type_name = feature_name
 
@@ -111,22 +111,34 @@ class ASPModelVisitor(ModelVisitor):
             c_min = cardinality.min.text.replace("x", "")
             c_max = c_min
             if cardinality.max is not None:
-                c_max = cardinality.max.text.replace("x", "").replace("*", "#sup")
+                c_max = cardinality.max.text.replace("x",
+                                                     "").replace("*", "#sup")
 
-        self.output_asp.append(f'feature("{self.structure_name}","{feature_name}","{type_name}",{c_min},{c_max}).')
+        self.output_asp.append(
+            f'feature("{self.structure_name}","{feature_name}","{type_name}",{c_min},{c_max}).'
+        )
         if type_name == "num":
             num: ModelParser.Number_defContext = field.number_def()
             if num.fraction() is not None:
                 precision = str(num.fraction().HASHES()).count("#")
-                self.output_asp.append(f'precision("{self.structure_name}","{feature_name}",{precision}).')
+                self.output_asp.append(
+                    f'precision("{self.structure_name}","{feature_name}",{precision}).'
+                )
             if num.unit() is not None:
                 unit = str(num.unit().NAME())
-                self.output_asp.append(f'unit("{self.structure_name}","{feature_name}","{unit}").')
+                self.output_asp.append(
+                    f'unit("{self.structure_name}","{feature_name}","{unit}").'
+                )
 
             if num.min is not None or num.max is not None:
-                r_min = "#inf" if num.min.getText() == "-\u221e" else num.min.getText()  # negative infinity symbol
-                r_max = "#sup" if num.max.getText() == "\u221e" else num.max.getText()  # infinity symbol
-                self.output_asp.append(f'range("{self.structure_name}","{feature_name}",{r_min},{r_max}).')
+                r_min = "#inf" if num.min.getText(
+                ) == "-\u221e" else num.min.getText(
+                )  # negative infinity symbol
+                r_max = "#sup" if num.max.getText(
+                ) == "\u221e" else num.max.getText()  # infinity symbol
+                self.output_asp.append(
+                    f'range("{self.structure_name}","{feature_name}",{r_min},{r_max}).'
+                )
 
     def visitAttribute(self, ctx: ModelParser.AttributeContext):
         # if self.parent_enum is None:
@@ -138,7 +150,8 @@ class ASPModelVisitor(ModelVisitor):
         else:
             field_type = "str"
         field_name = field.fieldName.getText()
-        self.output_asp.append(f'attribute("{parent_name}","{field_name}","{field_type}").')
+        self.output_asp.append(
+            f'attribute("{parent_name}","{field_name}","{field_type}").')
         super().visitAttribute(ctx)
 
     def visitOption(self, ctx: ModelParser.OptionContext):
@@ -150,7 +163,8 @@ class ASPModelVisitor(ModelVisitor):
 
         constant: ModelParser.ConstantContext = ctx.constant()
         if constant != []:
-            parent_attr: ModelParser.AttributeContext = self.parent_enum.attribute()
+            parent_attr: ModelParser.AttributeContext = self.parent_enum.attribute(
+            )
             for a, c in zip(parent_attr, constant):
                 field: ModelParser.FieldContext = a.field()
                 attr_name = field.fieldName.getText()
@@ -168,29 +182,34 @@ class ASPModelVisitor(ModelVisitor):
         if ctx.interaction() is None:
             self.output_asp.append("")
             self.output_asp.append(f"behavior({self.constraint_idx}).")
-            self.output_asp.append(f'context({self.constraint_idx},"{self.context}").')
+            self.output_asp.append(
+                f'context({self.constraint_idx},"{self.context}").')
             super().visitConditioned(ctx)
             self.constraint_idx += 1
 
     def visitExplanation(self, ctx: ModelParser.ExplanationContext):
-        self.output_asp.append(f"explanation({self.constraint_idx},{ctx.name().getText()}).")
+        self.output_asp.append(
+            f"explanation({self.constraint_idx},{ctx.name().getText()}).")
         return super().visitExplanation(ctx)
 
     def visitAssign_default(self, ctx: ModelParser.Assign_defaultContext):
         path = ctx.path().getText()
         formula = ctx.formula().getText()
-        self.output_asp.append(f'default({self.constraint_idx},"{path}","{formula}").')
+        self.output_asp.append(
+            f'default({self.constraint_idx},"{path}","{formula}").')
         super().visitAssign_default(ctx)
 
     def visitAssign_imply(self, ctx: ModelParser.Assign_implyContext):
         path = ctx.path().getText()
         formula = ctx.formula().getText()
-        self.output_asp.append(f'imply({self.constraint_idx},"{path}","{formula}").')
+        self.output_asp.append(
+            f'imply({self.constraint_idx},"{path}","{formula}").')
         super().visitAssign_imply(ctx)
 
     def visitCombinations(self, ctx: ModelParser.CombinationsContext):
         for i, f in enumerate(ctx.formula()):
-            self.output_asp.append(f'combinations({self.constraint_idx},{i},"{f.getText()}").')
+            self.output_asp.append(
+                f'combinations({self.constraint_idx},{i},"{f.getText()}").')
         super().visitCombinations(ctx)
         self.row_idx = 0
 
@@ -205,7 +224,9 @@ class ASPModelVisitor(ModelVisitor):
                 v = v.strip('"')
                 if v == "-*-":  # Wildcard operator for combinations table
                     continue
-                self.output_asp.append(f'{row_type}({self.constraint_idx},({col_idx},{self.row_idx}),"{v}").')
+                self.output_asp.append(
+                    f'{row_type}({self.constraint_idx},({col_idx},{self.row_idx}),"{v}").'
+                )
         self.print_path = False
         super().visitCombination_row(ctx)
         self.print_path = True
@@ -214,7 +235,9 @@ class ASPModelVisitor(ModelVisitor):
     def visitPrecondition(self, ctx: ModelParser.PreconditionContext):
         condition = ctx.condition().getText().replace('"', "")
         condition = f'"{condition}"'
-        self.output_asp.append(f"condition({self.constraint_idx},{self.condition_idx},{condition}).")
+        self.output_asp.append(
+            f"condition({self.constraint_idx},{self.condition_idx},{condition})."
+        )
         self.condition_idx += 1
         super().visitPrecondition(ctx)
 
@@ -228,18 +251,22 @@ class ASPModelVisitor(ModelVisitor):
         cond_and: ModelParser.condition_andContext = ctx.condition_and()
         for i in range(len(cond_and) - 1):
             left = cond_and[i].getText().strip('"')
-            right = "||".join([a.getText().strip('"') for a in cond_and[i + 1 :]])
+            right = "||".join(
+                [a.getText().strip('"') for a in cond_and[i + 1:]])
             complete = left + "||" + right
-            self.output_asp.append(f'binary("{complete}","{left}","||","{right}").')
+            self.output_asp.append(
+                f'binary("{complete}","{left}","||","{right}").')
         super().visitCondition_or(ctx)
 
     def visitCondition_and(self, ctx: ModelParser.Condition_andContext):
         cond_not: ModelParser.condition_notContext = ctx.condition_not()
         for i in range(len(cond_not) - 1):
             left = cond_not[i].getText().strip('"')
-            right = "&&".join([a.getText().strip('"') for a in cond_not[i + 1 :]])
+            right = "&&".join(
+                [a.getText().strip('"') for a in cond_not[i + 1:]])
             complete = left + "&&" + right
-            self.output_asp.append(f'binary("{complete}","{left}","&&","{right}").')
+            self.output_asp.append(
+                f'binary("{complete}","{left}","&&","{right}").')
         super().visitCondition_and(ctx)
 
     def visitCondition_not(self, ctx: ModelParser.Condition_notContext):
@@ -249,10 +276,12 @@ class ASPModelVisitor(ModelVisitor):
             self.output_asp.append(f'unary("{complete}","!","{negated}").')
         elif ctx.condition() is not None:
             in_brackets = ctx.condition().getText().strip('"')
-            self.output_asp.append(f'unary("{complete}","()","{in_brackets}").')
+            self.output_asp.append(
+                f'unary("{complete}","()","{in_brackets}").')
         super().visitCondition_not(ctx)
 
-    def visitCondition_compare(self, ctx: ModelParser.Condition_compareContext):
+    def visitCondition_compare(self,
+                               ctx: ModelParser.Condition_compareContext):
         formula: ModelParser.FormulaContext = ctx.formula()
         parts: ModelParser.Condition_partContext = ctx.condition_part()
 
@@ -262,7 +291,8 @@ class ASPModelVisitor(ModelVisitor):
             right = p.formula().getText().strip('"')
             compare = p.compare().getText()
             complete = left + compare + right
-            self.output_asp.append(f'binary("{complete}","{left}","{compare}","{right}").')
+            self.output_asp.append(
+                f'binary("{complete}","{left}","{compare}","{right}").')
             left = right
 
             # # For multiple comparisons rewrite as propositional formulas connected by &&
@@ -278,45 +308,55 @@ class ASPModelVisitor(ModelVisitor):
         form_sub: ModelParser.Formula_subContext = ctx.formula_sub()
         for i in range(len(form_sub) - 1):
             left = form_sub[i].getText().strip('"')
-            right = "+".join([a.getText().strip('"') for a in form_sub[i + 1 :]])
+            right = "+".join(
+                [a.getText().strip('"') for a in form_sub[i + 1:]])
             complete = left + "+" + right
-            self.output_asp.append(f'binary("{complete}","{left}","+","{right}").')
+            self.output_asp.append(
+                f'binary("{complete}","{left}","+","{right}").')
         super().visitFormula_add(ctx)
 
     def visitFormula_sub(self, ctx: ModelParser.Formula_subContext):
         form_mul: ModelParser.Formula_mulContext = ctx.formula_mul()
         for i in range(len(form_mul) - 1):
             left = form_mul[i].getText().strip('"')
-            right = "-".join([a.getText().strip('"') for a in form_mul[i + 1 :]])
+            right = "-".join(
+                [a.getText().strip('"') for a in form_mul[i + 1:]])
             complete = left + "-" + right
-            self.output_asp.append(f'binary("{complete}","{left}","-","{right}").')
+            self.output_asp.append(
+                f'binary("{complete}","{left}","-","{right}").')
         super().visitFormula_sub(ctx)
 
     def visitFormula_mul(self, ctx: ModelParser.Formula_mulContext):
         form_div: ModelParser.Formula_divContext = ctx.formula_div()
         for i in range(len(form_div) - 1):
             left = form_div[i].getText().strip('"')
-            right = "*".join([a.getText().strip('"') for a in form_div[i + 1 :]])
+            right = "*".join(
+                [a.getText().strip('"') for a in form_div[i + 1:]])
             complete = left + "*" + right
-            self.output_asp.append(f'binary("{complete}","{left}","*","{right}").')
+            self.output_asp.append(
+                f'binary("{complete}","{left}","*","{right}").')
         super().visitFormula_mul(ctx)
 
     def visitFormula_div(self, ctx: ModelParser.Formula_divContext):
         form_pow: ModelParser.Formula_powContext = ctx.formula_pow()
         for i in range(len(form_pow) - 1):
             left = form_pow[i].getText().strip('"')
-            right = "/".join([a.getText().strip('"') for a in form_pow[i + 1 :]])
+            right = "/".join(
+                [a.getText().strip('"') for a in form_pow[i + 1:]])
             complete = left + "/" + right
-            self.output_asp.append(f'binary("{complete}","{left}","/","{right}").')
+            self.output_asp.append(
+                f'binary("{complete}","{left}","/","{right}").')
         super().visitFormula_div(ctx)
 
     def visitFormula_pow(self, ctx: ModelParser.Formula_powContext):
         form_sign: ModelParser.Formula_signContext = ctx.formula_sign()
         for i in range(len(form_sign) - 1):
             left = form_sign[i].getText().strip('"')
-            right = "^".join([a.getText().strip('"') for a in form_sign[i + 1 :]])
+            right = "^".join(
+                [a.getText().strip('"') for a in form_sign[i + 1:]])
             complete = left + "^" + right
-            self.output_asp.append(f'binary("{complete}","{left}","^","{right}").')
+            self.output_asp.append(
+                f'binary("{complete}","{left}","^","{right}").')
         super().visitFormula_pow(ctx)
 
     def visitFormula_sign(self, ctx: ModelParser.Formula_signContext):
@@ -328,17 +368,22 @@ class ASPModelVisitor(ModelVisitor):
             else:
                 # Is this really necessary?
                 positive = ctx.formula_sign().getText()
-                self.output_asp.append(f'unary("{complete}","+","{positive}").')
+                self.output_asp.append(
+                    f'unary("{complete}","+","{positive}").')
         elif ctx.formula() is not None:
             in_brackets = ctx.formula().getText()
-            self.output_asp.append(f'unary("{complete}","()","{in_brackets}").')
+            self.output_asp.append(
+                f'unary("{complete}","()","{in_brackets}").')
         elif ctx.formula_func() is not None:
             func = ctx.formula_func().FUNCTION()
             for f in ctx.formula_func().formula():
                 if str(func) in ["sum", "count", "min", "max", "avg"]:
-                    self.output_asp.append(f'function("{self.context}","{complete}","{func}","{f.getText()}").')
+                    self.output_asp.append(
+                        f'function("{self.context}","{complete}","{func}","{f.getText()}").'
+                    )
                 else:
-                    self.output_asp.append(f'unary("{complete}","{func}","{f.getText()}").')
+                    self.output_asp.append(
+                        f'unary("{complete}","{func}","{f.getText()}").')
         super().visitFormula_sign(ctx)
 
     def visitPath(self, ctx: ModelParser.PathContext):
@@ -358,4 +403,5 @@ class ASPModelVisitor(ModelVisitor):
         if ctx.FLOATING() is not None:
             self.output_asp.append(f'float("{ctx.FLOATING()}").')
         elif ctx.INTEGER() is not None:
-            self.output_asp.append(f'number("{ctx.INTEGER()}",{ctx.INTEGER()}).')
+            self.output_asp.append(
+                f'number("{ctx.INTEGER()}",{ctx.INTEGER()}).')
