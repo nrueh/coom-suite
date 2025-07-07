@@ -57,13 +57,8 @@ behavior {
     condition count(seat.display) > 20
     require count(dvdPlayer) > 1
 
-    explanation "The total power consumption is the sum of all devices"
-    imply totalPowerConsumption = sum(dvdPlayer.powerConsumption) + sum(seat.lamp.powerConsumption) + sum(seat.display.powerConsumption)
-
-    explanation "The total power consumption must not exceed 2000 W."
-    require totalPowerConsumption <= 2000
+    explanation "The total power consumption of the bus is the sum of the power consumption of all devices."
+    imply totalPowerConsumption = sum(dvdPlayer.powerConsumption) + sum(seat.lamp.powerConsumption) + sum(display.powerConsumption)
 
     imply seatCount = count(seat)
-
-    // maximize seatCount
 }

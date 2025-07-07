@@ -8,14 +8,15 @@ authors = [
     { name = "Nicolas Rühling", email = "nicolas.ruehling@uni-potsdam.de" },
 ]
 description = "Python package to parse and solve COOM configuration instances using ASP."
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "antlr4-tools",
     "antlr4-python3-runtime==4.9.3",
     "clingo==5.7.*",
-    "clingcon >= 5.2.1, == 5.2.*",                                                                    # requirement for fclingo
+    "clingcon >= 5.2.1, == 5.2.*",                                                                  # requirement for fclingo
     "fclingo@git+https://github.com/potassco/fclingo.git@6f4d7efc92bfac18465e2c95c4ef9ac99ef470b5",
-    "clinguin@git+https://github.com/potassco/clinguin.git@3f3f46157c33333390dfa4268716303bee2fbe0d",
+    "clinguin>=2.6.1",
+    "constraint-handler@file:/src/coomsuite/encodings/constraint-handler/constraint-handler/",
 ]
 license = { file = "LICENSE" }
 dynamic = ["version"]
@@ -28,7 +29,7 @@ Homepage = "https://github.com/krr-up/coom-suite.git/"
 format = ["black", "isort", "autoflake"]
 lint_pylint = ["pylint"]
 typecheck = ["types-setuptools", "mypy"]
-test = ["coverage[toml]", "clintest>=0.2.0"]
+test = ["coverage[toml]", "clintest>=0.3.0"]
 doc = [
     "mkdocs",
     "mkdocs-material",
@@ -98,4 +99,4 @@ omit = [
 exclude_lines = ["assert", "nocoverage"]
 
 [tool.mypy]
-exclude = ['coom_grammar', '/coomsuite/__main__.py']
+exclude = ['coom_grammar', '/coomsuite/__main__.py', 'constraint-handler']

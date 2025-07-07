@@ -1,30 +1,34 @@
 %%% Output atoms
 % Attributes of the model (enumerations and numeric features in COOM)
-discrete(T) :- coom_enumeration(T).
+discrete(T,str) :- coom_enumeration(T).
 domain(T,V) :- coom_option(T,V).
 
 % Enumeration attributes
-discrete(@join(T,A)) :- coom_attribute(T,A,"str").
+discrete(@join(T,A),str) :- coom_attribute(T,A,"str").
 domain(@join(T,A),V) :- coom_attribute_value(T,_,A,V), coom_attribute(T,A,"str").
 
-integer(@join(T,A))       :- coom_attribute(T,A,"num"), not discrete.
-range(@join(T,A),Min,Max) :- coom_attribute(T,A,"num"), not discrete,
+numeric(@join(T,A),int)   :- coom_attribute(T,A,"num"), fclingo.
+range(@join(T,A),Min,Max) :- coom_attribute(T,A,"num"), fclingo,
                              Min = #min { V: coom_attribute_value(T,_,A,V) },
                              Max = #max { V: coom_attribute_value(T,_,A,V) }.
 
 % Temporary fix: For clingo, huge ranges might make grounding to large, translate numeric attributes to discrete attributes
-discrete(@join(T,A)) :- coom_attribute(T,A,"num"), discrete.
-domain(@join(T,A),V) :- coom_attribute_value(T,_,A,V), coom_attribute(T,A,"num"), discrete.
+discrete(@join(T,A),int) :- coom_attribute(T,A,"num"),                            not fclingo.
+domain(@join(T,A),V) :- coom_attribute_value(T,_,A,V), coom_attribute(T,A,"num"), not fclingo.
 
 % Numeric features
-integer(@join(Ctx,N))       :- coom_feature(Ctx,N,"num",_,_).
-range(@join(Ctx,N),Min,Max) :- coom_feature(Ctx,N,"num",_,_), coom_range(Ctx,N,Min,Max).
+numeric(@join(Ctx,N),int)   :- coom_feature(Ctx,N,"num",_,_), not coom_precision(Ctx,N,_). % Integers
+numeric(@join(Ctx,N),float) :- coom_feature(Ctx,N,"num",_,_),     coom_precision(Ctx,N,_). % Floats
 
-#show discrete/1.
+range(@join(Ctx,N),Min,Max) :- coom_feature(Ctx,N,"num",_,_), coom_range(Ctx,N,Min,Max).
+precision(@join(Ctx,N),P)   :- coom_feature(Ctx,N,"num",_,_), coom_precision(Ctx,N,P). % For floats
+
+#show discrete/2.
 #show domain/2.
 
-#show integer/1.
+#show numeric/2.
 #show range/3.
+#show precision/2.
 
 % Instances (of structures, enumerations and attributes in COOM)
 type("root","product") :- coom_structure("product").
@@ -46,8 +50,8 @@ constraint((C,G),"boolean") :- coom_require(C,F), ground_formula(_,F,G), not coo
 constraint((C,@implication(Con,Req)),"boolean")        :- conditional_requirement(C,Con,Req).
 binary(@implication(Con,Req),@unary(Con,"!"),"||",Req) :- conditional_requirement(_,Con,Req).
 unary(@unary(Con,"!"),"!",Con)                         :- conditional_requirement(_,Con,_).
-unary(@unary(G,"()"),"()",G)                           :- conditions_binary(_,_,G,_,_,()).
-binary(G,L,"&&",R)                                     :- conditions_binary(_,_,G,L,R,_).
+unary(@unary(G,"()"),"()",G)                           :- conditional_requirement(C,_,_), conditions_binary(C,_,G,_,_,()).
+binary(G,L,"&&",R)                                     :- conditional_requirement(C,_,_), conditions_binary(C,_,G,L,R,_).
 
 binary(G,L,Op,R) :- binary(_,_,G,L,Op,R).
 unary(G,Op,F)    :- unary(_,_,G,Op,F).
@@ -75,8 +79,15 @@ allow(T,(0,I),O)     :- attribute_constraint((T,_)), coom_option(T,O), I = #coun
 allow(T,(Col,Row),V) :- attribute_constraint((T,_)), allow(T,(0,Row),O), coom_attribute_value(T,O,A,V), attribute_constraint_column(T,Col,A).
 
 % Imply statements
-constraint((C,@binary(X',"=",G)),"boolean") :- imply(C,X',G).
-binary(@binary(X',"=",G),X',"=",G)          :- imply(C,X',G).
+% constraint((C,@binary(X',"=",G)),"boolean") :- imply(C,X',G).
+% binary(@binary(X',"=",G),X',"=",G)          :- imply(C,X',G).
+
+imply((C,X'),G)       :- imply((C,_),X',G), not coom_condition(C,_,_).
+imply((C,X'),G)       :- imply((C,X),X',G), ground_condition(C,X,_,_).
+condition((C,X'),Con) :- imply((C,X),X',_), ground_condition(C,X,_,Con).
+
+#show imply/2.
+#show condition/2.
 
 % Functions
 function(@aggregate(T,X,P),T,@join(X,P)) :- function(X,_,T,P).
@@ -96,9 +107,11 @@ set(@join(X,N),X')                       :- cardinality_aux(X,N,_), path_to(X,N,
 % Constants and numbers
 constant(C) :- coom_constant(C).
 number(C,N) :- coom_number(C,N).
+float(F)    :- coom_float(F).
 
 #show constant/1.
 #show number/2.
+#show float/1.
 
 % Explanations
 explanation(C,E) :- coom_explanation(C,E).

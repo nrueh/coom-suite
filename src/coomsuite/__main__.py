@@ -23,7 +23,7 @@ def solve(serialized_facts: List[str], max_bound: int, args, unknown_args) -> in
     processed_facts = preprocess(
         serialized_facts,
         max_bound=max_bound,
-        discrete=args.solver == "clingo",
+        fclingo=args.solver == "fclingo",
     )
     check_user_input(processed_facts)
 

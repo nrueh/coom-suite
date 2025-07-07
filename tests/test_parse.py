@@ -2,6 +2,8 @@
 Test cases for the parser from COOM to ASP.
 """
 
+# pylint: disable=line-too-long, too-many-lines
+
 from unittest import TestCase
 
 from . import parse_coom
@@ -115,6 +117,28 @@ class TestCOOMModelParser(TestCase):
                 'structure("product").',
                 'feature("product","totalWeight","num",1,1).',
                 'range("product","totalWeight",#inf,1000).',
+            ],
+        )
+
+        self.assertEqual(
+            parse_coom("product{num	.#/m 1-100 length}"),
+            [
+                'structure("product").',
+                'feature("product","length","num",1,1).',
+                'precision("product","length",1).',
+                'unit("product","length","m").',
+                'range("product","length",1,100).',
+            ],
+        )
+
+        self.assertEqual(
+            parse_coom("product{num	.##/kg 1-100 weight}"),
+            [
+                'structure("product").',
+                'feature("product","weight","num",1,1).',
+                'precision("product","weight",2).',
+                'unit("product","weight","kg").',
+                'range("product","weight",1,100).',
             ],
         )
 
@@ -328,6 +352,21 @@ class TestCOOMModelParser(TestCase):
         )
 
         self.assertEqual(
+            parse_coom("behavior {condition a = b default c = 2.2}"),
+            [
+                "behavior(0).",
+                'context(0,"product").',
+                'condition(0,0,"a=b").',
+                'binary("a=b","a","=","b").',
+                'path("a",0,"a").',
+                'path("b",0,"b").',
+                'default(0,"c","2.2").',
+                'path("c",0,"c").',
+                'float("2.2").',
+            ],
+        )
+
+        self.assertEqual(
             parse_coom("behavior {condition a = 2 condition b = 1 require c > 5}"),
             [
                 "behavior(0).",
@@ -370,6 +409,17 @@ class TestCOOMModelParser(TestCase):
                 'imply(0,"a","b").',
                 'path("a",0,"a").',
                 'path("b",0,"b").',
+            ],
+        )
+
+        self.assertEqual(
+            parse_coom("behavior{imply a = 5}"),
+            [
+                "behavior(0).",
+                'context(0,"product").',
+                'imply(0,"a","5").',
+                'path("a",0,"a").',
+                'number("5",5).',
             ],
         )
 

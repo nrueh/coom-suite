@@ -22,6 +22,12 @@ from .utils.logging import get_logger
 # mypy: allow-untyped-calls
 log = get_logger("main")
 
+ENCODING = {
+    "clingo": "encoding-base-clingo.lp",
+    "fclingo": "encoding-base-fclingo.lp",
+    "constraint-handler": "encoding-constraint-handler.lp",
+}
+
 
 def _get_valuation(model: Model) -> List[Symbol]:
     return [
@@ -131,15 +137,15 @@ class COOMSolverApp(Application):
         Print a model on the console.
         """
 
-        if self._options["solver"] == "clingo":
-            output_symbols = model.symbols(shown=True)
-        elif self._options["solver"] == "fclingo":
+        if self._options["solver"] == "fclingo":
             output_symbols = [
                 atom
                 for atom in model.symbols(shown=True)
                 if not (atom.name == self.config.defined and len(atom.arguments) == 1)
             ]
             output_symbols.extend(_get_valuation(model))
+        else:
+            output_symbols = list(model.symbols(shown=True))
 
         print(_sym_to_prg(output_symbols, self._options["output_format"]))
 
@@ -147,12 +153,11 @@ class COOMSolverApp(Application):
         """
         Main function ran on call.
         """
-        encoding = get_encoding(f"encoding-base-{self._options['solver']}.lp")
+        encoding = get_encoding(ENCODING[self._options["solver"]])
         show = get_encoding(f"show-{self._options['solver']}.lp")
         for f in files:
             control.load(f)
-
-        if self._options["solver"] == "clingo":
+        if self._options["solver"] in ["clingo", "constraint-handler"]:
             control.load(encoding)
             control.load(show)
             control.ground()
