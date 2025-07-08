@@ -2,6 +2,8 @@
 Test cases for the parser from COOM to ASP.
 """
 
+# pylint: disable=line-too-long, too-many-lines
+
 from unittest import TestCase
 
 from . import parse_coom
@@ -71,6 +73,20 @@ class TestCOOMModelParser(TestCase):
                 'structure("product").',
                 'feature("product","wheel","Wheel",1,1).',
                 'feature("product","frame","Frame",1,1).',
+            ],
+        )
+        self.assertEqual(
+            parse_coom("product{Bool hasBell}"),
+            [
+                'structure("product").',
+                'feature("product","hasBell","Bool",1,1).',
+            ],
+        )
+        self.assertEqual(
+            parse_coom("product{bool hasBell}"),
+            [
+                'structure("product").',
+                'feature("product","hasBell","Bool",1,1).',
             ],
         )
         self.assertEqual(
@@ -157,6 +173,14 @@ class TestCOOMModelParser(TestCase):
             ],
         )
         self.assertEqual(
+            parse_coom('enumeration Color {"Red" "Green"}'),
+            [
+                'enumeration("Color").',
+                'option("Color", "Red").',
+                'option("Color", "Green").',
+            ],
+        )
+        self.assertEqual(
             parse_coom(
                 """\
                 enumeration Capacity {
@@ -215,6 +239,18 @@ class TestCOOMModelParser(TestCase):
         )
 
         self.assertEqual(
+            parse_coom('behavior{require a = "b"}'),
+            [
+                "behavior(0).",
+                'context(0,"product").',
+                'require(0,"a=b").',
+                'binary("a=b","a","=","b").',
+                'path("a",0,"a").',
+                'path("b",0,"b").',
+            ],
+        )
+
+        self.assertEqual(
             parse_coom("behavior Bag {require a = b}"),
             [
                 "behavior(0).",
@@ -237,7 +273,17 @@ class TestCOOMModelParser(TestCase):
                 'constant("Red").',
             ],
         )
-
+        self.assertEqual(
+            parse_coom("behavior {require hasBell = true}"),
+            [
+                "behavior(0).",
+                'context(0,"product").',
+                'require(0,"hasBell=True").',
+                'binary("hasBell=True","hasBell","=","True").',
+                'path("hasBell",0,"hasBell").',
+                'constant("True").',
+            ],
+        )
         self.assertEqual(
             parse_coom("behavior {default color = red}"),
             [
@@ -314,8 +360,8 @@ class TestCOOMModelParser(TestCase):
             parse_coom(
                 """behavior Bike {
                             combinations  (wheelSupport	 rearWheel)
-                            allow         (True          (W14, W16))
-                            allow         (False         (W18, W20))}"""
+                            allow         (true          (W14, W16))
+                            allow         (false         (W18, W20))}"""
             ),
             [
                 "behavior(0).",
@@ -338,10 +384,25 @@ class TestCOOMModelParser(TestCase):
             [
                 "behavior(0).",
                 'context(0,"product").',
-                'condition(0,"a=b").',
+                'condition(0,0,"a=b").',
                 'binary("a=b","a","=","b").',
                 'path("a",0,"a").',
                 'path("b",0,"b").',
+                'require(0,"c>5").',
+                'binary("c>5","c",">","5").',
+                'path("c",0,"c").',
+                'number("5",5).',
+            ],
+        )
+        self.assertEqual(
+            parse_coom("behavior {condition wheelSupport = false require c > 5}"),
+            [
+                "behavior(0).",
+                'context(0,"product").',
+                'condition(0,0,"wheelSupport=False").',
+                'binary("wheelSupport=False","wheelSupport","=","False").',
+                'path("wheelSupport",0,"wheelSupport").',
+                'constant("False").',
                 'require(0,"c>5").',
                 'binary("c>5","c",">","5").',
                 'path("c",0,"c").',
@@ -354,13 +415,48 @@ class TestCOOMModelParser(TestCase):
             [
                 "behavior(0).",
                 'context(0,"product").',
-                'condition(0,"a=b").',
+                'condition(0,0,"a=b").',
                 'binary("a=b","a","=","b").',
                 'path("a",0,"a").',
                 'path("b",0,"b").',
                 'default(0,"c","2.2").',
                 'path("c",0,"c").',
                 'float("2.2").',
+            ],
+        )
+
+        self.assertEqual(
+            parse_coom("behavior {condition a = 2 condition b = 1 require c > 5}"),
+            [
+                "behavior(0).",
+                'context(0,"product").',
+                'condition(0,0,"a=2").',
+                'binary("a=2","a","=","2").',
+                'path("a",0,"a").',
+                'number("2",2).',
+                'condition(0,1,"b=1").',
+                'binary("b=1","b","=","1").',
+                'path("b",0,"b").',
+                'number("1",1).',
+                'require(0,"c>5").',
+                'binary("c>5","c",">","5").',
+                'path("c",0,"c").',
+                'number("5",5).',
+            ],
+        )
+
+        self.assertEqual(
+            parse_coom("behavior {condition a = b default c = d}"),
+            [
+                "behavior(0).",
+                'context(0,"product").',
+                'condition(0,0,"a=b").',
+                'binary("a=b","a","=","b").',
+                'path("a",0,"a").',
+                'path("b",0,"b").',
+                'default(0,"c","d").',
+                'path("c",0,"c").',
+                'path("d",0,"d").',
             ],
         )
 
@@ -375,11 +471,22 @@ class TestCOOMModelParser(TestCase):
             ],
         )
 
+        self.assertEqual(
+            parse_coom("behavior{imply a = 5}"),
+            [
+                "behavior(0).",
+                'context(0,"product").',
+                'imply(0,"a","5").',
+                'path("a",0,"a").',
+                'number("5",5).',
+            ],
+        )
+
         self.assertEqual(parse_coom("behavior{readonly totalWeight}"), [])
 
-    def test_condition(self) -> None:
+    def test_formula(self) -> None:
         """
-        Test parsing the 'condition' keyword.
+        Test parsing with Boolean and arithmetic formulas.
         """
         self.assertEqual(
             parse_coom("behavior{require a = b || a = c}"),
@@ -479,10 +586,6 @@ class TestCOOMModelParser(TestCase):
             ],
         )
 
-    def test_formula(self) -> None:
-        """
-        Test parsing behavior with arithmetic formulas.
-        """
         self.assertEqual(
             parse_coom("behavior{require a = b + c}"),
             [

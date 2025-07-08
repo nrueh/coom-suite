@@ -2,6 +2,8 @@
 Test cases for preprocessing the serialized fact format.
 """
 
+# pylint: disable=R0801
+
 from unittest import TestCase
 
 from . import run_test, unpack_test
@@ -51,6 +53,7 @@ class TestPreprocess(TestCase):
         self.run_test("require_two_wheels")
         self.run_test("conditional_require_undef")
         self.run_test("conditional_require")
+        self.run_test("multiple_conditions")
 
         self.run_test("require_multiple_instances")
         self.run_test("require_with_partonomy")
@@ -62,9 +65,16 @@ class TestPreprocess(TestCase):
         Test preprocessing COOM imply constraints.
         """
         self.run_test("imply_undef")
-        # self.run_test("imply_with_number") # TODO: Update preprocess encoding
-        # self.run_test("imply_with_float") # TODO: Add test
-        # self.run_test("imply_sum")
+        self.run_test("imply_undef_formula")
+        self.run_test("imply_with_number")
+        self.run_test("imply_with_float")
+        self.run_test("imply_with_variable")
+        self.run_test("imply_with_binary")
+        self.run_test("imply_with_unary")
+        self.run_test("imply_with_sum")
+        self.run_test("conditional_imply_undef")
+        self.run_test("conditional_imply")
+        self.run_test("multiple_conditions_imply")
 
     def test_combinations_table(self) -> None:
         """

@@ -4,7 +4,7 @@
 
 #include "base/structure.lp".
 #include "constraint-handler/discrete.lp".
-#include "constraint-handler/numerical.lp".
+#include "constraint-handler/numeric.lp".
 #include "constraint-handler/convert.lp".
 
 #include "constraint-handler/boolean.lp".

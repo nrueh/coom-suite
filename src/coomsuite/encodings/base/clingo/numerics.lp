@@ -27,4 +27,4 @@ value(F,-VR) :- binary(F,XL,"-",XR), value(XR,VR), not value(XL,_).
 % TODO: More rules for multiplication?
 
 % Assign values of imply statements if object is included
-value(X,V) :- imply(X,F), include(X), value(F,V).
+value(X,V) :- imply((C,X),F), include(X), value(F,V), satisfied(Con) : condition((C,X),Con).

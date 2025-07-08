@@ -11,7 +11,6 @@ assign(range,trang(NAME),CHECK) :- range(TYPE,MIN,MAX),
     EMIN = val(int,MIN),
     EMAX = val(int,MAX).
 
-
 violated((NAME,range)) :- range(TYPE,MIN,MAX), type(NAME,TYPE), value(trang(NAME),bool,false).
 
 

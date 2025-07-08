@@ -723,9 +723,103 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "ftest": StableModels({'value("root.x[0]",3)', 'value("root.x[1]",3)'}, fclingo=True),
         "files": ["max.lp"],
     },
-    "simple_imply": {
-        "test": TEST_EMPTY,
-        "program": "",
+    "imply_with_number": {
+        "test": StableModels({'value("root.wheel[0]","W27")', 'value("root.wheel[0].size[0]",27)'}),
+        "files": ["imply_with_number.lp"],
+    },
+    "imply_with_float": {  # Constraint handler only
+        "test": StableModels({'value("root.a[0]","2.24")'}),
+        "files": ["imply_with_float.lp"],
+    },
+    "imply_with_variable": {
+        "test": StableModels(
+            {'value("root.a[0]",1)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",2)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",3)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.a[0]",1)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",2)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",3)'},
+            fclingo=True,
+        ),
+        "files": ["imply_with_variable.lp"],
+    },
+    "imply_with_binary": {
+        "test": StableModels(
+            {'value("root.a[0]",4)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",5)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",6)', 'value("root.b[0]",3)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.a[0]",4)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",5)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",6)', 'value("root.b[0]",3)'},
+            fclingo=True,
+        ),
+        "files": ["imply_with_binary.lp"],
+    },
+    "imply_with_unary": {
+        "test": StableModels(
+            {'value("root.a[0]",-1)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",-2)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",-3)', 'value("root.b[0]",3)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.a[0]",-1)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",-2)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",-3)', 'value("root.b[0]",3)'},
+            fclingo=True,
+        ),
+        "files": ["imply_with_unary.lp"],
+    },
+    "imply_with_sum": {
+        "test": StableModels(
+            {'value("root.a[0]",2)', 'value("root.b[0]",1)', 'value("root.b[1]",1)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",2)', 'value("root.b[1]",1)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",1)', 'value("root.b[1]",2)'},
+            {'value("root.a[0]",4)', 'value("root.b[0]",2)', 'value("root.b[1]",2)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.a[0]",2)', 'value("root.b[0]",1)', 'value("root.b[1]",1)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",2)', 'value("root.b[1]",1)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",1)', 'value("root.b[1]",2)'},
+            {'value("root.a[0]",4)', 'value("root.b[0]",2)', 'value("root.b[1]",2)'},
+            fclingo=True,
+        ),
+        "files": ["imply_with_sum.lp"],
+    },
+    "conditional_imply": {
+        "test": StableModels(
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)'},
+            fclingo=True,
+        ),
+        "files": ["conditional_imply.lp"],
+    },
+    "multiple_conditions_imply": {
+        "test": StableModels(
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
+        ),
+        "ftest": StableModels(
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
+            fclingo=True,
+        ),
+        "files": ["multiple_conditions_imply.lp"],
     },
     "add_part": {
         "test": StableModels({'include("root.a[0]")'}),

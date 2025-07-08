@@ -2,6 +2,8 @@
 Test cases for solving.
 """
 
+# pylint: disable=R0801
+
 from unittest import TestCase
 
 from . import run_test, unpack_test
@@ -123,7 +125,13 @@ class TestClingo(TestCase):
         """
         Test imply statements (clingo).
         """
-        # self.run_test("simple_imply") # TODO: Add test
+        self.run_test("imply_with_number")
+        self.run_test("imply_with_variable")
+        self.run_test("imply_with_binary")
+        self.run_test("imply_with_unary")
+        self.run_test("imply_with_sum")
+        self.run_test("conditional_imply")
+        self.run_test("multiple_conditions_imply")
 
     def test_user_input(self) -> None:
         """
@@ -253,6 +261,18 @@ class TestFclingo(TestCase):
         self.run_test("min")
         self.run_test("max")
 
+    def test_imply(self) -> None:
+        """
+        Test imply statements (fclingo).
+        """
+        self.run_test("imply_with_number")
+        self.run_test("imply_with_variable")
+        self.run_test("imply_with_binary")
+        self.run_test("imply_with_unary")
+        self.run_test("imply_with_sum")
+        self.run_test("conditional_imply")
+        self.run_test("multiple_conditions_imply")
+
     def test_user_input(self) -> None:
         """
         Test solving user input (fclingo).
@@ -373,17 +393,26 @@ class TestConstraintHandler(TestCase):
         self.run_test("precedence_unsat")
         self.run_test("precedence_par_unsat")
 
-        self.run_test("plus_sat_float")  # Constraint handler only
-        self.run_test("plus_unsat_float")  # Constraint handler only
-
     def test_aggregates(self) -> None:
         """
         Test aggregation functions (constraint handler).
         """
         self.run_test("count")
         self.run_test("sum")
-        # self.run_test("min") % Not yet implemented in the constraint handler
-        # self.run_test("max") % Not yet implemented in the constraint handler
+        # self.run_test("min")
+        # self.run_test("max")
+
+    def test_imply(self) -> None:
+        """
+        Test imply statements (fclingo).
+        """
+        self.run_test("imply_with_number")
+        self.run_test("imply_with_variable")
+        self.run_test("imply_with_binary")
+        self.run_test("imply_with_unary")
+        self.run_test("imply_with_sum")
+        self.run_test("conditional_imply")
+        self.run_test("multiple_conditions_imply")
 
     def test_user_input(self) -> None:
         """
