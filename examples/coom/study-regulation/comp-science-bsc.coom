@@ -1,31 +1,14 @@
 product {
-    1..6 Semester semester
+    1..12 Semester semester
     1..2 Specialization specialization // should be 1 or 2 different specializations allowed, missing syntax for constraint
     num totalECTS
-    // num totalECTS
-    // Semester first
-    // Semester second
-    // Semester third
-    // Semester fourth
 }
 
 structure Semester {
-        ID id
         Type type
     0..5 Module module
     num semesterECTS
     num previousECTS
-}
-
-enumeration ID {
-    attribute num id
-
-    first = ( 1 )
-    second = ( 2 )
-    third = ( 3 )
-    fourth = ( 4 )
-    fifth = ( 5 )
-    sixth = ( 6 )
 }
 
 enumeration Type {
@@ -129,72 +112,97 @@ enumeration Module {
 
 }
 
+// General constraints
 behavior {
-    alldiff specialization
-
-    imply totalECTS = sum(s.semesterECTS for s in semester)
-
-    require semester[i].type != semester[i+1].type
-
-    // You cannot take a module twice (correct behavior?)
+    explanation "Each module can only be taken once in the whole program."
     alldiff semester.module
+
+    explanation "The total ECTS is the sum of the ECTS of all taken modules."
+    imply totalECTS = sum(semester.module.ects)
+
+    explanation "Summer and winter semesters alternate."
+    require semester[i].type != semester[i+1].type
 }
 
 behavior Semester {
+    // explanation "Summer and winter semesters alternate."
+    // require next.type != type
+
+    explanation "A module can only be taken in the semesters it is offered."
     combinations ( type     module.type    )
     allow        ( Summer   (summer, each) )
     allow        ( Winter   (winter, each) )
 
-    imply semesterECTS = sum(m.ects for m in module)
+    explanation "The number of ECTS taken in one semester is equal to the sum of the ECTS of all modules in that semester."
+    imply semesterECTS = sum(module.ects)
 
+    explanation "The number of previously achieved ECTS is equal to the sum of the ECTS of all semesters before this one."
     imply previousECTS = sum(s.ects for s in root.semester if s.id < id)
 }
 
+// Programme specific constraints
 behavior Semester {
-    condition currentECTS < 126
+    condition previousECTS < 126
     require module != Thesis
 }
 
 behavior {
+    explanation "If more than one specialization is chosen, they have to be different."
+    alldiff specialization
+
+    explanation "The number of total ECTS has to be equal to 120."
     require 180 = totalECTS
 
+    explanation "The number of ECTS in group I has to be equal to 102."
     require 102 = sum(m.ects for m in semester.module if m.group = i)
 
+    explanation "The number of ECTS in group II has to be equal to 12."
     require 12 = sum(m.ects for m in semester.module if m.group = ii)
 
     //require 30 = sum(m.ects for m in semester.module if m.group = x)
-
+    explanation "The number of ECTS in groups III and IV together has to be equal to 30."
     require 30 = sum(m.ects for m in semester.module if m.group = iii || m.group = iv )
 
+    explanation "The number of ECTS in group III has to be at least 6."
     require 6 <= sum(m.ects for m in semester.module if m.group = iii )
 
+    explanation "The number of ECTS in group III has to be at most 15."
     require 15 >= sum(m.ects for m in semester.module if m.group = iii )
 
+    explanation "The number of ECTS in group IV has to be at least 15."
     require 15 <= sum(m.ects for m in semester.module if m.group = iv )
 
+    explanation "The number of ECTS in group IV has to be at most 24."
     require 24 >= sum(m.ects for m in semester.module if m.group = iv )
 
+    explanation "The number of ECTS in group V has to be equal to 6."
     require 6 = sum(m.ects for m in semester.module if m.group = v)
 
+    explanation "The number of ECTS in group VI has to be equal to 18."
     require 18 = sum(m.ects for m in semester.module if m.group = vi)
 
+    explanation "The thesis has to be taken."
     exists m in semester.module { m = Thesis }
 }
 
 behavior Module {
+    explanation "Only modules from the chosen specialization can be taken."
     condition specialization_group = b || specialization_group = ba
     exists s in root.specialization { s = Bioinformatics }
 
+    explanation "Only modules from the chosen specialization can be taken."
     condition specialization_group = c || specialization_group = ca
     exists s in root.specialization { s = Chemistry }
 
+    explanation "Only modules from the chosen specialization can be taken."
     condition specialization_group = ge || specialization_group = gea
     exists s in root.specialization { s = Geoscience }
 
+    explanation "Only modules from the chosen specialization can be taken."
     condition specialization_group = k || specialization_group = ka
     exists s in root.specialization { s = CognitiveScience }
 
+    explanation "Only modules from the chosen specialization can be taken."
     condition specialization_group = p || specialization_group = pa
     exists s in root.specialization { s = Physics }
-
 }
