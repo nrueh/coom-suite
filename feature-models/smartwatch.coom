@@ -39,11 +39,6 @@ enumeration EnergyManagementType { Basic AdvancedSolar }
 
 behavior SportsTracking { require count(running) + count(cycling) + count(swimming) > 0 }
 
-// behavior {
-//     condition count(sportsTracking) > 0 // How do do this definedness check in a better way?
-//     require count(sportsTracking.running) + count(sportsTracking.cycling) + count(sportsTracking.swimming) > 0
-// }
-
 behavior {
     condition count(sportsTracking) > 0
     require count(gps) > 0
