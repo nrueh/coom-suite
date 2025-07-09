@@ -1,3 +1,16 @@
+// Translation from FM to COOM
+// 1. The root feature is represented implicitly COOM product.
+// 2. A mandatory relationship is is a COOM feature with cardinality 1..1 such that its type is a structure.
+// 3. An optional relationship is a COOM feature with cardinality 0..1 such that its type is a structure.
+// 4. An alternative relationship is:
+//    (a) a COOM feature with cardinality 1..1 such that its type is an enumeration IF the children are leaf features,
+//    (b) a COOM feature with cardinality 0..1 for every child such that its type is a structures
+//        AND a corresponding constraint count(f1) + count(f2) + ... = 1 where f1,f2,... are the children of the or relation OTHERWISE.
+// 5. An or relation is a COOM feature with cardinality 0..1 for every child such that its type is a structure
+//    AND a corresponding constraint count(f1) + count(f2) + ... > 0 where f1,f2,... are the children of the or relation.
+// 6. A "f1 requires f2" relation is a COOM constraint "condition count(f1) > 0 require count(f2) > 0".
+// 7. A "f1 excludes f2" relation is a COOM constraint TODO
+
 product {
     1..1 Screen screen
     0..1 Payment payment
