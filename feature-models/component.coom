@@ -1,0 +1,55 @@
+product {
+    1..1 Jacket jacket
+    1..1 Spring spring
+    0..1 Spacer spacer
+}
+
+structure Jacket {
+    1..1 JacketMaterial jacketMaterial
+    1..1 JacketDesign   jacketDesign
+    0..1 Flange         flange
+    0..1 ExtendedHeel   extendedHeel
+}
+structure JacketMaterial {
+    0..1 Mat1 mat1
+    0..1 Mat2 mat2
+}
+structure Mat1 {}
+structure Mat2 {}
+structure JacketDesign {
+    0..1 HDesign    hDesign
+    0..1 ODesign    oDesign
+    0..1 RacoDesign racoDesign
+}
+structure Flange {}
+structure ExtendedHeel {}
+
+structure Spring {
+    0..1 HSpring    hSPring
+    0..1 RacoSpring racoSpring
+    0..1 OSpring    oSpring
+}
+structure HSpring {
+    0..1 Heavy      heavy
+    0..1 Standard   standard
+}
+structure RacoSpring {}
+structure OSpring {
+    0..1 Double double
+}
+structure Double {}
+
+structure Spacer {
+    0..1 NormalSpacer   normalSpacer
+    0..1 BallSpacer     ballSpacer
+    0..1 TSpacer        tSpacer
+}
+structure NormalSpacer {}
+structure BallSpacer {}
+structure TSpacer {}
+
+behavior JacketMaterial { require count(mat1) + count(mat2) > 0 }
+behavior JacketDesign { require count(hDesign) + count(oDesign) + count(racoDesign) > 0 }
+behavior Spring { require count(hSPring) + count(racoSpring) + count(oSpring) > 0 }
+behavior HSpring { require count(heavy) + count(standard) > 0 }
+behavior Spacer { require count(normalSpacer) + count(ballSpacer) + count(tSpacer) > 0 }
