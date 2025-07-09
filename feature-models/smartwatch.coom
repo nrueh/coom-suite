@@ -1,0 +1,38 @@
+product {
+    1..1 Screen screen
+    0..1 Payment payment
+    0..1 GPS gps
+    0..1 SportsTracking sportsTracking
+    1..1 EnergyManagement energyManagement
+}
+
+structure Screen { ScreenType type }
+enumeration ScreenType { Touch Standard }
+
+structure Payment { }
+structure GPS { }
+
+structure SportsTracking {
+    0..1 Running running
+    0..1 Cycling cycling
+    0..1 Swimming swimming
+}
+structure Running { }
+structure Cycling { }
+structure Swimming { }
+
+structure EnergyManagement { EnergyManagementType type }
+enumeration EnergyManagementType { Basic AdvancedSolar }
+
+// behavior SportsTracking { require count(running) + count(cycling) + count(swimming) > 0 }
+
+behavior {
+    condition count(sportsTracking) > 0 // How do do this definedness check in a better way?
+    require count(sportsTracking.running) + count(sportsTracking.cycling) + count(sportsTracking.swimming) > 0 }
+
+behavior {
+    condition count(sportsTracking) > 0
+    require count(gps) > 0
+
+    require !(screen.type = Standard && count(payment) > 0)
+}

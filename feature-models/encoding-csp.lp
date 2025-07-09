@@ -24,6 +24,12 @@ relation(F1,F2) :- alternative(F1,F2).
 % At least one or feature has to be included
 :- include(F1), or(F1,_), not include(F2) : or(F1,F2).
 
+% Requires constraints
+:- requires(F1,F2), include(F1), not include(F2).
+
+% Excludes constraints
+:- excludes(F1,F2), include(F1), include(F2).
+
 #show include/1.
 
 #defined feature/1.

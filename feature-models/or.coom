@@ -1,0 +1,11 @@
+product {
+    0..1 B b
+    0..1 C c
+}
+
+structure B { }
+structure C { }
+
+behavior {
+    require count(b) + count(c) >= 1
+}
