@@ -1,13 +1,13 @@
 product {
-    1..8 Semester semester
+    1..2 Semester semester
     num totalECTS
 }
 
 structure Semester {
          Type type
-    0..5 Module module
-    num semesterECTS
-    num previousECTS
+    // 0..5 Module module
+    // num semesterECTS
+    // num previousECTS
 }
 
 enumeration Type {
@@ -44,13 +44,13 @@ behavior {
     explanation "The total ECTS is the sum of the ECTS of all taken modules."
     imply totalECTS = sum(semester.module.ects)
 
-    explanation "Summer and winter semesters alternate."
-    require semester[i].type != semester[i+1].type
+    // explanation "Summer and winter semesters alternate."
+    // require semester[i].type != semester[i+1].type
 }
 
 behavior Semester {
-    // explanation "Summer and winter semesters alternate."
-    // require next.type != type
+    explanation "Summer and winter semesters alternate."
+    require next.type != type
 
     explanation "A module can only be taken in the semesters it is offered."
     combinations ( type     module.type    )
@@ -60,33 +60,35 @@ behavior Semester {
     explanation "The number of ECTS taken in one semester is equal to the sum of the ECTS of all modules in that semester."
     imply semesterECTS = sum(module.ects)
 
-    explanation "The number of previously achieved ECTS is equal to the sum of the ECTS of all semesters before this one."
-    imply previousECTS = sum(s.ects for s in root.semester if s.id < id)
+    // explanation "The number of previously achieved ECTS is equal to the sum of the ECTS of all semesters before this one."
+    // imply previousECTS = sum(s.ects for s in root.semester if s.id < id)
 }
 
 
 // Programme specific constraints
-behavior Semester {
-    condition previousECTS < 90
-    require module != Thesis
-}
+// behavior Semester {
+//     condition previousECTS < 90
+//     require module != Thesis
+// }
 
-behavior {
-    explanation "The number of total ECTS has to be equal to 120."
-    require 120 = totalECTS
+// behavior {
+//     explanation "The number of total ECTS has to be equal to 120."
+//     require 120 = totalECTS
 
-    explanation "The number of ECTS in the basic modules has to be equal to 27."
-    require 27 = sum(m.ects for m in semester.module if m.group == b)
+//     explanation "The number of ECTS in the basic modules has to be equal to 27."
+//     require 27 = sum(m.ects for m in semester.module if m.group == b)
 
-    explanation "The number of ECTS in the advanced modules has to be equal to 36."
-    require 24 = sum(m.ects for m in semester.module if m.group == a)
+//     explanation "The number of ECTS in the advanced modules has to be equal to 36."
+//     require 24 = sum(m.ects for m in semester.module if m.group == a)
 
-    explanation "The number of ECTS in the practical modules has to be equal to 36."
-    require 24 = sum(m.ects for m in semester.module if m.group == p)
+//     explanation "The number of ECTS in the practical modules has to be equal to 36."
+//     require 24 = sum(m.ects for m in semester.module if m.group == p)
 
-    explanation "The interdisciplinary modules has to be taken."
-    exists m in semester.module { m = IM}
+//     explanation "The interdisciplinary modules has to be taken."
+//     // exists m in semester.module { require m = IM } // change syntax without require?
+//     exists IM in semester.module
 
-    explanation "The thesis has to be taken."
-    exists m in semester.module { m = Thesis }
-}
+//     explanation "The thesis has to be taken."
+//     // exists m in semester.module { require m = Thesis }
+//     exists Thesis in semester.module
+// }

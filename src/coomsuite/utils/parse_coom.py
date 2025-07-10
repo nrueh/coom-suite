@@ -185,6 +185,11 @@ class ASPModelVisitor(ModelVisitor):
         self.output_asp.append(f'imply({self.constraint_idx},"{path}","{formula}").')
         super().visitAssign_imply(ctx)
 
+    def visitAlldiff(self, ctx: ModelParser.AlldiffContext):
+        path = ctx.path().getText()
+        self.output_asp.append(f'alldiff({self.constraint_idx},"{path}").')
+        return super().visitAlldiff(ctx)
+
     def visitCombinations(self, ctx: ModelParser.CombinationsContext):
         for i, f in enumerate(ctx.formula()):
             self.output_asp.append(f'combinations({self.constraint_idx},{i},"{f.getText()}").')

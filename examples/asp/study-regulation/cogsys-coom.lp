@@ -1,13 +1,13 @@
 %%% COOM model
 coom_structure("product").
-coom_feature("product","semester","Semester",1,4).
+coom_feature("product","semester","Semester",1,8).
+coom_feature("product","totalECTS","num",1,1).
 
 coom_structure("Semester").
-coom_feature("Semester","id","num",1,1).
-coom_range("Semester","id",1,4).
 coom_feature("Semester","type","Type",1,1).
 coom_feature("Semester","module","Module",0,5).
-coom_feature("Semester","currentECTS","num",1,1).
+coom_feature("Semester","semesterECTS","num",1,1).
+coom_feature("Semester","previousECTS","num",1,1).
 
 coom_enumeration("Type").
 coom_option("Type", "Summer").
@@ -76,76 +76,50 @@ coom_attribute_value("Module","Thesis","group","t").
 
 coom_behavior(0).
 coom_context(0,"product").
-coom_require(0,"alldiff(semester.id)").
-coom_function("product","alldiff(semester.id)","alldiff","semester.id").
-coom_path("semester.id",0,"semester").
-coom_path("semester.id",1,"id").
+coom_explanation(0,"Each module can only be taken once in the whole program.").
+coom_alldiff(0,"semester.module").
+coom_path("semester.module",0,"semester").
+coom_path("semester.module",1,"module").
 
 coom_behavior(1).
-coom_context(1,"Semester").
-coom_combinations(1,0,"type").
-coom_combinations(1,1,"module.type").
-coom_path("type",0,"type").
-coom_path("module.type",0,"module").
-coom_path("module.type",1,"type").
-coom_allow(1,(0,0),"Summer").
-coom_allow(1,(1,0),"summer").
-coom_allow(1,(1,0),"each").
-coom_allow(1,(0,1),"Winter").
-coom_allow(1,(1,1),"winter").
-coom_allow(1,(1,1),"each").
-
-coom_behavior(2).
-coom_context(2,"Semester").
-coom_imply(2,"currentECTS","sum").
-coom_path("currentECTS",0,"currentECTS").
-coom_path("sum",0,"sum").
-
-coom_behavior(3).
-coom_context(3,"Semester").
-coom_condition(3,"currentECTS<90").
-coom_binary("currentECTS<90","currentECTS","<","90").
-coom_path("currentECTS",0,"currentECTS").
-coom_number("90",90).
-coom_require(3,"module!=Thesis").
-coom_binary("module!=Thesis","module","!=","Thesis").
-coom_path("module",0,"module").
-coom_constant("Thesis").
-
-coom_behavior(4).
-coom_context(4,"product").
-coom_require(4,"120=sum(semester.module.ects)").
-coom_binary("120=sum(semester.module.ects)","120","=","sum(semester.module.ects)").
-coom_number("120",120).
+coom_context(1,"product").
+coom_explanation(1,"The total ECTS is the sum of the ECTS of all taken modules.").
+coom_imply(1,"totalECTS","sum(semester.module.ects)").
+coom_path("totalECTS",0,"totalECTS").
 coom_function("product","sum(semester.module.ects)","sum","semester.module.ects").
 coom_path("semester.module.ects",0,"semester").
 coom_path("semester.module.ects",1,"module").
 coom_path("semester.module.ects",2,"ects").
 
-coom_behavior(5).
-coom_context(5,"product").
-coom_require(5,"27=sum").
-coom_binary("27=sum","27","=","sum").
-coom_number("27",27).
-coom_path("sum",0,"sum").
+coom_behavior(2).
+coom_context(2,"Semester").
+coom_explanation(2,"Summer and winter semesters alternate.").
+coom_require(2,"next.type!=type").
+coom_binary("next.type!=type","next.type","!=","type").
+coom_path("next.type",0,"next").
+coom_path("next.type",1,"type").
+coom_path("type",0,"type").
 
-coom_behavior(6).
-coom_context(6,"product").
-coom_require(6,"24=sum").
-coom_binary("24=sum","24","=","sum").
-coom_number("24",24).
-coom_path("sum",0,"sum").
+coom_behavior(3).
+coom_context(3,"Semester").
+coom_explanation(3,"A module can only be taken in the semesters it is offered.").
+coom_combinations(3,0,"type").
+coom_combinations(3,1,"module.type").
+coom_path("type",0,"type").
+coom_path("module.type",0,"module").
+coom_path("module.type",1,"type").
+coom_allow(3,(0,0),"Summer").
+coom_allow(3,(1,0),"summer").
+coom_allow(3,(1,0),"each").
+coom_allow(3,(0,1),"Winter").
+coom_allow(3,(1,1),"winter").
+coom_allow(3,(1,1),"each").
 
-coom_behavior(7).
-coom_context(7,"product").
-coom_require(7,"24=sum").
-coom_binary("24=sum","24","=","sum").
-coom_number("24",24).
-coom_path("sum",0,"sum").
-
-coom_behavior(8).
-coom_context(8,"product").
-coom_path("semester.module",0,"semester").
-coom_path("semester.module",1,"module").
-coom_path("semester.module",0,"semester").
-coom_path("semester.module",1,"module").
+coom_behavior(4).
+coom_context(4,"Semester").
+coom_explanation(4,"The number of ECTS taken in one semester is equal to the sum of the ECTS of all modules in that semester.").
+coom_imply(4,"semesterECTS","sum(module.ects)").
+coom_path("semesterECTS",0,"semesterECTS").
+coom_function("Semester","sum(module.ects)","sum","module.ects").
+coom_path("module.ects",0,"module").
+coom_path("module.ects",1,"ects").

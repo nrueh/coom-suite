@@ -1,4 +1,4 @@
-# Generated from Model.g4 by ANTLR 4.9
+# Generated from model/Model.g4 by ANTLR 4.9.3
 from antlr4 import *
 
 if __name__ is not None and "." in __name__:
@@ -77,6 +77,10 @@ class ModelVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by ModelParser#conditioned.
     def visitConditioned(self, ctx: ModelParser.ConditionedContext):
+        return self.visitChildren(ctx)
+
+    # Visit a parse tree produced by ModelParser#alldiff.
+    def visitAlldiff(self, ctx: ModelParser.AlldiffContext):
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by ModelParser#exists.

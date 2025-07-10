@@ -84,6 +84,10 @@ imply(X',G) :- imply(_,X',G).
 
 #show imply/2.
 
+% Alldiff constraints
+constraint(@join(X,P),"alldiff") :- alldiff(X,P).
+set(@join(X,P),X')                   :- alldiff(X,P), path_to(X,P,X').
+
 % Functions
 function(@aggregate(T,X,P),T,@join(X,P)) :- function(X,_,T,P).
 set(@join(X,P),X')                       :- function(X,_,_,P), path_to(X,P,X').
