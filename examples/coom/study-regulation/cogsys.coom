@@ -1,11 +1,11 @@
 product {
-    1..2 Semester semester
+    4..4 Semester semester
     num totalECTS
 }
 
 structure Semester {
          Type type
-    // 0..5 Module module
+    0..5 Module module
     // num semesterECTS
     // num previousECTS
 }
@@ -76,13 +76,13 @@ behavior Semester {
 //     require 120 = totalECTS
 
 //     explanation "The number of ECTS in the basic modules has to be equal to 27."
-//     require 27 = sum(m.ects for m in semester.module if m.group == b)
+//     require 27 = sum(m.ects for m in semester.module if m.group = b)
 
 //     explanation "The number of ECTS in the advanced modules has to be equal to 36."
-//     require 24 = sum(m.ects for m in semester.module if m.group == a)
+//     require 24 = sum(m.ects for m in semester.module if m.group = a)
 
 //     explanation "The number of ECTS in the practical modules has to be equal to 36."
-//     require 24 = sum(m.ects for m in semester.module if m.group == p)
+//     require 24 = sum(m.ects for m in semester.module if m.group = p)
 
 //     explanation "The interdisciplinary modules has to be taken."
 //     // exists m in semester.module { require m = IM } // change syntax without require?

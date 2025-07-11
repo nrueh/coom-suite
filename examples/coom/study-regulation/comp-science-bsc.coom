@@ -1,6 +1,6 @@
 product {
     1..12 Semester semester
-    1..2 Specialization specialization // should be 1 or 2 different specializations allowed, missing syntax for constraint
+    1..2 Specialization specialization
     num totalECTS
 }
 
@@ -120,13 +120,13 @@ behavior {
     explanation "The total ECTS is the sum of the ECTS of all taken modules."
     imply totalECTS = sum(semester.module.ects)
 
-    explanation "Summer and winter semesters alternate."
-    require semester[i].type != semester[i+1].type
+    // explanation "Summer and winter semesters alternate."
+    // require semester[i].type != semester[i+1].type
 }
 
 behavior Semester {
-    // explanation "Summer and winter semesters alternate."
-    // require next.type != type
+    explanation "Summer and winter semesters alternate."
+    require next.type != type
 
     explanation "A module can only be taken in the semesters it is offered."
     combinations ( type     module.type    )
