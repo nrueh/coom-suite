@@ -1,4 +1,4 @@
-# Generated from Model.g4 by ANTLR 4.9
+# Generated from model/Model.g4 by ANTLR 4.9.3
 from antlr4 import *
 
 if __name__ is not None and "." in __name__:
@@ -144,6 +144,14 @@ class ModelListener(ParseTreeListener):
 
     # Exit a parse tree produced by ModelParser#conditioned.
     def exitConditioned(self, ctx: ModelParser.ConditionedContext):
+        pass
+
+    # Enter a parse tree produced by ModelParser#alldiff.
+    def enterAlldiff(self, ctx: ModelParser.AlldiffContext):
+        pass
+
+    # Exit a parse tree produced by ModelParser#alldiff.
+    def exitAlldiff(self, ctx: ModelParser.AlldiffContext):
         pass
 
     # Enter a parse tree produced by ModelParser#exists.

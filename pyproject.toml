@@ -18,7 +18,7 @@ dependencies = [
     "clinguin>=2.6.1",
     "constraint-handler@file:/src/coomsuite/encodings/constraint-handler/constraint-handler/",
 ]
-license = { file = "LICENSE" }
+license-files = ["LICENSE"]
 dynamic = ["version"]
 readme = "README.md"
 

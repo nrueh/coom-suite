@@ -1,4 +1,4 @@
-# Generated from UserInput.g4 by ANTLR 4.9.3
+# Generated from user/UserInput.g4 by ANTLR 4.9.3
 import sys
 from io import StringIO
 

@@ -35,25 +35,26 @@ formula_context(F',Ctx) :- coom_binary(F',_,_,_), coom_unary(F,_,F'), formula_co
 formula_context(F',Ctx) :- coom_unary(F',_,_),    coom_unary(F,_,F'), formula_context(F,Ctx).
 
 % Instantiate paths
-path_start(X,P)  :- coom_binary(F,P,_,_),     coom_path(P,0,_), type_aux(X,Ctx), formula_context(F,Ctx).
-path_start(X,P)  :- coom_binary(F,_,_,P),     coom_path(P,0,_), type_aux(X,Ctx), formula_context(F,Ctx).
-path_start(X,P)  :- coom_unary(F,_,P),        coom_path(P,0,_), type_aux(X,Ctx), formula_context(F,Ctx).
-path_start(X,P)  :- coom_combinations(C,_,P), coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
-path_start(X,P)  :- coom_function(Ctx,_,_,P), coom_path(P,0,_), type_aux(X,Ctx).
-path_start(X,P)  :- coom_imply(C,P,_),        coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
-path_start(X,P)  :- coom_imply(C,_,P),        coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
-path_start(X,P)  :- coom_exists(C,P,_),       coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
+path_start(X,P) :- coom_binary(F,P,_,_),     coom_path(P,0,_), type_aux(X,Ctx), formula_context(F,Ctx).
+path_start(X,P) :- coom_binary(F,_,_,P),     coom_path(P,0,_), type_aux(X,Ctx), formula_context(F,Ctx).
+path_start(X,P) :- coom_unary(F,_,P),        coom_path(P,0,_), type_aux(X,Ctx), formula_context(F,Ctx).
+path_start(X,P) :- coom_combinations(C,_,P), coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
+path_start(X,P) :- coom_function(Ctx,_,_,P), coom_path(P,0,_), type_aux(X,Ctx).
+path_start(X,P) :- coom_imply(C,P,_),        coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
+path_start(X,P) :- coom_imply(C,_,P),        coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
+path_start(X,P) :- coom_exists(C,P,_),       coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
+path_start(X,P) :- coom_alldiff(C,P),        coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
 
 % Determine all ground paths
-path_to(X,P,0,X')  :- coom_path(P,0,N),
-                      path_start(X,P),     type_aux(X',_),  X' =(N,(X,_)).
-path_to(X,P,1,X')  :- coom_path(P,0,"root"), coom_path(P,1,N),
-                      path_start(X,P),     type_aux(X',_),  X' =(N,((),_)).
+path_to(X,P,0,X)  :- path_start(X,P).
+% path_to(X,P,1,X')  :- coom_path(P,0,"root"), coom_path(P,1,N),
+%                       path_start(X,P),     type_aux(X',_),  X' =(N,((),_)).
+path_to(X,P,1,())  :- coom_path(P,0,"root"), path_start(X,P).
 
-path_to(X,P,I,X'') :- coom_path(P,I,N),
-                      path_to(X,P,I-1,X'), type_aux(X'',_), X''=(N,(X',_)).
+path_to(X,P,I+1,X'') :- coom_path(P,I,N),      path_to(X,P,I,X'), type_aux(X'',_), X''=(N,(X',_)).
+path_to(X,P,I+1,X'') :- coom_path(P,I,"next"), path_to(X,P,I,X'), type_aux(X'',_), X' = (N,(Parent,Idx)), X'' =(N,(Parent,Idx+1)).
 
-path_to(X,P,@dotpath(X')) :- not coom_path(P,I+1,_), path_to(X,P,I,X').
+path_to(X,P,@dotpath(X')) :- not coom_path(P,I,_), path_to(X,P,I,X').
 
 % Constants and numbers
 path_to(X,P,P) :- coom_binary(F,_,_,P), coom_constant(P), formula_context(F,T), type_aux(X,T).
@@ -92,8 +93,9 @@ ground_formula(X,F,XR) :- coom_binary(F,L,"+",R),
                           type_aux(X,C), not path_to(X,L,_), path_to(X,R,XR).
 
 
-% Instantiate functions
+% Instantiate functions and alldiff constraints
 function(X,F,T,P) :- coom_function(C,F,T,P), type_aux(X,C).
+alldiff(X,P) :- coom_alldiff(C,P), coom_context(C,Ctx), type_aux(X,Ctx).
 
 % Auxiliary paths for formulas and functions
 path_to(X,F,G) :- ground_formula(X,F,G).

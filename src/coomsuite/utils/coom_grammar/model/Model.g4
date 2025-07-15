@@ -81,8 +81,10 @@ conditioned:
 		| combinations
 		| message
 		| exists
+		| alldiff
 	);
 
+alldiff: 'alldiff' path;
 exists:
 	op = 'exists' name 'in' path (','? name 'in' path)* '{' (
 		define stmt_end
@@ -175,7 +177,7 @@ path_item: name ('[' path_index ('..' path_index)? ']')?;
 path_index: INTEGER | ('last' ('-' INTEGER)?);
 
 name: NAME | FUNCTION | KEYWORD;
-stmt_end: ';' | { wasNewline(); };
+stmt_end: ';' | {self.wasNewline()};
 
 compare:
 	'<'
