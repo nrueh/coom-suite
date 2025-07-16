@@ -1,45 +1,31 @@
+%%% COOM model
 coom_structure("product").
 coom_feature("product","module","Module",3,3).
 
 coom_enumeration("Module").
 coom_attribute("Module","ects","num").
 coom_attribute("Module","group","str").
-coom_option("Module", "BM1").
-coom_attribute_value("Module","BM1","ects",9).
-coom_attribute_value("Module","BM1","group","b").
-coom_option("Module", "BM2").
-coom_attribute_value("Module","BM2","ects",9).
-coom_attribute_value("Module","BM2","group","b").
-coom_option("Module", "BM3").
-coom_attribute_value("Module","BM3","ects",9).
-coom_attribute_value("Module","BM3","group","b").
-coom_option("Module", "AM1").
-coom_attribute_value("Module","AM1","ects",6).
-coom_attribute_value("Module","AM1","group","a").
-coom_option("Module", "AM2").
-coom_attribute_value("Module","AM2","ects",6).
-coom_attribute_value("Module","AM2","group","a").
-coom_option("Module", "AM3").
-coom_attribute_value("Module","AM3","ects",6).
-coom_attribute_value("Module","AM3","group","a").
+coom_option("Module", "A").
+coom_attribute_value("Module","A","ects",6).
+coom_attribute_value("Module","A","group","a").
+coom_option("Module", "B").
+coom_attribute_value("Module","B","ects",9).
+coom_attribute_value("Module","B","group","b").
 
 coom_behavior(0).
 coom_context(0,"product").
-coom_alldiff(0,"module").
-coom_path("module",0,"module").
-
-coom_behavior(1).
-coom_context(1,"product").
-coom_require(1,"9=sum(module.ects if module.group=b)").
-coom_binary("9=sum(module.ects if module.group=b)","9","=","sum(module.ects if module.group=b)").
-coom_number("9",9).
-coom_function("product","sum(module.ects if module.group=b)","sum","module.ects").
-coom_condition("product","sum(module.ects if module.group=b)","module.group","b").
-
-coom_behavior(2).
-coom_context(2,"product").
-coom_require(2,"12=sum(module.ects if module.group=a)").
-coom_binary("12=sum(module.ects if module.group=a)","12","=","sum(module.ects if module.group=a)").
+coom_require(0,"12=sum(m.ectsforminmoduleifm.group=a)").
+coom_binary("12=sum(m.ectsforminmoduleifm.group=a)","12","=","sum(m.ectsforminmoduleifm.group=a)").
 coom_number("12",12).
-coom_function("product","sum(module.ects if module.group=a)","sum","module.ects").
-coom_condition("product","sum(module.ects if module.group=a)","module.group","a").
+coom_aggregate("product","sum(m.ectsforminmoduleifm.group=a)","sum").
+coom_aggregate_set("product","sum(m.ectsforminmoduleifm.group=a)","module").
+coom_aggregate_variable("product","sum(m.ectsforminmoduleifm.group=a)","m").
+coom_aggregate_value("product","sum(m.ectsforminmoduleifm.group=a)","m.ects").
+coom_aggregate_condition("product","sum(m.ectsforminmoduleifm.group=a)","m.group=a").
+coom_path("m.ects",0,"m").
+coom_path("m.ects",1,"ects").
+coom_path("module",0,"module").
+coom_binary("m.group=a","m.group","=","a").
+coom_path("m.group",0,"m").
+coom_path("m.group",1,"group").
+coom_path("a",0,"a").

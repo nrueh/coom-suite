@@ -350,12 +350,29 @@ class ASPModelVisitor(ModelVisitor):
             in_brackets = ctx.formula().getText()
             self.output_asp.append(f'unary("{complete}","()","{in_brackets}").')
         elif ctx.formula_func() is not None:
-            func = ctx.formula_func().FUNCTION()
-            for f in ctx.formula_func().formula():
-                if str(func) in ["sum", "count", "min", "max", "avg"]:
-                    self.output_asp.append(f'function("{self.context}","{complete}","{func}","{f.getText()}").')
+            func_ctx: ModelParser.Formula_funcContext = ctx.formula_func()
+            func = func_ctx.FUNCTION()
+
+            # for f in func_ctx.formula():
+            if str(func) in ["sum", "count", "min", "max", "avg"]:
+                self.output_asp.append(f'aggregate("{self.context}","{complete}","{func}").')
+                if func_ctx.path() is None:
+                    path = func_ctx.formula().getText()
+                    self.output_asp.append(f'aggregate_set("{self.context}","{complete}","{path}").')
                 else:
-                    self.output_asp.append(f'unary("{complete}","{func}","{f.getText()}").')
+                    path = prepare_value(func_ctx.path().getText())
+                    variable = prepare_value(func_ctx.name().getText())
+                    formula = prepare_value(func_ctx.formula().getText())
+
+                    self.output_asp.append(f'aggregate_set("{self.context}","{complete}","{path}").')
+                    self.output_asp.append(f'aggregate_variable("{self.context}","{complete}","{variable}").')
+                    self.output_asp.append(f'aggregate_value("{self.context}","{complete}","{formula}").')
+
+                    if func_ctx.condition() is not None:
+                        condition = prepare_value(func_ctx.condition().getText())
+                        self.output_asp.append(f'aggregate_condition("{self.context}","{complete}","{condition}").')
+            else:
+                self.output_asp.append(f'unary("{complete}","{func}","{func_ctx.formula().getText()}").')
         super().visitFormula_sign(ctx)
 
     def visitPath(self, ctx: ModelParser.PathContext):
