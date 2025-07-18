@@ -1,0 +1,171 @@
+product {
+    1..6 Semester semester
+    1..1 Specialization specialization
+    num totalECTS
+}
+
+structure Semester {
+        ID id
+        Type type
+    0..5 Module module
+    num semesterECTS
+    num previousECTS
+}
+
+enumeration ID {
+    attribute num id
+
+    first = ( 1 )
+    second = ( 2 )
+    third = ( 3 )
+    fourth = ( 4 )
+    fifth = ( 5 )
+    sixth = ( 6 )
+}
+
+enumeration Type {
+    Summer
+    Winter
+}
+
+enumeration Specialization {
+    Language
+    Politics
+}
+
+enumeration Module {
+    attribute num ects
+    attribute str type
+    attribute str specialization_group
+    attribute str group
+
+    Biobm105    =   ( 12, winter, bb, iii )
+    Biobm107    =   ( 6, summer, ba, iv )
+    Biobm108    =   ( 6, summer, ba, iv )
+    Bioam212    =   ( 12, summer, ba, iv )
+    Bioam302    =   ( 9, each,   ba, iv )
+    Bioam314    =   ( 6, winter, ba, iv )
+
+    Slrba014    =   ( 12, each, none, i )
+    Slrba001    =   ( 6, each, none, i )
+    Slrba002    =   ( 6, each, none, i )
+    Slrba003    =   ( 12, each, none, i )
+    Slrba006    =   ( 9, each, none, i )
+    Rusba001    =   ( 9, winter, none, i )
+
+    Bbmvwl110   =   ( 6, winter, none, i )
+    Bbmpuv610   =   ( 6, winter, none, i )
+    Bbmpuv110   =   ( 6, winter, none, i )
+    Bbmpuv210   =   ( 6, winter, none, i )
+    Bbmpuv310   =   ( 6, summer, none, i )
+    Bbmpuv410   =   ( 6, winter, none, i )
+
+    Bbmpuv510   =   ( 6, summer, none, i )
+    Bbmvwl210   =   ( 6, winter, none, i )
+    Slrba022    =   ( 6, winter, none, i )
+    Slrba023    =   ( 6, summer, none, i )
+    Rusba002    =   ( 9, winter, none, i )
+    Zruba01     =   ( 9, each, none, i )
+
+    Zruba02     =   ( 9, each, none, i )
+    Slrba017    =   ( 6, each, none, i )
+    Zruba04     =   ( 6, each, none, i )
+    Rusba003    =   ( 6, winter, none, i )
+    Slrba021    =   ( 24, summer, none, i )
+
+    BamaO1      =   ( 6, each, none, ii )
+    BamaO2      =   ( 6, each, none, ii )
+    BamaO3      =   ( 6, each, none, ii )
+    BamaO4      =   ( 6, each, none, ii )
+    BamaO5      =   ( 6, each, none, ii )
+    BamaO6      =   ( 6, each, none, ii )
+
+    BamaO7      =   ( 6, each, none, ii )
+    BamaO8      =   ( 6, each, none, ii )
+    Zruos01     =   ( 6, winter, none, ii )
+    Zruos02     =   ( 6, winter, none, ii )
+    Zruos03     =   ( 6, each, none, ii )
+
+    Slrba010    =   ( 12, each, none, l )
+    Slrba012    =   ( 12, each, none, l )
+    Rusba005    =   ( 6, winter, none, l )
+
+    Bbmvwl310   =   ( 6, summer, none, p )
+    Bbmvwl320   =   ( 6, winter, none, p )
+    Rusba004    =   ( 6, winter, none, p )
+
+    Bvmpuv110   =   ( 6, each, none, e )
+    Bvmpuv210   =   ( 6, each, none, e )
+    Bvmpuv120   =   ( 6, each, none, e )
+    Bvmpuv220   =   ( 6, each, none, e )
+    Bvmpuv310   =   ( 6, each, none, e )
+    Bvmpuv320   =   ( 6, each, none, e )
+
+    Bvmpuv410   =   ( 6, each, none, e )
+    Bvmpuv420   =   ( 6, each, none, e )
+    Bvmpuv510   =   ( 6, each, none, e )
+    Bvmpuv520   =   ( 6, each, none, e )
+
+    BA         =   ( 9, each, none, m )
+
+}
+
+behavior {
+    alldiff specialization
+
+    imply totalECTS = sum(s.semesterECTS for s in semester)
+
+    require semester[i].type != semester[i+1].type
+
+    // You cannot take a module twice (correct behavior?)
+    alldiff semester.module
+}
+
+behavior Semester {
+    combinations ( type     module.type    )
+    allow        ( Summer   (summer, each) )
+    allow        ( Winter   (winter, each) )
+
+    imply semesterECTS = sum(m.ects for m in module)
+
+    imply previousECTS = sum(s.ects for s in root.semester if s.id < id)
+}
+
+behavior Semester {
+    condition currentECTS < 171
+    require module != Thesis
+}
+
+behavior {
+    require 240 = totalECTS
+
+    require 183 = sum(m.ects for m in semester.module if m.group = i)
+
+    require 18 = sum(m.ects for m in semester.module if m.group = ii)
+
+    require 30 = sum(m.ects for m in semester.module if m.group = l)
+
+    require 18 = sum(m.ects for m in semester.module if m.group = p)
+
+    require 12 = sum(m.ects for m in semester.module if m.group = e)
+
+    exists m in semester.module { m = Thesis }
+}
+
+behavior Module {
+    condition specialization_group = b || specialization_group = ba
+    exists s in root.specialization { s = Bioinformatics }
+
+    condition specialization_group = c || specialization_group = ca
+    exists s in root.specialization { s = Chemistry }
+
+    condition specialization_group = ge || specialization_group = gea
+    exists s in root.specialization { s = Geoscience }
+
+    condition specialization_group = k || specialization_group = ka
+    exists s in root.specialization { s = CognitiveScience }
+
+    condition specialization_group = p || specialization_group = pa
+    exists s in root.specialization { s = Physics }
+
+}
