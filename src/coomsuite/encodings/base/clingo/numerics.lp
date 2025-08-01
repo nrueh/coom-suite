@@ -1,14 +1,14 @@
 % Define subset based on a satisfied condition
-subset(S,(C,V),X) :- set(S,X), condition(_,C,V), property(S,X,C,CX), value(CX,V).
+subset(A,S,C,X) :- set(S,X), condition(A,C), property((S,X),(C,F)), satisfied(F).
 
 % Evaluate aggregates
 % value(F,V) :- aggregate(F,"count",P), condition(F,C,CV), V = #count{ X    : set(P,X), include(X),  property(P,X,C,CX), value(CX,CV) }.
 % value(F,V) :- aggregate(F,"sum",  P), condition(F,C,CV), V = #sum  { V',X : set(P,X), value(X,V'), property(P,X,C,CX), value(CX,CV) }.
-value(F,V) :- aggregate(F,"count",P), condition(F,C,CV), V = #count{ X    : subset(P,(C,CV),X), include(X)  }.
-value(F,V) :- aggregate(F,"sum",  P), condition(F,C,CV), V = #sum  { V',X : subset(P,(C,CV),X), value(X,V') }.
+value(A,V) :- aggregate(A,"count",P), condition(A,C), V = #count{ X    : subset(A,P,C,X), include(X)  }.
+value(A,V) :- aggregate(A,"sum",  P), condition(A,C), V = #sum  { V',X : subset(A,P,C,X), value(X,V') }.
 
-value(F,V) :- aggregate(F,"min",  P), V = #min  { V',X : set(P,X), value(X,V')   }.
-value(F,V) :- aggregate(F,"max",  P), V = #max  { V',X : set(P,X), value(X,V')   }.
+value(A,V) :- aggregate(A,"min",  P), V = #min  { V',X : set(P,X), value(X,V')   }.
+value(A,V) :- aggregate(A,"max",  P), V = #max  { V',X : set(P,X), value(X,V')   }.
 
 % Arithmetics
 value(F,VL+VR) :- binary(F,XL,"+",XR), value(XL,VL), value(XR,VR).

@@ -6,10 +6,11 @@ enumeration Module {
     attribute num ects
     attribute str group
 
-    A = ( 6, a )
-    B = ( 9, b )
+    A1 = ( 6, A )
+    B1 = ( 9, B )
 }
 
 behavior {
-    require 12 = sum(m.ects for m in module if m.group = a)
+    require 12 = sum(m.ects for m in module if m.group = A)
+    // require 12 = sum(m.ects if m.group = a for m in module )
 }

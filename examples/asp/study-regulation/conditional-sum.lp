@@ -5,10 +5,10 @@ discrete("Module.group",str).
 discrete("Module",str).
 domain("Module.ects",9).
 domain("Module.ects",6).
-domain("Module.group","b").
-domain("Module.group","a").
-domain("Module","A").
-domain("Module","B").
+domain("Module.group","B").
+domain("Module.group","A").
+domain("Module","A1").
+domain("Module","B1").
 
 type("root","product").
 type("root.module[0]","Module").
@@ -51,14 +51,14 @@ column(("Module","root.module[2]"),0,2,"root.module[2].group[0]").
 column(("Module","root.module[0]"),0,0,"root.module[0]").
 column(("Module","root.module[1]"),0,0,"root.module[1]").
 column(("Module","root.module[2]"),0,0,"root.module[2]").
-allow("Module",(0,0),"A").
-allow("Module",(0,1),"B").
+allow("Module",(0,0),"A1").
+allow("Module",(0,1),"B1").
 allow("Module",(1,1),9).
-allow("Module",(2,1),"b").
+allow("Module",(2,1),"B").
 allow("Module",(1,0),6).
-allow("Module",(2,0),"a").
+allow("Module",(2,0),"A").
 
-constraint(("root.module",1),"lowerbound").
+constraint(("root.module",3),"lowerbound").
 constraint(("root.module[0].ects",1),"lowerbound").
 constraint(("root.module[1].ects",1),"lowerbound").
 constraint(("root.module[2].ects",1),"lowerbound").
@@ -75,15 +75,20 @@ set("root.module[0].group","root.module[0].group[0]").
 set("root.module[1].group","root.module[1].group[0]").
 set("root.module[2].group","root.module[2].group[0]").
 
-constraint((0,"12=sum(m.ects for m in root.module if m.group=a)"),"boolean").
-binary("12=sum(m.ects for m in root.module if m.group=a)","12","=","sum(m.ects for m in root.module if m.group=a)").
-aggregate("sum(m.ects for m in root.module if m.group=a)","sum","root.module.ects").
-condition("sum(m.ects for m in root.module if m.group=a)","root.module.group","a").
+constraint((0,"12=sum(m.ects for m in root.module if m.group=A)"),"boolean").
+binary("12=sum(m.ects for m in root.module if m.group=A)","12","=","sum(m.ects for m in root.module if m.group=A)").
+aggregate("sum(m.ects for m in root.module if m.group=A)","sum","root.module.ects").
+condition("sum(m.ects for m in root.module if m.group=A)","root.module.group=A").
 number("12",12).
 
 set("root.module.ects","root.module[0].ects[0]").
 set("root.module.ects","root.module[1].ects[0]").
 set("root.module.ects","root.module[2].ects[0]").
-property(("root.module.ects","root.module[0].ects[0]"),("root.module.group","root.module[0].group[0]")).
-property(("root.module.ects","root.module[1].ects[0]"),("root.module.group","root.module[1].group[0]")).
-property(("root.module.ects","root.module[2].ects[0]"),("root.module.group","root.module[2].group[0]")).
+property(("root.module.ects","root.module[0].ects[0]"),("root.module.group=A","root.module[0].group[0]=A")).
+property(("root.module.ects","root.module[1].ects[0]"),("root.module.group=A","root.module[1].group[0]=A")).
+property(("root.module.ects","root.module[2].ects[0]"),("root.module.group=A","root.module[2].group[0]=A")).
+
+binary("root.module[0].group[0]=A","root.module[0].group[0]","=","A").
+binary("root.module[1].group[0]=A","root.module[1].group[0]","=","A").
+binary("root.module[2].group[0]=A","root.module[2].group[0]","=","A").
+constant("A").

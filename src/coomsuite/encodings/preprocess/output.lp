@@ -93,11 +93,11 @@ condition((C,X'),Con) :- imply((C,X),X',_), ground_condition(C,X,_,Con).
 constraint(@join(X,P),"alldiff") :- alldiff(X,P).
 set(@join(X,P),X')                   :- alldiff(X,P), path_to(X,P,X').
 
-% Functions
-function(@aggregate(T,X,P),T,@join(X,P)) :- function(X,_,T,P).
-set(@join(X,P),X')                       :- function(X,_,_,P), path_to(X,P,X').
+% Aggregates
+aggregate(@aggregate(T,X,P),T,@join(X,P)) :- aggregate(X,_,T,P).
+set(@join(X,P),X')                        :- aggregate(X,_,_,P), path_to(X,P,X').
 
-#show function/3.
+#show aggregate/3.
 #show set/2.
 
 

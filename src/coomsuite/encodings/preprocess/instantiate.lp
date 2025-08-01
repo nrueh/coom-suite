@@ -35,26 +35,25 @@ formula_context(F',Ctx) :- coom_binary(F',_,_,_), coom_unary(F,_,F'), formula_co
 formula_context(F',Ctx) :- coom_unary(F',_,_),    coom_unary(F,_,F'), formula_context(F,Ctx).
 
 % Instantiate paths
-path_start(X,P) :- coom_binary(F,P,_,_),     coom_path(P,0,_), type_aux(X,Ctx), formula_context(F,Ctx).
-path_start(X,P) :- coom_binary(F,_,_,P),     coom_path(P,0,_), type_aux(X,Ctx), formula_context(F,Ctx).
-path_start(X,P) :- coom_unary(F,_,P),        coom_path(P,0,_), type_aux(X,Ctx), formula_context(F,Ctx).
-path_start(X,P) :- coom_combinations(C,_,P), coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
-path_start(X,P) :- coom_function(Ctx,_,_,P), coom_path(P,0,_), type_aux(X,Ctx).
-path_start(X,P) :- coom_imply(C,P,_),        coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
-path_start(X,P) :- coom_imply(C,_,P),        coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
-path_start(X,P) :- coom_exists(C,P,_),       coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
-path_start(X,P) :- coom_alldiff(C,P),        coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
+path_start(X,P) :- coom_binary(F,P,_,_),          coom_path(P,0,_), type_aux(X,Ctx), formula_context(F,Ctx).
+path_start(X,P) :- coom_binary(F,_,_,P),          coom_path(P,0,_), type_aux(X,Ctx), formula_context(F,Ctx).
+path_start(X,P) :- coom_unary(F,_,P),             coom_path(P,0,_), type_aux(X,Ctx), formula_context(F,Ctx).
+path_start(X,P) :- coom_combinations(C,_,P),      coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
+path_start(X,P) :- coom_aggregate_set(Ctx,_,P),   coom_path(P,0,_), type_aux(X,Ctx).
+path_start(X,P) :- coom_imply(C,P,_),             coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
+path_start(X,P) :- coom_imply(C,_,P),             coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
+path_start(X,P) :- coom_exists(C,P,_),            coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
+path_start(X,P) :- coom_alldiff(C,P),             coom_path(P,0,_), type_aux(X,Ctx), coom_context(C,Ctx).
 
 % Determine all ground paths
 path_to(X,P,0,X)  :- path_start(X,P).
-% path_to(X,P,1,X')  :- coom_path(P,0,"root"), coom_path(P,1,N),
-%                       path_start(X,P),     type_aux(X',_),  X' =(N,((),_)).
 path_to(X,P,1,())  :- coom_path(P,0,"root"), path_start(X,P).
 
 path_to(X,P,I+1,X'') :- coom_path(P,I,N),      path_to(X,P,I,X'), type_aux(X'',_), X''=(N,(X',_)).
 path_to(X,P,I+1,X'') :- coom_path(P,I,"next"), path_to(X,P,I,X'), type_aux(X'',_), X' = (N,(Parent,Idx)), X'' =(N,(Parent,Idx+1)).
 
-path_to(X,P,@dotpath(X')) :- not coom_path(P,I,_), path_to(X,P,I,X').
+path_to_aux(X,P,X') :- not coom_path(P,I,_), path_to(X,P,I,X').
+path_to(X,P,@dotpath(X')) :- path_to_aux(X,P,X').
 
 % Constants and numbers
 path_to(X,P,P) :- coom_binary(F,_,_,P), coom_constant(P), formula_context(F,T), type_aux(X,T).
@@ -93,13 +92,38 @@ ground_formula(X,F,XR) :- coom_binary(F,L,"+",R),
                           type_aux(X,C), not path_to(X,L,_), path_to(X,R,XR).
 
 
-% Instantiate functions and alldiff constraints
-function(X,F,T,P) :- coom_function(C,F,T,P), type_aux(X,C).
+% Instantiate aggregates
+aggregate(X,A,T,P) :-
+    coom_aggregate(C,A,T),
+    coom_aggregate_set(C,A,P),
+    type_aux(X,C),
+    not coom_aggregate_variable(C,A,_).
+
+path_to(X,@join2(S,P),@dotpath(X'')) :-
+    coom_aggregate_set(Ctx,Agg,S),
+    coom_aggregate_value(Ctx,Agg,P),
+    coom_aggregate_variable(Ctx,Agg,V),
+    type_aux(X,Ctx),
+    path_to_aux(X,S,X'),
+    coom_path(P,0,V),
+    coom_path(P,1,N),
+    type_aux(X'',_),
+    X'' = (N,(X',_)).
+
+aggregate(X,A,T,@join2(S,P)) :-
+    coom_aggregate(C,A,T),
+    coom_aggregate_set(C,A,S),
+    type_aux(X,C),
+    coom_aggregate_variable(C,A,V),
+    coom_aggregate_value(C,A,P).
+
+
+% Instantiate alldiff constraints
 alldiff(X,P) :- coom_alldiff(C,P), coom_context(C,Ctx), type_aux(X,Ctx).
 
-% Auxiliary paths for formulas and functions
+% Auxiliary paths for formulas and aggregates
 path_to(X,F,G) :- ground_formula(X,F,G).
-path_to(X,F,@aggregate(T,X,P)) :- function(X,F,T,P).
+path_to(X,F,@aggregate(T,X,P)) :- aggregate(X,F,T,P).
 
 % Auxiliary paths for cardinalities
 path_to(X,N,@dotpath(X')) :- coom_feature(Ctx,N,_,_,_), type_aux(X,Ctx), type_aux(X',_), X' =(N,(X,_)).
@@ -140,7 +164,7 @@ in_tuple(CT,X)          :- in_tuple(CT,_,X).
 
 % Instantiate imply statements
 imply((C,X),X',G)                  :- coom_imply(C,P,F), coom_context(C,Ctx), type_aux(X,Ctx), path_to(X,P,X'), ground_formula(X,F,G).
-imply((C,X),X',@aggregate(T,X,P')) :- coom_imply(C,P,F), coom_context(C,Ctx), type_aux(X,Ctx), path_to(X,P,X'), function(X,F,T,P').
+imply((C,X),X',@aggregate(T,X,P')) :- coom_imply(C,P,F), coom_context(C,Ctx), type_aux(X,Ctx), path_to(X,P,X'), aggregate(X,F,T,P').
 imply((C,X),X',G)                  :- coom_imply(C,P,F), coom_context(C,Ctx), type_aux(X,Ctx), path_to(X,P,X'), path_to(X,F,G), not ground_formula(X,F,G). % TODO: Check if this is enough if there are aggreagates
 
 % Instantiate attribute constraints

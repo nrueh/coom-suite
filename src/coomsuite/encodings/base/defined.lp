@@ -26,8 +26,10 @@
 #defined number/2.
 #defined float/1.
 
-#defined function/3.
+#defined aggregate/3.
 #defined set/2.
+#defined condition/3.
+#defined property/4.
 
 #defined user_include/1.
 #defined user_value/2.
