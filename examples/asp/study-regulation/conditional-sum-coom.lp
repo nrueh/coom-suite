@@ -19,13 +19,16 @@ coom_binary("12=sum(m.ectsforminmoduleifm.group=A)","12","=","sum(m.ectsforminmo
 coom_number("12",12).
 coom_aggregate("product","sum(m.ectsforminmoduleifm.group=A)","sum").
 coom_aggregate_set("product","sum(m.ectsforminmoduleifm.group=A)","module").
-coom_aggregate_variable("product","sum(m.ectsforminmoduleifm.group=A)","m").
-coom_aggregate_value("product","sum(m.ectsforminmoduleifm.group=A)","m.ects").
+% coom_aggregate_variable("product","sum(m.ectsforminmoduleifm.group=A)","m").
+% coom_aggregate_value("product","sum(m.ectsforminmoduleifm.group=A)","m.ects").
+coom_aggregate_comprehension("product","sum(m.ectsforminmoduleifm.group=A)","m.ects","m").
 coom_aggregate_condition("product","sum(m.ectsforminmoduleifm.group=A)","m.group=A").
+
 coom_path("m.ects",0,"m").
 coom_path("m.ects",1,"ects").
 coom_path("module",0,"module").
+
 coom_binary("m.group=A","m.group","=","A").
 coom_path("m.group",0,"m").
 coom_path("m.group",1,"group").
-coom_path("A",0,"A").
+constant("A").

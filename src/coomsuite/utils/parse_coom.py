@@ -365,8 +365,11 @@ class ASPModelVisitor(ModelVisitor):
                     formula = prepare_value(func_ctx.formula().getText())
 
                     self.output_asp.append(f'aggregate_set("{self.context}","{complete}","{path}").')
-                    self.output_asp.append(f'aggregate_variable("{self.context}","{complete}","{variable}").')
-                    self.output_asp.append(f'aggregate_value("{self.context}","{complete}","{formula}").')
+                    # self.output_asp.append(f'aggregate_variable("{self.context}","{complete}","{variable}").')
+                    # self.output_asp.append(f'aggregate_value("{self.context}","{complete}","{formula}").')
+                    self.output_asp.append(
+                        f'aggregate_comprehension("{self.context}","{complete}","{formula}","{variable}").'
+                    )
 
                     if func_ctx.condition() is not None:
                         condition = prepare_value(func_ctx.condition().getText())

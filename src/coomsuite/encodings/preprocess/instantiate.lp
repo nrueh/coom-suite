@@ -20,6 +20,7 @@ type_aux((A,(X,0)),A) :- type_aux(X,T), coom_enumeration(T), coom_attribute_valu
 formula_context(F,Ctx) :- coom_binary(F,_,_,_), coom_require(C,F),   coom_context(C,Ctx).
 formula_context(F,Ctx) :- coom_binary(F,_,_,_), coom_condition(C,_,F), coom_context(C,Ctx).
 formula_context(F,Ctx) :- coom_binary(F,_,_,_), coom_imply(C,_,F),   coom_context(C,Ctx).
+formula_context(F,Ctx) :- coom_binary(F,_,_,_), coom_aggregate_condition(Ctx,_,F).
 
 formula_context(F,Ctx) :- coom_unary(F,_,_),    coom_require(C,F),   coom_context(C,Ctx).
 formula_context(F,Ctx) :- coom_unary(F,_,_),    coom_condition(C,_,F), coom_context(C,Ctx).
@@ -92,31 +93,66 @@ ground_formula(X,F,XR) :- coom_binary(F,L,"+",R),
                           type_aux(X,C), not path_to(X,L,_), path_to(X,R,XR).
 
 
-% Instantiate aggregates
+%%% Instantiate aggregates
+
+% no comprehension
 aggregate(X,A,T,P) :-
     coom_aggregate(C,A,T),
     coom_aggregate_set(C,A,P),
     type_aux(X,C),
-    not coom_aggregate_variable(C,A,_).
+    not coom_aggregate_comprehension(C,A,_,_).
 
-path_to(X,@join2(S,P),@dotpath(X'')) :-
-    coom_aggregate_set(Ctx,Agg,S),
-    coom_aggregate_value(Ctx,Agg,P),
-    coom_aggregate_variable(Ctx,Agg,V),
-    type_aux(X,Ctx),
-    path_to_aux(X,S,X'),
-    coom_path(P,0,V),
-    coom_path(P,1,N),
-    type_aux(X'',_),
-    X'' = (N,(X',_)).
-
-aggregate(X,A,T,@join2(S,P)) :-
+% with comprehension but without condition
+aggregate(X,A,T,@join_comprehension(S,P)) :-
     coom_aggregate(C,A,T),
     coom_aggregate_set(C,A,S),
     type_aux(X,C),
-    coom_aggregate_variable(C,A,V),
-    coom_aggregate_value(C,A,P).
+    coom_aggregate_comprehension(C,A,P,V).
 
+% with condition
+aggregate_condition(X,A,F,(@join_comprehension(S,L),Op,R)) :-
+    coom_aggregate_set(C,A,S),
+    coom_aggregate_condition(C,A,F),
+    type_aux(X,C),
+    coom_binary(F,L,Op,R).
+
+% auxiliary coom_path/3 and path_to/3 for aggregate comprehensions
+coom_path(@join_comprehension(S,P),I,N) :-
+    coom_aggregate_set(C,A,S),
+    coom_aggregate_comprehension(C,A,P,V),
+    coom_path(P,0,V),
+    coom_path(P,I,N).
+
+coom_path(@join_comprehension(S,L),I,N) :-
+    coom_aggregate_set(C,A,S),
+    coom_aggregate_comprehension(C,A,_,V),
+    coom_aggregate_condition(C,A,F),
+    coom_binary(F,L,_,_),
+    coom_path(L,0,V),
+    coom_path(L,I,N).
+
+path_to(X,@join_comprehension(S,P),1,X') :-
+    coom_aggregate_set(C,A,S),
+    coom_aggregate_comprehension(C,A,P,V),
+    type_aux(X,C),
+    path_to_aux(X,S,X'),
+    coom_path(P,0,V).
+
+path_to(X,@join_comprehension(S,L),1,X') :-
+    coom_aggregate_set(C,A,S),
+    coom_aggregate_comprehension(C,A,_,V),
+    coom_aggregate_condition(C,A,F),
+    type_aux(X,C),
+    coom_binary(F,L,_,_),
+    path_to_aux(X,S,X'),
+    coom_path(L,0,V).
+
+% auxiliary binary for aggregate conditions
+binary(X,F,@binary(XL,Op,XR),XL,Op,XR) :-
+    aggregate_condition(X,A,F,(L,Op,R)),
+    coom_binary(F,_,Op,R),
+    path_to(X,L,XL),
+    path_to(X,R,XR).
 
 % Instantiate alldiff constraints
 alldiff(X,P) :- coom_alldiff(C,P), coom_context(C,Ctx), type_aux(X,Ctx).
