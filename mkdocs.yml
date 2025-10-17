@@ -1,5 +1,5 @@
 site_name: COOM Suite
-site_url: https://potassco.org/systems/coom-suite
+site_url: https://potassco.org/coom-suite/
 site_description: Python package to parse and solve product configuration problems specified in COOM using ASP
 repo_name: potassco/coom-suite
 repo_url: https://github.com/potassco/coom-suite
@@ -65,6 +65,8 @@ extra:
     - icon: potassco-logo
       link: https://potassco.org
   generator: false
+  version:
+    provider: mike
 
 markdown_extensions:
   - admonition
