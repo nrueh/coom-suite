@@ -435,7 +435,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "require_with_optional_part": {
         "test": StableModels(
             {
-                'integer("A.b")',
+                'numeric("A.b",int)',
                 'range("A.b",1,2)',
                 'type("root","product")',
                 'type("root.a[0]","A")',
