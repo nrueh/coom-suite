@@ -1,3 +1,0 @@
-[submodule "src/coomsuite/encodings/constraint-handler/constraint-handler"]
-	path = src/coomsuite/encodings/constraint-handler/constraint-handler
-	url = git@github.com:potassco/constraint-handler.git
