@@ -135,9 +135,9 @@ class ASPModelVisitor(ModelVisitor):
                 unit = str(num.unit().NAME())
                 self.output_asp.append(f'unit("{self.structure_name}","{feature_name}","{unit}").')
 
-            if num.min is not None or num.max is not None:
-                r_min = "#inf" if num.min.getText() == "-\u221e" else num.min.getText()  # negative infinity symbol
-                r_max = "#sup" if num.max.getText() == "\u221e" else num.max.getText()  # infinity symbol
+            if num.min_ is not None or num.max_ is not None:
+                r_min = "#inf" if num.min_.getText() == "-\u221e" else num.min_.getText()  # negative infinity symbol
+                r_max = "#sup" if num.max_.getText() == "\u221e" else num.max_.getText()  # infinity symbol
                 self.output_asp.append(f'range("{self.structure_name}","{feature_name}",{r_min},{r_max}).')
 
     def visitAttribute(self, ctx: ModelParser.AttributeContext):

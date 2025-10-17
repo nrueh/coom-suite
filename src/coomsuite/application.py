@@ -5,10 +5,12 @@ Clingo application class extended to solve COOM configuration problems
 import textwrap
 from typing import Any, Callable, Dict, List, Optional, Sequence
 
+import constraint_handler
 from clingcon import ClingconTheory
 from clingo import Control, Model, Symbol
 from clingo.application import Application, ApplicationOptions, Flag
 from clingo.ast import Location, Position, ProgramBuilder, Rule, parse_files
+from clingo.script import enable_python
 from clingo.symbol import Function, SymbolType
 from fclingo.__main__ import CSP, DEF, MAX_INT, MIN_INT
 from fclingo.__main__ import AppConfig as FclingoConfig
@@ -158,6 +160,9 @@ class COOMSolverApp(Application):
         for f in files:
             control.load(f)
         if self._options["solver"] in ["clingo", "constraint-handler"]:
+            enable_python()
+            with ProgramBuilder(control) as bld:
+                constraint_handler.add_encoding_to_program_builder(bld)
             control.load(encoding)
             control.load(show)
             control.ground()
