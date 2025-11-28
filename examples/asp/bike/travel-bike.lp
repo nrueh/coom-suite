@@ -5,67 +5,67 @@ part("Frame").
 part("Bag").
 
 % Attributes of the model
-integer("product.totalWeight").
+numeric("product.totalWeight",int).
 range("product.totalWeight",1,10000).
 
-integer("product.maxWeight").
-range("product.maxWeight",10,10).
+numeric("product.maxWeight",int).
+range("product.maxWeight",0,10).
 
-integer("product.totalVolume").
+numeric("product.totalVolume",int).
 range("product.totalVolume",0,200).
 
-integer("product.requestedVolume").
-range("product.requestedVolume",200,200).
+numeric("product.requestedVolume",int).
+range("product.requestedVolume",0,200).
 
-discrete("Capacity").
-domain("Capacity","B10").
-domain("Capacity","B20").
-domain("Capacity","B50").
-domain("Capacity","B100").
+discrete("Capacity",str).
+domain("Capacity", "B10").
+domain("Capacity", "B20").
+domain("Capacity", "B50").
+domain("Capacity", "B100").
 
-discrete("Capacity.volume").
+discrete("Capacity.volume",int).
 domain("Capacity.volume",10).
 domain("Capacity.volume",20).
 domain("Capacity.volume",50).
 domain("Capacity.volume",100).
 
-discrete("Capacity.weight").
+discrete("Capacity.weight",int).
 domain("Capacity.weight",100).
 domain("Capacity.weight",250).
 domain("Capacity.weight",600).
 domain("Capacity.weight",1200).
 
-discrete("Material").
-domain("Material","Cotton").
-domain("Material","Leather").
-domain("Material","Polyester").
+discrete("Material",str).
+domain("Material", "Cotton").
+domain("Material", "Leather").
+domain("Material", "Polyester").
 
-discrete("Wheel").
-domain("Wheel","W20").
-domain("Wheel","W22").
-domain("Wheel","W24").
-domain("Wheel","W26").
-domain("Wheel","W28").
+discrete("Wheel",str).
+domain("Wheel", "W20").
+domain("Wheel", "W22").
+domain("Wheel", "W24").
+domain("Wheel", "W26").
+domain("Wheel", "W28").
 
-discrete("Wheel.size").
+discrete("Wheel.size",int).
 domain("Wheel.size",20).
 domain("Wheel.size",22).
 domain("Wheel.size",24).
 domain("Wheel.size",26).
 domain("Wheel.size",28).
 
-discrete("Wheel.weight").
+discrete("Wheel.weight",int).
 domain("Wheel.weight",650).
 domain("Wheel.weight",700).
 domain("Wheel.weight",800).
 domain("Wheel.weight",900).
 domain("Wheel.weight",1000).
 
-discrete("Color").
-domain("Color","Red").
-domain("Color","Green").
-domain("Color","Yellow").
-domain("Color","Blue").
+discrete("Color",str).
+domain("Color", "Red").
+domain("Color", "Green").
+domain("Color", "Yellow").
+domain("Color", "Blue").
 
 % Complete instance tree
 type("root","product").
@@ -238,8 +238,9 @@ number("4",4).
 
 
 explanation(1,"The total weight is equal to the weight of the front wheel plus the weight of the rear wheel plus the sum of the weights of all bags on the carrier and the frame.").
-constraint((1,"root.totalWeight[0]=root.frontWheel[0].weight[0]+root.rearWheel[0].weight[0]+sum(root.carrier.bag.capacity.weight)+sum(root.frame.bag.capacity.weight)"),"boolean").
-binary("root.totalWeight[0]=root.frontWheel[0].weight[0]+root.rearWheel[0].weight[0]+sum(root.carrier.bag.capacity.weight)+sum(root.frame.bag.capacity.weight)","root.totalWeight[0]","=","root.frontWheel[0].weight[0]+root.rearWheel[0].weight[0]+sum(root.carrier.bag.capacity.weight)+sum(root.frame.bag.capacity.weight)").
+% constraint((1,"root.totalWeight[0]=root.frontWheel[0].weight[0]+root.rearWheel[0].weight[0]+sum(root.carrier.bag.capacity.weight)+sum(root.frame.bag.capacity.weight)"),"boolean").
+% binary("root.totalWeight[0]=root.frontWheel[0].weight[0]+root.rearWheel[0].weight[0]+sum(root.carrier.bag.capacity.weight)+sum(root.frame.bag.capacity.weight)","root.totalWeight[0]","=","root.frontWheel[0].weight[0]+root.rearWheel[0].weight[0]+sum(root.carrier.bag.capacity.weight)+sum(root.frame.bag.capacity.weight)").
+imply((1,"root.totalWeight[0]"),"root.frontWheel[0].weight[0]+root.rearWheel[0].weight[0]+sum(root.carrier.bag.capacity.weight)+sum(root.frame.bag.capacity.weight)").
 binary("root.frontWheel[0].weight[0]+root.rearWheel[0].weight[0]+sum(root.carrier.bag.capacity.weight)+sum(root.frame.bag.capacity.weight)","root.frontWheel[0].weight[0]","+","root.rearWheel[0].weight[0]+sum(root.carrier.bag.capacity.weight)+sum(root.frame.bag.capacity.weight)").
 binary("root.rearWheel[0].weight[0]+sum(root.carrier.bag.capacity.weight)+sum(root.frame.bag.capacity.weight)","root.rearWheel[0].weight[0]","+","sum(root.carrier.bag.capacity.weight)+sum(root.frame.bag.capacity.weight)").
 binary("sum(root.carrier.bag.capacity.weight)+sum(root.frame.bag.capacity.weight)","sum(root.carrier.bag.capacity.weight)","+","sum(root.frame.bag.capacity.weight)").
@@ -258,8 +259,9 @@ binary("root.maxWeight[0]*1000","root.maxWeight[0]","*","1000").
 number("1000",1000).
 
 explanation(3,"The total volume is equal to the sum of the volumes of all bags on the carrier and the frame.").
-constraint((3,"root.totalVolume[0]=sum(root.carrier.bag.capacity.volume)+sum(root.frame.bag.capacity.volume)"),"boolean").
-binary("root.totalVolume[0]=sum(root.carrier.bag.capacity.volume)+sum(root.frame.bag.capacity.volume)","root.totalVolume[0]","=","sum(root.carrier.bag.capacity.volume)+sum(root.frame.bag.capacity.volume)").
+% constraint((3,"root.totalVolume[0]=sum(root.carrier.bag.capacity.volume)+sum(root.frame.bag.capacity.volume)"),"boolean").
+% binary("root.totalVolume[0]=sum(root.carrier.bag.capacity.volume)+sum(root.frame.bag.capacity.volume)","root.totalVolume[0]","=","sum(root.carrier.bag.capacity.volume)+sum(root.frame.bag.capacity.volume)").
+imply((2,"root.totalVolume[0]"),"sum(root.carrier.bag.capacity.volume)+sum(root.frame.bag.capacity.volume)").
 binary("sum(root.carrier.bag.capacity.volume)+sum(root.frame.bag.capacity.volume)","sum(root.carrier.bag.capacity.volume)","+","sum(root.frame.bag.capacity.volume)").
 function("sum(root.carrier.bag.capacity.volume)","sum","root.carrier.bag.capacity.volume").
 set("root.carrier.bag.capacity.volume","root.carrier[0].bag[0].capacity[0].volume[0]").

@@ -5,46 +5,46 @@ part("Carrier").
 part("Bag").
 
 % Attributes of the model
-discrete("Color").
+discrete("Color",str).
 domain("Color", "Silver").
 domain("Color", "White").
 domain("Color", "Black").
 domain("Color", "Blue").
 
-discrete("Position").
+discrete("Position",str).
 domain("Position", "Front").
 domain("Position", "Back").
 
-discrete("Saddle").
+discrete("Saddle",str).
 domain("Saddle", "Standard").
 domain("Saddle", "Comfort").
 domain("Saddle", "Vintage").
 
-discrete("Wheel").
+discrete("Wheel",str).
 domain("Wheel", "W26").
 domain("Wheel", "W27").
 domain("Wheel", "W28").
 domain("Wheel", "W29").
 
-discrete("Wheel.size").
+discrete("Wheel.size",int).
 domain("Wheel.size",26).
 domain("Wheel.size",27).
 domain("Wheel.size",28).
 domain("Wheel.size",29).
 
-discrete("Capacity").
+discrete("Capacity",str).
 domain("Capacity", "B10").
 domain("Capacity", "B20").
 domain("Capacity", "B50").
 domain("Capacity", "B100").
 
-discrete("Capacity.volume").
+discrete("Capacity.volume",int).
 domain("Capacity.volume",10).
 domain("Capacity.volume",20).
 domain("Capacity.volume",50).
 domain("Capacity.volume",100).
 
-discrete("Material").
+discrete("Material",str).
 domain("Material", "Cotton").
 domain("Material", "Leather").
 domain("Material", "Polyester").

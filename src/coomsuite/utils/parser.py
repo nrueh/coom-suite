@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 from textwrap import dedent
 from typing import Any, Optional, cast
 
-from coomsuite import SOLVERS
+from coomsuite.utils import SOLVERS
 
 from . import logging
 
@@ -94,7 +94,7 @@ def get_parser() -> ArgumentParser:
     )
     parser_solve.add_argument("--user-input", "-u", type=str, help="Input the COOM user input.")
 
-    parser_solve.add_argument("--solver", "-s", type=str, help="Set solver", choices=SOLVERS, default="clingo")
+    parser_solve.add_argument("--solver", "-s", type=str, help="Set solver", choices=SOLVERS.keys(), default="clingo")
 
     parser_solve.add_argument(
         "--output", "-o", type=str, help="Set console output format", choices=["asp", "coom"], default="asp"

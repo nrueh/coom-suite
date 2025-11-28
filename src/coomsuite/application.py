@@ -5,10 +5,12 @@ Clingo application class extended to solve COOM configuration problems
 import textwrap
 from typing import Any, Callable, Dict, List, Optional, Sequence
 
+import constraint_handler
 from clingcon import ClingconTheory
 from clingo import Control, Model, Symbol
 from clingo.application import Application, ApplicationOptions, Flag
 from clingo.ast import Location, Position, ProgramBuilder, Rule, parse_files
+from clingo.script import enable_python
 from clingo.symbol import Function, SymbolType
 from fclingo.__main__ import CSP, DEF, MAX_INT, MIN_INT
 from fclingo.__main__ import AppConfig as FlingoConfig
@@ -16,7 +18,7 @@ from fclingo.__main__ import Statistic
 from fclingo.parsing import THEORY, HeadBodyTransformer
 from fclingo.translator import AUX, Translator
 
-from .utils import asp2coom, get_encoding
+from .utils import asp2coom, get_encoding, get_filename
 from .utils.logging import get_logger
 
 # mypy: allow-untyped-calls
@@ -131,7 +133,7 @@ class COOMSolverApp(Application):
         Print a model on the console.
         """
 
-        if self._options["solver"] == "clingo":
+        if self._options["solver"] in ["clingo", "constraint-handler"]:
             output_symbols = model.symbols(shown=True)
         elif self._options["solver"] == "flingo":
             output_symbols = [
@@ -140,6 +142,8 @@ class COOMSolverApp(Application):
                 if not (atom.name == self.config.defined and len(atom.arguments) == 1)
             ]
             output_symbols.extend(_get_valuation(model))
+        else:
+            output_symbols = list(model.symbols(shown=True))
 
         print(_sym_to_prg(output_symbols, self._options["output_format"]))
 
@@ -147,12 +151,14 @@ class COOMSolverApp(Application):
         """
         Main function ran on call.
         """
-        encoding = get_encoding(f"encoding-base-{self._options['solver']}.lp")
-        show = get_encoding(f"show-{self._options['solver']}.lp")
+        encoding = get_encoding(get_filename(self._options["solver"]))
+        show = get_encoding(get_filename(self._options["solver"], show=True))
         for f in files:
             control.load(f)
-
-        if self._options["solver"] == "clingo":
+        if self._options["solver"] in ["clingo", "constraint-handler"]:
+            enable_python()
+            with ProgramBuilder(control) as bld:
+                constraint_handler.add_encoding_to_program_builder(bld)
             control.load(encoding)
             control.load(show)
             control.ground()

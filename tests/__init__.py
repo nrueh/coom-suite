@@ -96,7 +96,7 @@ def run_test(
         multishot = kwargs.get("multishot", False)
         max_bound = kwargs.get("max_bound", 99)
         solver = Clingo(
-            program="".join(preprocess(file_paths, discrete=False, max_bound=max_bound, multishot=multishot))
+            program="".join(preprocess(file_paths, discrete=True, max_bound=max_bound, multishot=multishot))
         )
     else:
         coom_app = COOMSolverApp(options=options, istest=True)

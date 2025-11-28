@@ -1,0 +1,21 @@
+product {
+	Bool	is_high
+	bool	is_low
+}
+
+
+behavior {
+	combinations	(	is_high	is_low	)
+	allow			(	True	false	)
+	allow			(	False	true	)
+}
+
+behavior {
+	condition is_high = True
+	require is_low = false
+}
+
+behavior {
+	condition is_low = true
+	require is_high = False
+}

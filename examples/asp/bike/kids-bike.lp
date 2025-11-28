@@ -2,25 +2,25 @@
 part("root").
 
 % Attributes of the model
-discrete("Color").
+discrete("Color",str).
 domain("Color","Red").
 domain("Color","Green").
 domain("Color","Yellow").
 domain("Color","Blue").
 
-discrete("Wheel").
+discrete("Wheel",str).
 domain("Wheel","W14").
 domain("Wheel","W16").
 domain("Wheel","W18").
 domain("Wheel","W20").
 
-discrete("Wheel.size").
+discrete("Wheel.size",int).
 domain("Wheel.size",14).
 domain("Wheel.size",16).
 domain("Wheel.size",18).
 domain("Wheel.size",20).
 
-discrete("Bool").
+discrete("Bool",str).
 domain("Bool", "True").
 domain("Bool", "False").
 

@@ -16,8 +16,6 @@ from .utils.logging import get_logger
 
 log = get_logger("main")
 
-SOLVERS = ["clingo", "flingo"]
-
 
 def convert_instance(coom_file: str, grammar: str, outdir: Optional[str] = None) -> str:  # nocoverage
     """

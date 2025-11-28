@@ -1,5 +1,5 @@
 % Generate exactly one value for each discrete attribute if it is included
-{ value(X,V) : domain(T,V) } = 1 :- include(X), type(X,T), discrete(T).
+{ value(X,V) : domain(T,V) } = 1 :- include(X), type(X,T), discrete(T,_).
 
 % { value(X,O) : type(X,T), enumeration(T), option(T,O) } 1.
 % % No value if variable has not been included
