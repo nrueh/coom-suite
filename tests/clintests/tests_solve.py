@@ -825,7 +825,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "test": OptimalModel({'value("root.totalWeight[0]",1)'}),
         "ftest": OptimalModel({'value("root.totalWeight[0]",1)'}, flingo=True),
         "program": """
-            integer("product.totalWeight").
+            numeric("product.totalWeight",int).
             range("product.totalWeight",1,10).
             type("root","product").
             type("root.totalWeight[0]","product.totalWeight").
@@ -840,7 +840,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "test": OptimalModel({'value("root.totalOutput[0]",10)'}),
         "ftest": OptimalModel({'value("root.totalOutput[0]",10)'}, flingo=True),
         "program": """
-            integer("product.totalOutput").
+            numeric("product.totalOutput",int).
             range("product.totalOutput",1,10).
             type("root","product").
             type("root.totalOutput[0]","product.totalOutput").

@@ -16,12 +16,6 @@ from .utils.logging import get_logger
 
 log = get_logger("main")
 
-SOLVERS = {
-    "clingo": "encoding-base-clingo.lp",
-    "flingo": "encoding-base-flingo.lp",
-    "constraint-handler": "encoding-constraint-handler.lp",
-}
-
 
 def convert_instance(coom_file: str, grammar: str, outdir: Optional[str] = None) -> str:  # nocoverage
     """

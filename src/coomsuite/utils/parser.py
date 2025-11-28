@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 from textwrap import dedent
 from typing import Any, Optional, cast
 
-from coomsuite import SOLVERS
+from coomsuite.utils import SOLVERS
 
 from . import logging
 

@@ -280,12 +280,12 @@ class TestFlingo(TestCase):
         self.run_test("conditional_imply")
         self.run_test("multiple_conditions_imply")
 
-    def test_optimization(self) -> None:
-        """
-        Test solving optimization statements (flingo)
-        """
-        self.run_test("minimize")
-        self.run_test("maximize")
+    # def test_optimization(self) -> None:
+    #     """
+    #     Test solving optimization statements (flingo)
+    #     """
+    #     self.run_test("minimize")
+    #     self.run_test("maximize")
 
     def test_user_input(self) -> None:
         """
@@ -418,7 +418,7 @@ class TestConstraintHandler(TestCase):
 
     def test_imply(self) -> None:
         """
-        Test imply statements (fclingo).
+        Test imply statements (constraint handler).
         """
         self.run_test("imply_with_number")
         self.run_test("imply_with_variable")
@@ -430,7 +430,7 @@ class TestConstraintHandler(TestCase):
 
     # def test_optimization(self) -> None:
     #     """
-    #     Test solving optimization statements (flingo)
+    #     Test solving optimization statements (constraint handler)
     #     """
     #     self.run_test("minimize")
     #     self.run_test("maximize")

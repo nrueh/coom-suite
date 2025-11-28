@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "coomsuite"
 authors = [{ name = "Nicolas Rühling", email = "nruehling@uni-potsdam.de" }]
 description = "Python package to parse and solve COOM configuration instances using ASP."
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
     "antlr4-python3-runtime==4.13.2",
     "clingo==5.7.*",
@@ -96,11 +96,5 @@ omit = [
 [tool.coverage.report]
 exclude_lines = ["assert", "nocoverage"]
 
-name = "coomsuite"
-authors = [
-    { name = "Nicolas Rühling", email = "nicolas.ruehling@uni-potsdam.de" },
-]
-description = "Python package to parse and solve COOM configuration instances using ASP."
-requires-python = ">=3.11"
 [tool.mypy]
 exclude = ['coom_grammar'] # , '/coomsuite/__main__.py']

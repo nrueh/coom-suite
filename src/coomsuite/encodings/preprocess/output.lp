@@ -7,14 +7,14 @@ domain(T,V) :- coom_option(T,V).
 discrete(@join(T,A),str) :- coom_attribute(T,A,"str").
 domain(@join(T,A),V) :- coom_attribute_value(T,_,A,V), coom_attribute(T,A,"str").
 
-numeric(@join(T,A),int)   :- coom_attribute(T,A,"num"), fclingo.
-range(@join(T,A),Min,Max) :- coom_attribute(T,A,"num"), fclingo,
+numeric(@join(T,A),int)   :- coom_attribute(T,A,"num"), not discrete.
+range(@join(T,A),Min,Max) :- coom_attribute(T,A,"num"), not discrete,
                              Min = #min { V: coom_attribute_value(T,_,A,V) },
                              Max = #max { V: coom_attribute_value(T,_,A,V) }.
 
 % Temporary fix: For clingo, huge ranges might make grounding to large, translate numeric attributes to discrete attributes
-discrete(@join(T,A),int) :- coom_attribute(T,A,"num"),                            not fclingo.
-domain(@join(T,A),V) :- coom_attribute_value(T,_,A,V), coom_attribute(T,A,"num"), not fclingo.
+discrete(@join(T,A),int) :- coom_attribute(T,A,"num"),                            discrete.
+domain(@join(T,A),V) :- coom_attribute_value(T,_,A,V), coom_attribute(T,A,"num"), discrete.
 
 % Numeric features
 numeric(@join(Ctx,N),int)   :- coom_feature(Ctx,N,"num",_,_), not coom_precision(Ctx,N,_). % Integers

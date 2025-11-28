@@ -1504,7 +1504,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "minimize": {
         "test": StableModels(
             {
-                'integer("product.totalWeight")',
+                'numeric("product.totalWeight",int)',
                 'range("product.totalWeight",1,10)',
                 'type("root","product")',
                 'type("root.totalWeight[0]","product.totalWeight")',
@@ -1529,7 +1529,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "maximize": {
         "test": StableModels(
             {
-                'integer("product.totalOutput")',
+                'numeric("product.totalOutput",int)',
                 'range("product.totalOutput",1,10)',
                 'type("root","product")',
                 'type("root.totalOutput[0]","product.totalOutput")',

@@ -3,7 +3,7 @@ Utilities.
 """
 
 from importlib.resources import as_file, files
-from typing import List
+from typing import List, Optional
 
 from antlr4 import CommonTokenStream, InputStream
 from clingo import Symbol
@@ -18,16 +18,36 @@ from .coom_grammar.user.UserInputParser import UserInputParser
 # mypy: allow-untyped-calls
 
 
-def get_encoding(file_name: str) -> str:  # nocoverage
-    """Gets the path to a given ASP encoding in the encodings folder
+SOLVERS = {
+    "clingo": "encoding-base-clingo.lp",
+    "flingo": "encoding-base-flingo.lp",
+    "constraint-handler": "encoding-constraint-handler.lp",
+}
+
+
+def get_filename(solver: str, show: Optional[bool] = False) -> str:  # nocoverage
+    """Gets the filename of a encoding
 
     Args:
-        file_name (str): The name of the ASP encoding with the extension
+        solver (str): The name of the solver
+        show (Optional[bool]): Whether it is a encoding with show statements
+
+    """
+    if show:
+        return f"show-{solver}.lp"
+    return SOLVERS[solver]
+
+
+def get_encoding(filename: str) -> str:  # nocoverage
+    """Gets the full path to a given ASP encoding in the encodings folder
+
+    Args:
+        filename (str): The name of the ASP encoding with the extension
 
     Returns:
         str: The string for the path to the ASP encoding
     """
-    with as_file(files("coomsuite") / "encodings" / file_name) as file:
+    with as_file(files("coomsuite") / "encodings" / filename) as file:
         return str(file)
 
 

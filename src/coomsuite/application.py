@@ -18,8 +18,7 @@ from fclingo.__main__ import Statistic
 from fclingo.parsing import THEORY, HeadBodyTransformer
 from fclingo.translator import AUX, Translator
 
-from . import SOLVERS
-from .utils import asp2coom, get_encoding
+from .utils import asp2coom, get_encoding, get_filename
 from .utils.logging import get_logger
 
 # mypy: allow-untyped-calls
@@ -152,8 +151,8 @@ class COOMSolverApp(Application):
         """
         Main function ran on call.
         """
-        encoding = get_encoding(SOLVERS[self._options["solver"]])
-        show = get_encoding(f"show-{self._options['solver']}.lp")
+        encoding = get_encoding(get_filename(self._options["solver"]))
+        show = get_encoding(get_filename(self._options["solver"], show=True))
         for f in files:
             control.load(f)
         if self._options["solver"] in ["clingo", "constraint-handler"]:
