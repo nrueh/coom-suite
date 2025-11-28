@@ -74,8 +74,8 @@ unary(G,Op,F)    :- unary(_,_,G,Op,F).
 
 % Table constraints
 constraint((C,@dotpath(X)),"table") :- table(C,X).
-column((C,@dotpath(X)),ID,Col,@dotpath(X')) :- coom_combinations(C,Col,P),
-                                               path_to(X,P,X'), in_tuple(CT,X'), tuple_order((C,X),CT,ID).
+column((C,@dotpath(X)),CT,Col,X') :- coom_combinations(C,Col,P),
+                                               path_to(X,P,X'), in_tuple(CT,X').
 allow(C,XY,V) :- coom_allow(C,XY,V).
 
 #show column/4.
@@ -124,6 +124,13 @@ float(F)    :- coom_float(F).
 #show constant/1.
 #show number/2.
 #show float/1.
+
+% Optimization
+minimize(X') :- coom_minimize(C,P), coom_context(C,Ctx), type_aux(X,Ctx), path_to(X,P,X').
+maximize(X') :- coom_maximize(C,P), coom_context(C,Ctx), type_aux(X,Ctx), path_to(X,P,X').
+
+#show minimize/1.
+#show maximize/1.
 
 % Explanations
 explanation(C,E) :- coom_explanation(C,E).

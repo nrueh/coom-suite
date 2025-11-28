@@ -94,15 +94,33 @@ def get_parser() -> ArgumentParser:
     )
     parser_solve.add_argument("--user-input", "-u", type=str, help="Input the COOM user input.")
 
-    parser_solve.add_argument("--solver", "-s", type=str, help="Set solver", choices=SOLVERS, default="clingo")
+    parser_solve.add_argument("--solver", "-s", type=str, help="Set solver", choices=SOLVERS.keys(), default="clingo")
 
     parser_solve.add_argument(
         "--output", "-o", type=str, help="Set console output format", choices=["asp", "coom"], default="asp"
     )
     parser_solve.add_argument("--show-facts", action="store_true", help="Show preprocessed fact format")
     parser_solve.add_argument(
-        "--incremental-bounds",
+        "--bounds",
+        "-b",
+        type=str,
+        help="Solve with search for bounds for problems with unbounded cardinalities.",
+        choices=["linear", "exponential"],
+        default=None,
+    )
+    parser_solve.add_argument(
+        "--multishot",
+        "-m",
         action="store_true",
-        help="Incrementally increase the maximum for unbounded cardinalities.",
+        help="""
+        Use multi-shot solving for problems with unbounded cardinalities.
+        (If --bounds is not used this flag is ignored.)""",
+    )
+    parser_solve.add_argument(
+        "--initial-bound",
+        "-i",
+        type=int,
+        default=0,
+        help="Initial bound for the incremental search algorithm. Default is 0.",
     )
     return parser

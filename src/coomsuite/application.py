@@ -13,22 +13,17 @@ from clingo.ast import Location, Position, ProgramBuilder, Rule, parse_files
 from clingo.script import enable_python
 from clingo.symbol import Function, SymbolType
 from fclingo.__main__ import CSP, DEF, MAX_INT, MIN_INT
-from fclingo.__main__ import AppConfig as FclingoConfig
+from fclingo.__main__ import AppConfig as FlingoConfig
 from fclingo.__main__ import Statistic
 from fclingo.parsing import THEORY, HeadBodyTransformer
 from fclingo.translator import AUX, Translator
 
+from . import SOLVERS
 from .utils import asp2coom, get_encoding
 from .utils.logging import get_logger
 
 # mypy: allow-untyped-calls
 log = get_logger("main")
-
-ENCODING = {
-    "clingo": "encoding-base-clingo.lp",
-    "fclingo": "encoding-base-fclingo.lp",
-    "constraint-handler": "encoding-constraint-handler.lp",
-}
 
 
 def _get_valuation(model: Model) -> List[Symbol]:
@@ -39,7 +34,7 @@ def _get_valuation(model: Model) -> List[Symbol]:
         and len(assignment.arguments) == 2
         and model.contains(
             Function(DEF, [Function(str(assignment.arguments[0]), [], True)])
-        )  # Temporary fix until fclingo fixes String behavior
+        )  # Temporary fix until flingo fixes String behavior
         and not (assignment.arguments[0].type is SymbolType.Function and assignment.arguments[0].name == AUX)
     ]
 
@@ -66,7 +61,7 @@ class COOMSolverApp(Application):
     _options: Dict[str, Any]
     _istest: bool
     _log_level: str
-    config: FclingoConfig
+    config: FlingoConfig
     _propagator: ClingconTheory
     program_name: str = "COOM Suite"
     version: str = "0.1"
@@ -83,7 +78,7 @@ class COOMSolverApp(Application):
         self._options = {"solver": "clingo", "output_format": "asp"} if options is None else options
         self._istest = istest
         self._log_level = "WARNING" if log_level == "" else log_level
-        self.config = FclingoConfig(MIN_INT, MAX_INT, Flag(False), Flag(False), DEF)
+        self.config = FlingoConfig(MIN_INT, MAX_INT, Flag(False), Flag(False), DEF)
         self._propagator = ClingconTheory()
 
     def parse_log_level(self, log_level: str) -> bool:  # nocoverage
@@ -123,11 +118,11 @@ class COOMSolverApp(Application):
         Args:
             model (Model): clingo Model
         """
-        if self._options["solver"] == "fclingo":
+        if self._options["solver"] == "flingo":
             self._propagator.on_model(model)
 
             if self._istest:
-                # this slows down solving considerably but makes tests for clingo and fclingo uniform
+                # this slows down solving considerably but makes tests for clingo and flingo uniform
                 # better way?
                 model.extend(_get_valuation(model))
 
@@ -139,7 +134,9 @@ class COOMSolverApp(Application):
         Print a model on the console.
         """
 
-        if self._options["solver"] == "fclingo":
+        if self._options["solver"] in ["clingo", "constraint-handler"]:
+            output_symbols = model.symbols(shown=True)
+        elif self._options["solver"] == "flingo":
             output_symbols = [
                 atom
                 for atom in model.symbols(shown=True)
@@ -155,7 +152,7 @@ class COOMSolverApp(Application):
         """
         Main function ran on call.
         """
-        encoding = get_encoding(ENCODING[self._options["solver"]])
+        encoding = get_encoding(SOLVERS[self._options["solver"]])
         show = get_encoding(f"show-{self._options['solver']}.lp")
         for f in files:
             control.load(f)
@@ -168,7 +165,7 @@ class COOMSolverApp(Application):
             control.ground()
             control.solve()
 
-        elif self._options["solver"] == "fclingo":
+        elif self._options["solver"] == "flingo":
             self._propagator.register(control)
             self._propagator.configure("max-int", str(self.config.max_int))
             self._propagator.configure("min-int", str(self.config.min_int))

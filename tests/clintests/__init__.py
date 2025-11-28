@@ -6,7 +6,7 @@ from typing import Set, Union
 
 from clingo import Symbol
 from clingo.solving import Model
-from clintest.assertion import Equals, False_, SubsetOf, SupersetOf, True_
+from clintest.assertion import Equals, False_, Implies, Optimal, SubsetOf, SupersetOf, True_
 from clintest.quantifier import All, Exact
 from clintest.test import And, Assert, Test
 
@@ -21,17 +21,37 @@ def NumModels(n: int) -> Test:  # pylint: disable=invalid-name
     return Assert(Exact(n), True_())
 
 
-def StableModels(*args: set[Symbol | str], fclingo: bool = False) -> Test:  # pylint: disable=invalid-name
+def StableModels(*args: set[Symbol | str], flingo: bool = False) -> Test:  # pylint: disable=invalid-name
     """
     clintest.Test for checking that a program has a certain set of stable models
 
     Args:
         args: The set of stable models as a set of sets of strings or clingo symbols
-        fclingo (bool): Whether to prepare the test for use with the fclingo solver
+        flingo (bool): Whether to prepare the test for use with the flingo solver
     """
-    if not fclingo:
+    if not flingo:
         return And(NumModels(len(args)), *(Assert(Exact(1), Equals(a)) for a in args))
     return And(NumModels(len(args)), *(Assert(Exact(1), SupersetOfTheory(a, check_theory=True)) for a in args))
+
+
+def OptimalModel(model: set[Symbol | str], flingo: bool = False) -> Test:  # pylint: disable=invalid-name
+    """
+    clintest.Test for checking that a program has a certain optimal stable model
+
+    Args:
+        args: The optimal stable model as a set of sets of strings or clingo symbols
+        flingo (bool): Whether to prepare the test for use with the flingo solver
+    """
+    if not flingo:
+        return Assert(All(), Implies(Optimal(), Equals(model)))
+    return Assert(All(), Implies(Optimal(), SupersetOfTheory(model, check_theory=True)))
+
+
+def Supersets(*args: set[Symbol | str]) -> Test:  # pylint: disable=invalid-name
+    """
+    clintest.Test for checking models of a program against a set of models using superset relation
+    """
+    return And(NumModels(len(args)), *(Assert(Exact(1), SupersetOf(a)) for a in args))
 
 
 class SupersetOfTheory(SupersetOf):
