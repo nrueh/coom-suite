@@ -13,7 +13,7 @@ dependencies = [
     "clingcon >= 5.2.1, == 5.2.*",                                                                                                                                               # requirement for flingo
     "fclingo@git+https://github.com/potassco/fclingo.git@6f4d7efc92bfac18465e2c95c4ef9ac99ef470b5",
     "clinguin>=2.6.1",
-    "constraint-handler@https://test-files.pythonhosted.org/packages/1b/9f/660f81a917c3462345dba2fa83845074f80b33726f0bc6b07f16f23ca5fb/constraint_handler-0.0.1.dev148.tar.gz",
+    "constraint-handler@https://test-files.pythonhosted.org/packages/34/4f/8ba1f93e0a0c447c60afc192fc0d2b8e55e7ce4c94c70a8e1b1320f2839e/constraint_handler-0.0.1.dev317.tar.gz",
 ]
 license-files = ["LICENSE"]
 dynamic = ["version"]
