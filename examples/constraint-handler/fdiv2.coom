@@ -1,0 +1,14 @@
+// "Shadow Master" Blinds example
+// Provided by denkbares GmbH
+
+product {
+			num/mm 		assemblyHeight
+			num/mm		passageHeight
+			num.#/mm	inputWidth
+			num/mm		length
+			num.##/rad	inclination
+}
+
+behavior {
+	imply inclination = (125 - inputWidth) / ((assemblyHeight - 8.82) + (90 - passageHeight)) // + acos((48.4985 / sqrt(((((assemblyHeight - 8.82) + (90 - passageHeight)) ^ 2) + ((125 - inputWidth) ^ 2)))))
+}

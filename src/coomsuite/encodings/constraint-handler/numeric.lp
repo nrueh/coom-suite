@@ -1,5 +1,6 @@
-% Generate exactly one value for each (numeric) integer/float attribute if it is included
-{ assign(a(X),X,E) : convert(T,V,E) } = 1 :- include(X), type(X,T), numeric(T,_).
+% Generate exactly one value for each (numeric) integer/float attribute if it is included and has a range specified
+% TODO: Open ranges
+{ assign(a(X),X,E) : convert(T,V,E) } = 1 :- include(X), type(X,T), numeric(T,_), range(T,_,_).
 
 % Check ranges
 assign(range,trang(NAME),CHECK) :- range(TYPE,MIN,MAX),

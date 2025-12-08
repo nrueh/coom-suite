@@ -1,0 +1,17 @@
+// Large grounding although only discrete values (17 seconds)
+product { Cover cover }
+
+enumeration Cover {
+	attribute	num/gramm	weight
+
+	_AcrylLumera		= (	   1495	)
+	_AcrylPerfora		= (	   1238	)
+	_AcrylAllWeather	= (	   2600	)
+	_AcrylStandardFremd	= (	    800	)
+	_AcrylUniQuer		= (	    599	)
+	_AcrylUniQuerFremd	= (	    673	)
+	_KombiAcryl			= (	   2598	)
+	_KombiSoltis		= (	   2293	)
+	_Satinee			= (	   1487	)
+	_Screen				= (	   2499	)
+}

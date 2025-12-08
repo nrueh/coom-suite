@@ -1,0 +1,6 @@
+set assemblyHeight[0] = 2900
+set passageHeight[0] = 2400
+set inputWidth[0] = 3500
+set length[0] = 4500
+
+set cover[0] = _AcrylAllWeather

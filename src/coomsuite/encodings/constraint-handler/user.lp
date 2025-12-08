@@ -1,4 +1,5 @@
 % Prohibit double assignments of a value to an attribute
+% TODO: Needed?
 :- include(X), type(X,T), value(X,_,V1), value(X,_,V2), V1 != V2.
 
 consistent(X)   :- user_include(X), type(X,_).

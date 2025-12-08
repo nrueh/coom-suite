@@ -1,0 +1,8 @@
+
+product {
+			num.##/kg	weight
+}
+
+behavior {
+	imply weight = 2600 / 1000.0
+}

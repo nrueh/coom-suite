@@ -28,4 +28,5 @@ operatorMap1("-",minus).
 
 
 operatorMap1("()",brackets).
-computed(brackets,ARGS,T,V) :- compute(brackets,ARGS), ARGS=(T,(V,())).
+% computed(brackets,ARGS,T,V) :- compute(brackets,ARGS), ARGS=(T,(V,())).
+computed(brackets,ARGS,val(T,V)) :- compute(brackets,ARGS), ARGS=(val(T,V),()).

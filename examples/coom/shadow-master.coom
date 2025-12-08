@@ -2,28 +2,28 @@
 // Provided by denkbares GmbH
 
 product {
-	Grundmerkmale	grundmerkmale
-	Pfosten			pfosten
-	Cover			cover
-}
+			num/mm 		assemblyHeight
+			num/mm		passageHeight
+			num.#/mm	inputWidth
+			num/mm		length
+			num.##/rad	inclination
+			num.#/mm	orderWidth
+			num.##/qm	area
+			num.##/kg	weight
 
-structure Grundmerkmale {
-	num/mm		montagehoehe
-	num/mm		durchgangshoehe
-	num/mm		laenge
-	num.#/mm	eingabeBreite
-	num.#/mm	bestellBreite
-	num.##/qm	flaeche
-	num.##/Grad	neigungswinkelAnlage
-	num.##/Kg	weight
+	0..1	Pole		pole
+	0..1 	Pole		poleRight
+
+			Cover		cover // this feature alone makes the grounding large, discrete enumeration but depending on chosen values
+
 	// Debug		debugValues
 }
 
 // structure Debug {
-// 	num.###/mm	deltaHoehe
-// 	num/mm		deltaBreite
-// 	num.###/mm	deltaHoehePow2
-// 	num/mm		deltaBreitePow2
+// 	num.###/mm	deltaHeight
+// 	num/mm		deltaWidth
+// 	num.###/mm	deltaHeightPow2
+// 	num/mm		deltaWidthPow2
 // 	num.###/mm	sqrtValue
 // 	num.##		atanValue
 // 	num.##		acosValue
@@ -31,23 +31,18 @@ structure Grundmerkmale {
 // 	num.######	acosArg
 // }
 
-// structure Konstruktion {
-// 	Pfosten	pfostenLI
-// 	Pfosten	pfostenRE
-// }
-
-structure Pfosten {
-	num.####/mm		km_gesamthoehe
-	num.####		km_mittePfosten
-	num.####		ueberstand
-	TypPfosten		typPfosten
+structure Pole {
+	num.####/mm		height
+	num.####		distance
+	num.####		overhang
+	PoleType		poleType
 }
 
-enumeration TypPfosten {
-	_Ohne
-	_Starr
-	_Hoehenverstellbar
-	_Doppelpfosten
+enumeration PoleType {
+	// _Ohne
+	_Fixed
+	_HeightAdjustable
+	_DoublePole
 }
 
 enumeration Cover {
@@ -65,112 +60,89 @@ enumeration Cover {
 	_Screen				= (	   2499	)
 }
 
-behavior Pfosten {
-	imply ueberstand = (root.grundmerkmale.eingabeBreite - km_mittePfosten)
+behavior Pole {
+	imply overhang = (root.inputWidth - distance)
 
-	imply km_gesamthoehe = (root.grundmerkmale.durchgangshoehe + (tan(root.grundmerkmale.neigungswinkelAnlage) * ueberstand))
+	imply height = (root.passageHeight + (tan(root.inclination) * overhang))
 
-	require ueberstand > 105
+	require overhang > 105
 
-	require km_mittePfosten < 4000
+	require distance < 4000
 
-	require km_gesamthoehe > 1000
+	require height > 1000
 
-	require km_gesamthoehe < 3200
+	require height < 3200
 
-	condition km_gesamthoehe > 2200
-	require typPfosten != _Doppelpfosten
+	condition height > 2200
+	require poleType != _DoublePole
 
-	// default 	ueberstand = 150
+	// default 	overhang = 150
 
-	// default 	km_mittePfosten = 3000
+	// default 	distance = 3000
 
-	// default 	km_gesamthoehe = 2000
+	// default 	height = 2000
 
-	// default 	typPfosten = _Starr
+	// default 	poleType = _Fixed
 }
 
 behavior {
-	imply grundmerkmale.neigungswinkelAnlage = (atan(((125 - grundmerkmale.eingabeBreite) / ((grundmerkmale.montagehoehe - 8.82) + (90 - grundmerkmale.durchgangshoehe)))) + acos((48.4985 / sqrt(((((grundmerkmale.montagehoehe - 8.82) + (90 - grundmerkmale.durchgangshoehe)) ^ 2) + ((125 - grundmerkmale.eingabeBreite) ^ 2))))))
+	imply inclination = atan(((125 - inputWidth) / ((assemblyHeight - 8.82) + (90 - passageHeight)))) + acos((48.4985 / sqrt(((((assemblyHeight - 8.82) + (90 - passageHeight)) ^ 2) + ((125 - inputWidth) ^ 2)))))
 
-	imply grundmerkmale.bestellBreite = (grundmerkmale.eingabeBreite + (tan(grundmerkmale.neigungswinkelAnlage) * 80))
+	imply orderWidth = inputWidth + (tan(inclination) * 80)
 
-	imply grundmerkmale.flaeche = (grundmerkmale.laenge * (grundmerkmale.bestellBreite / 1000000))
+	imply area = length * (orderWidth / 1000000)
 
-	imply grundmerkmale.weight = (grundmerkmale.flaeche * (cover.weight / 1000))
+	imply weight = area * (cover.weight / 1000)
 
-	// imply grundmerkmale.debugValues.deltaHoehe = ((grundmerkmale.montagehoehe - 8.82) + (90 - grundmerkmale.durchgangshoehe))
+	// imply debugValues.deltaHeight = ((assemblyHeight - 8.82) + (90 - passageHeight))
 
-	// imply grundmerkmale.debugValues.deltaBreite = (125 - grundmerkmale.eingabeBreite)
+	// imply debugValues.deltaWidth = (125 - inputWidth)
 
-	// imply grundmerkmale.debugValues.deltaBreitePow2 = ((125 - grundmerkmale.eingabeBreite) ^ 2)
+	// imply debugValues.deltaWidthPow2 = ((125 - inputWidth) ^ 2)
 
-	// imply grundmerkmale.debugValues.deltaHoehePow2 = (((grundmerkmale.montagehoehe - 8.82) + (90 - grundmerkmale.durchgangshoehe)) ^ 2)
+	// imply debugValues.deltaHeightPow2 = (((assemblyHeight - 8.82) + (90 - passageHeight)) ^ 2)
 
-	// imply grundmerkmale.debugValues.sqrtValue = sqrt(((((grundmerkmale.montagehoehe - 8.82) + (90 - grundmerkmale.durchgangshoehe)) ^ 2) + ((125 - grundmerkmale.eingabeBreite) ^ 2)))
+	// imply debugValues.sqrtValue = sqrt(((((assemblyHeight - 8.82) + (90 - passageHeight)) ^ 2) + ((125 - inputWidth) ^ 2)))
 
-	// imply grundmerkmale.debugValues.acosValue = acos((48.4985 / sqrt(((((grundmerkmale.montagehoehe - 8.82) + (90 - grundmerkmale.durchgangshoehe)) ^ 2) + ((125 - grundmerkmale.eingabeBreite) ^ 2)))))
+	// imply debugValues.acosValue = acos((48.4985 / sqrt(((((assemblyHeight - 8.82) + (90 - passageHeight)) ^ 2) + ((125 - inputWidth) ^ 2)))))
 
-	// imply grundmerkmale.debugValues.atanValue = atan(((125 - grundmerkmale.eingabeBreite) / ((grundmerkmale.montagehoehe - 8.82) + (90 - grundmerkmale.durchgangshoehe))))
+	// imply debugValues.atanValue = atan(((125 - inputWidth) / ((assemblyHeight - 8.82) + (90 - passageHeight))))
 
-	// imply grundmerkmale.debugValues.acosArg = (48.4985 / sqrt(((((grundmerkmale.montagehoehe - 8.82) + (90 - grundmerkmale.durchgangshoehe)) ^ 2) + ((125 - grundmerkmale.eingabeBreite) ^ 2))))
+	// imply debugValues.acosArg = (48.4985 / sqrt(((((assemblyHeight - 8.82) + (90 - passageHeight)) ^ 2) + ((125 - inputWidth) ^ 2))))
 
-	// imply grundmerkmale.debugValues.atanArg = ((125 - grundmerkmale.eingabeBreite) / ((grundmerkmale.montagehoehe - 8.82) + (90 - grundmerkmale.durchgangshoehe)))
+	// imply debugValues.atanArg = ((125 - inputWidth) / ((assemblyHeight - 8.82) + (90 - passageHeight)))
 
-// 	default 	cover = _AcrylAllWeather
+	// default 	cover = _AcrylAllWeather
 }
-// behavior Grundmerkmale {
-// 	readonly bestellBreite
-// }
 
-// behavior Grundmerkmale {
-// 	readonly flaeche
-// }
+// Other constraints
 
-// behavior Grundmerkmale {
+// behavior Properties {
+// 	readonly orderWidth
+
+// 	readonly area
+
 // 	readonly weight
-// }
 
-// behavior Grundmerkmale {
-// 	readonly debugValues.deltaHoehe
-// }
+// 	readonly debugValues.deltaHeight
 
-// behavior Grundmerkmale {
-// 	readonly debugValues.deltaBreite
-// }
+// 	readonly debugValues.deltaWidth
 
-// behavior Grundmerkmale {
-// 	readonly debugValues.deltaHoehePow2
-// }
+// 	readonly debugValues.deltaHeightPow2
 
-// behavior Grundmerkmale {
-// 	readonly debugValues.deltaBreitePow2
-// }
+// 	readonly debugValues.deltaWidthPow2
 
-// behavior Grundmerkmale {
 // 	readonly debugValues.sqrtValue
-// }
 
-// behavior Grundmerkmale {
 // 	readonly debugValues.atanValue
-// }
 
-// behavior Grundmerkmale {
 // 	readonly debugValues.acosValue
-// }
 
-// behavior Grundmerkmale {
 // 	readonly debugValues.atanArg
-// }
 
-// behavior Grundmerkmale {
 // 	readonly debugValues.acosArg
-// }
 
-// behavior Grundmerkmale {
-// 	readonly neigungswinkelAnlage
-// }
+// 	readonly inclination
 
-// behavior  {
 // 	readonly root.unterposition[0].id
 // }
