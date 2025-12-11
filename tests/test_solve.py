@@ -2,7 +2,7 @@
 Test cases for solving.
 """
 
-# pylint: disable=R0801
+# pylint: disable=R0801, line-too-long
 
 from typing import List, Optional
 from unittest import TestCase
@@ -156,6 +156,7 @@ class TestClingo(TestCase):
         self.run_test("add_attribute")
         self.run_test("set_value_discrete")
         self.run_test("set_value_integer")
+        self.run_test("set_value_integer_no_range")
 
         self.run_test("set_invalid_variable")
         self.run_test("add_invalid_variable")
@@ -310,6 +311,7 @@ class TestFlingo(TestCase):
         self.run_test("add_attribute")
         self.run_test("set_value_discrete")
         self.run_test("set_value_integer")
+        self.run_test("set_value_integer_no_range")
 
         self.run_test("set_invalid_variable")
         self.run_test("add_invalid_variable")
@@ -323,10 +325,13 @@ class TestConstraintHandler(TestCase):
     Test cases for the constraint handler encoding.
     """
 
-    def run_test(self, test_name: str) -> None:
+    def run_test(self, test_name: str, extra_ctl_args: Optional[List[str]] = None) -> None:
         """
         Runs a clintest test with the constraint handler encoding.
         """
+        ctl_args = ["0"]
+        if extra_ctl_args:
+            ctl_args += extra_ctl_args
         test, program, files = unpack_test(test_name, TESTS_SOLVE)
         run_test(test, files=files, program=program, ctl_args=["0"], solver="constraint-handler")
 
@@ -443,16 +448,16 @@ class TestConstraintHandler(TestCase):
         self.run_test("conditional_imply")
         self.run_test("multiple_conditions_imply")
 
-    # def test_optimization(self) -> None:
-    #     """
-    #     Test solving optimization statements (constraint-handler)
-    #     """
-    #     self.run_test("minimize", extra_ctl_args=["--opt-mode=optN"])
-    #     self.run_test("maximize", extra_ctl_args=["--opt-mode=optN"])
-    #     self.run_test("minimize_priority", extra_ctl_args=["--opt-mode=optN"])
-    #     self.run_test("maximize_priority", extra_ctl_args=["--opt-mode=optN"])
-    #     self.run_test("minimize_maximize_function", extra_ctl_args=["--opt-mode=optN"])
-    #     self.run_test("maximize_minimize_function", extra_ctl_args=["--opt-mode=optN"])
+    def test_optimization(self) -> None:
+        """
+        Test solving optimization statements (constraint handler)
+        """
+        self.run_test("minimize", extra_ctl_args=["--opt-mode=optN"])
+        self.run_test("maximize", extra_ctl_args=["--opt-mode=optN"])
+        self.run_test("minimize_priority", extra_ctl_args=["--opt-mode=optN"])
+        self.run_test("maximize_priority", extra_ctl_args=["--opt-mode=optN"])
+        self.run_test("minimize_maximize_function", extra_ctl_args=["--opt-mode=optN"])
+        self.run_test("maximize_minimize_function", extra_ctl_args=["--opt-mode=optN"])
 
     def test_user_input(self) -> None:
         """
@@ -462,6 +467,9 @@ class TestConstraintHandler(TestCase):
         self.run_test("add_attribute")
         self.run_test("set_value_discrete")
         self.run_test("set_value_integer")
+        self.run_test("set_value_integer_no_range")
+        self.run_test("set_value_float")  # TOOD: Fix test
+        self.run_test("set_value_float_no_range")
 
         self.run_test("set_invalid_variable")
         self.run_test("add_invalid_variable")

@@ -8,8 +8,10 @@ warning("not attribute",X) :- user_value(X,V), type(X,T), #false : discrete(T,_)
 
 % Check valid domain
 warning("outside domain",(X,V)) :- user_value(X,V), type(X,T), discrete(T,_), not domain(T,V).
-warning("outside domain",(X,V)) :- user_value(X,V), type(X,T), numeric(T,_), range(T,Min,Max), V < Min.
-warning("outside domain",(X,V)) :- user_value(X,V), type(X,T), numeric(T,_), range(T,Min,Max), V > Max.
+warning("outside domain",(X,V)) :- user_value(X,V), type(X,T), numeric(T,int), range(T,Min,Max), V < Min.
+warning("outside domain",(X,V)) :- user_value(X,V), type(X,T), numeric(T,int), range(T,Min,Max), V > Max.
+% TODO: Floats
+
 % Check max cardinality not exceeded
 % For now this is covered by line 3 (only max amount of objects is grounded)
 

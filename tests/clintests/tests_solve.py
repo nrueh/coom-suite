@@ -855,7 +855,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "test": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",0) '}),
         "ftest": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",0) '}, flingo=True),
         "program": """
-            integer("Bag.volume").
+            numeric("Bag.volume",int).
             range("Bag.volume",0,10).
             type("root","product").
             type("root.bags[0]","Bag").
@@ -877,7 +877,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "test": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",10)'}),
         "ftest": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",10) '}, flingo=True),
         "program": """
-            integer("Bag.volume").
+            numeric("Bag.volume",int).
             range("Bag.volume",0,10).
             type("root","product").
             type("root.bags[0]","Bag").
@@ -899,7 +899,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "test": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",10)'}),
         "ftest": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",10)'}, flingo=True),
         "program": """
-            integer("Bag.volume").
+            numeric("Bag.volume",int).
             range("Bag.volume",0,10).
             type("root","product").
             type("root.bags[0]","Bag").
@@ -950,7 +950,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             flingo=True,
         ),
         "program": """
-            integer("Bag.volume").
+            numeric("Bag.volume",int).
             range("Bag.volume",0,10).
             type("root","product").
             type("root.bags[0]","Bag").
@@ -1034,6 +1034,51 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             set("root.a","root.a[0]").
             part("product").
             user_value("root.a[0]",1).""",
+    },
+    "set_value_integer_no_range": {
+        "test": StableModels({'value("root.a[0]",1)'}),
+        "ftest": StableModels({'value("root.a[0]",1)'}, flingo=True),
+        "program": """
+            type("root","product").
+            type("root.a[0]","A").
+            numeric("A",int).
+            index("root.a[0]",0).
+            parent("root.a[0]","root").
+            constraint(("root.a",1),"lowerbound").
+            set("root.a","root.a[0]").
+            part("product").
+            user_value("root.a[0]",1).""",
+    },
+    "set_value_float": {
+        "test": StableModels({'value("root.a[0]","1.2")'}),
+        # "ftest": StableModels({'value("root.a[0]","1.2")'}, flingo=True),
+        "program": """
+            type("root","product").
+            type("root.a[0]","A").
+            numeric("A",float).
+            precision("A",1).
+            range("A",1,2).
+            index("root.a[0]",0).
+            parent("root.a[0]","root").
+            constraint(("root.a",1),"lowerbound").
+            set("root.a","root.a[0]").
+            part("product").
+            user_value("root.a[0]","1.2").""",
+    },
+    "set_value_float_no_range": {
+        "test": StableModels({'value("root.a[0]","1.2")'}),
+        # "ftest": StableModels({'value("root.a[0]","1.2")'}, flingo=True),
+        "program": """
+            type("root","product").
+            type("root.a[0]","A").
+            numeric("A",float).
+            precision("A",1).
+            index("root.a[0]",0).
+            parent("root.a[0]","root").
+            constraint(("root.a",1),"lowerbound").
+            set("root.a","root.a[0]").
+            part("product").
+            user_value("root.a[0]","1.2").""",
     },
     "add_invalid_variable": {
         "test": StableModels(set()),

@@ -1554,7 +1554,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "minimize_non_root_path": {
         "test": StableModels(
             {
-                'integer("Bag.weight")',
+                'numeric("Bag.weight",int)',
                 'range("Bag.weight",0,10)',
                 'type("root","product")',
                 'type("root.bags[0]","Bag")',
@@ -1588,7 +1588,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "maximize_non_root_path": {
         "test": StableModels(
             {
-                'integer("Bag.volume")',
+                'numeric("Bag.volume",int)',
                 'range("Bag.volume",0,10)',
                 'type("root","product")',
                 'type("root.bags[0]","Bag")',
@@ -1622,7 +1622,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "minimize_function": {
         "test": StableModels(
             {
-                'integer("Bag.volume")',
+                'numeric("Bag.volume",int)',
                 'range("Bag.volume",0,10)',
                 'type("root","product")',
                 'type("root.bags[0]","Bag")',
@@ -1666,7 +1666,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "maximize_function": {
         "test": StableModels(
             {
-                'integer("Bag.volume")',
+                'numeric("Bag.volume",int)',
                 'range("Bag.volume",0,10)',
                 'type("root","product")',
                 'type("root.bags[0]","Bag")',

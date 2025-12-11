@@ -5,3 +5,6 @@ convert(T,V,val(float,float(V))) :- domain(T,V), discrete(T,float).
 convert(T,V,val(int,V)) :- range(T,Min,Max), numeric(T,int),   V = Min..Max.
 convert(T,V,E)          :- range(T,Min,Max), numeric(T,float), precision(T,P), Factor = 10**P,
                            V = Factor*Min..Factor*Max, E = operation(fdiv,(val(float,float(V)),(val(float,float(Factor)),()))).
+
+% convert(T,V,val(int,V))          :- type(X,T), numeric(T,int),   user_value(X,V).
+% convert(T,V,val(float,float(V))) :- type(X,T), numeric(T,float), user_value(X,V).
