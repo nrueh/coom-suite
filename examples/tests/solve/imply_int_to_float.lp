@@ -1,0 +1,12 @@
+number("2",2).
+part("product").
+constraint(("root.a",1),"lowerbound").
+index("root.a[0]",0).
+parent("root.a[0]","root").
+set("root.a","root.a[0]").
+type("root","product").
+type("root.a[0]","product.a").
+numeric("product.a",float).
+range("product.a",0,10).
+precision("product.a",2).
+imply((0,"root.a[0]"),"2").

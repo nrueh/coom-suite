@@ -427,6 +427,11 @@ class TestConstraintHandler(TestCase):
         self.run_test("precedence_unsat")
         self.run_test("precedence_par_unsat")
 
+        self.run_test("plus_sat_float")
+        self.run_test("plus_unsat_float")
+        # "float_div"
+        # "float_div_int"
+
     def test_aggregates(self) -> None:
         """
         Test aggregation functions (constraint handler).
@@ -441,6 +446,8 @@ class TestConstraintHandler(TestCase):
         Test imply statements (constraint handler).
         """
         self.run_test("imply_with_number")
+        self.run_test("imply_with_float")
+        self.run_test("imply_int_to_float")  # TODO: Fix test
         self.run_test("imply_with_variable")
         self.run_test("imply_with_binary")
         self.run_test("imply_with_unary")
@@ -468,8 +475,9 @@ class TestConstraintHandler(TestCase):
         self.run_test("set_value_discrete")
         self.run_test("set_value_integer")
         self.run_test("set_value_integer_no_range")
-        self.run_test("set_value_float")  # TOOD: Fix test
+        self.run_test("set_value_float")  # TODO: Fix test
         self.run_test("set_value_float_no_range")
+        self.run_test("set_value_int_to_float")  # TODO: Fix test
 
         self.run_test("set_invalid_variable")
         self.run_test("add_invalid_variable")

@@ -10,5 +10,9 @@ product {
 }
 
 behavior {
-	imply inclination = (125 - inputWidth) / ((assemblyHeight - 8.82) + (90 - passageHeight)) // + acos((48.4985 / sqrt(((((assemblyHeight - 8.82) + (90 - passageHeight)) ^ 2) + ((125 - inputWidth) ^ 2)))))
+	// imply inclination = (125 - inputWidth) // working, because inputWidth is float?
+	// imply inclination = (assemblyHeight - 8.82) // working, because 8.82 is float
+	// imply inclination = (90 - passageHeight) // not working
+
+
 }

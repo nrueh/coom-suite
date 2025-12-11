@@ -233,7 +233,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             binary("root.a[0]<3","root.a[0]","<","3").
             number("3",3).""",
     },
-    "simple_float": {
+    "simple_float": {  # Constraint handler only
         "test": StableModels(
             {'value("root.a[0]","1.0")'},
             {'value("root.a[0]","1.1")'},
@@ -731,6 +731,10 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "test": StableModels({'value("root.a[0]","2.24")'}),
         "files": ["imply_with_float.lp"],
     },
+    "imply_int_to_float": {  # Constraint handler only
+        "test": StableModels({'value("root.a[0]","2.00")'}),
+        "files": ["imply_with_float.lp"],
+    },
     "imply_with_variable": {
         "test": StableModels(
             {'value("root.a[0]",1)', 'value("root.b[0]",1)'},
@@ -1049,7 +1053,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             part("product").
             user_value("root.a[0]",1).""",
     },
-    "set_value_float": {
+    "set_value_float": {  # Constraint handler only
         "test": StableModels({'value("root.a[0]","1.2")'}),
         # "ftest": StableModels({'value("root.a[0]","1.2")'}, flingo=True),
         "program": """
@@ -1065,7 +1069,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             part("product").
             user_value("root.a[0]","1.2").""",
     },
-    "set_value_float_no_range": {
+    "set_value_float_no_range": {  # Constraint handler only
         "test": StableModels({'value("root.a[0]","1.2")'}),
         # "ftest": StableModels({'value("root.a[0]","1.2")'}, flingo=True),
         "program": """
@@ -1079,6 +1083,22 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             set("root.a","root.a[0]").
             part("product").
             user_value("root.a[0]","1.2").""",
+    },
+    "set_value_int_to_float": {  # Constraint handler only
+        "test": StableModels({'value("root.a[0]","1.0")'}),
+        # "ftest": StableModels({'value("root.a[0]","1.2")'}, flingo=True),
+        "program": """
+            type("root","product").
+            type("root.a[0]","A").
+            numeric("A",float).
+            precision("A",1).
+            range("A",1,2).
+            index("root.a[0]",0).
+            parent("root.a[0]","root").
+            constraint(("root.a",1),"lowerbound").
+            set("root.a","root.a[0]").
+            part("product").
+            user_value("root.a[0]",1).""",
     },
     "add_invalid_variable": {
         "test": StableModels(set()),

@@ -4,5 +4,10 @@ product {
 }
 
 behavior {
-	imply weight = 2600 / 1000.0
+	// imply weight = 2600.0 / 1000 // does work
+	// imply weight = 2600 / 1000.0 // does work
+	// imply weight = 2600 / 1000 // does not work because two ints for float
+
+	imply weight = 15.1 * (2600 / 1000) // not working
+	// imply weight = 15.1 * (2600 / 1000.0) // working
 }
