@@ -61,11 +61,12 @@ def solve(
         max_bound=max_bound,
         discrete=solver == "clingo",
     )
-    check_user_input(processed_facts)
+    consistent_inputs = check_user_input(processed_facts)
 
     with NamedTemporaryFile(mode="w", delete=False) as tmp:
         tmp_name = tmp.name
         tmp.write("".join(processed_facts))
+        tmp.write("".join(consistent_inputs))
 
     # Solve the ASP instance
     return clingo_main(

@@ -37,22 +37,30 @@ def preprocess(files: List[str], max_bound: int = 99, discrete: bool = False, mu
     return facts
 
 
-def check_user_input(facts: List[str]) -> None:
+def check_user_input(facts: List[str]) -> list[str]:
     """
     Checks if the user input is valid and returns a clingo.SolveResult
     """
     ctl = Control(message_limit=0)
+    enable_python()
     ctl.load(get_encoding("user-check.lp"))
     ctl.add("".join(facts))
     ctl.ground()
     with ctl.solve(yield_=True) as handle:
-        warnings = [_parse_user_input_warnings(s) for s in handle.model().symbols(shown=True)]
+        warnings = [_parse_user_input_warnings(s) for s in handle.model().symbols(shown=True) if s.match("warning", 2)]
+        consistent_inputs = [
+            f"{str(s)}."
+            for s in handle.model().symbols(shown=True)
+            if s.match("consistent", 1) or s.match("consistent", 2)
+        ]
 
     if warnings != []:
         msg = "Invalid user input.\n" + "\n".join(warnings)
         # raise ValueError(error_msg)
         # warn(msg)
         log.warning(msg)
+
+    return consistent_inputs
 
 
 def _parse_user_input_warnings(warning: Symbol) -> str:

@@ -92,7 +92,7 @@ behavior {
 
 	imply area = length * (orderWidth / 1000000)
 
-	imply weight = area * (cover.weight / 1000.0) // TODO: need to add ".0" to the 1000 for fdiv to work correctly
+	imply weight = area * (cover.weight / 1000)
 
 	// imply debugValues.deltaHeight = ((assemblyHeight - 8.82) + (90 - passageHeight))
 

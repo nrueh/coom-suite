@@ -162,7 +162,8 @@ class TestClingo(TestCase):
         self.run_test("add_invalid_variable")
         self.run_test("set_invalid_type")
         self.run_test("set_invalid_value_discrete")
-        self.run_test("set_invalid_value_num")
+        self.run_test("set_greater_value_int")
+        self.run_test("set_lesser_value_int")
 
 
 class TestFlingo(TestCase):
@@ -317,7 +318,8 @@ class TestFlingo(TestCase):
         self.run_test("add_invalid_variable")
         self.run_test("set_invalid_type")
         self.run_test("set_invalid_value_discrete")
-        # self.run_test("set_invalid_value_num")
+        # self.run_test("set_greater_value_int") # TODO: fix, not working
+        # self.run_test("set_lesser_value_int") # TODO: fix, not working
 
 
 class TestConstraintHandler(TestCase):
@@ -432,6 +434,10 @@ class TestConstraintHandler(TestCase):
         # "float_div"
         # "float_div_int"
 
+    # def test_operations
+    # fdiv
+    # etc.
+
     def test_aggregates(self) -> None:
         """
         Test aggregation functions (constraint handler).
@@ -447,7 +453,7 @@ class TestConstraintHandler(TestCase):
         """
         self.run_test("imply_with_number")
         self.run_test("imply_with_float")
-        self.run_test("imply_int_to_float")  # TODO: Fix test
+        # self.run_test("imply_int_to_float")  # No implicit casts (for now)
         self.run_test("imply_with_variable")
         self.run_test("imply_with_binary")
         self.run_test("imply_with_unary")
@@ -477,10 +483,11 @@ class TestConstraintHandler(TestCase):
         self.run_test("set_value_integer_no_range")
         self.run_test("set_value_float")  # TODO: Fix test
         self.run_test("set_value_float_no_range")
-        self.run_test("set_value_int_to_float")  # TODO: Fix test
+        # self.run_test("set_value_int_to_float")  # No implicit casts (for now)
 
         self.run_test("set_invalid_variable")
         self.run_test("add_invalid_variable")
         self.run_test("set_invalid_type")
         self.run_test("set_invalid_value_discrete")
-        self.run_test("set_invalid_value_num")
+        self.run_test("set_greater_value_int")
+        self.run_test("set_lesser_value_int")

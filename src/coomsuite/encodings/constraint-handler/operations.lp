@@ -28,5 +28,27 @@ operatorMap1("-",minus).
 
 
 operatorMap1("()",brackets).
-% computed(brackets,ARGS,T,V) :- compute(brackets,ARGS), ARGS=(T,(V,())).
 computed(brackets,ARGS,val(T,V)) :- compute(brackets,ARGS), ARGS=(val(T,V),()).
+
+
+% Not used currently, implement for possible later use
+computed(cast_to_float,ARGS,val(float,@pythonCastToFloat(V))) :- compute(cast_to_float,ARGS), ARGS=(val(T,V),()), T=(int;float;str).
+
+% Temporary fix until constraint handler implements fdiv between two ints
+computed(fdiv,ARGS,val(float,@pythonFDiv(I1,I2))) :- compute(fdiv,ARGS), ARGS=(val(int,I1),(val(int,I2),())).
+
+#script (python)
+import constraint_handler as ch
+
+def pythonCastToFloat(cI):
+    pv = ch.myClorm.cltopy(cI)
+    pF = float(pv)
+    return ch.myClorm.pytocl(pF)
+
+def pythonFDiv(cI1,cI2):
+    pI1 = ch.myClorm.cltopy(cI1)
+    pI2 = ch.myClorm.cltopy(cI2)
+    pF = pI1 / pI2
+    return ch.myClorm.pytocl(pF)
+
+#end.

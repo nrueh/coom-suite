@@ -32,5 +32,7 @@
 #defined minimize/2.
 #defined maximize/2.
 
+#defined consistent/1.
+#defined consistent/2.
 #defined user_include/1.
 #defined user_value/2.

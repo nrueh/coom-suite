@@ -733,7 +733,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
     },
     "imply_int_to_float": {  # Constraint handler only
         "test": StableModels({'value("root.a[0]","2.00")'}),
-        "files": ["imply_with_float.lp"],
+        "files": ["imply_int_to_float.lp"],
     },
     "imply_with_variable": {
         "test": StableModels(
@@ -995,7 +995,8 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             parent("root.a[0]","root").
             part("product").
             part("A").
-            user_include("root.a[0]").""",
+            user_include("root.a[0]").
+            consistent("root.a[0]").""",
     },
     "add_attribute": {
         "test": StableModels({'value("root.basket[0]","White")'}, {'value("root.basket[0]","Black")'}),
@@ -1007,7 +1008,8 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             type("root.basket[0]","Basket").
             parent("root.basket[0]","root").
             index("root.basket[0]",0).
-            user_include("root.basket[0]").""",
+            user_include("root.basket[0]").
+            consistent("root.basket[0]").""",
     },
     "set_value_discrete": {
         "test": StableModels({'value("root.a[0]","A1")'}),
@@ -1022,7 +1024,8 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             constraint(("root.a",1),"lowerbound").
             set("root.a","root.a[0]").
             part("product").
-            user_value("root.a[0]","A1").""",
+            user_value("root.a[0]","A1").
+            consistent("root.a[0]","A1").""",
     },
     "set_value_integer": {
         "test": StableModels({'value("root.a[0]",1)'}),
@@ -1037,7 +1040,8 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             constraint(("root.a",1),"lowerbound").
             set("root.a","root.a[0]").
             part("product").
-            user_value("root.a[0]",1).""",
+            user_value("root.a[0]",1).
+            consistent("root.a[0]",1).""",
     },
     "set_value_integer_no_range": {
         "test": StableModels({'value("root.a[0]",1)'}),
@@ -1051,7 +1055,8 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             constraint(("root.a",1),"lowerbound").
             set("root.a","root.a[0]").
             part("product").
-            user_value("root.a[0]",1).""",
+            user_value("root.a[0]",1).
+            consistent("root.a[0]",1).""",
     },
     "set_value_float": {  # Constraint handler only
         "test": StableModels({'value("root.a[0]","1.2")'}),
@@ -1067,7 +1072,8 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             constraint(("root.a",1),"lowerbound").
             set("root.a","root.a[0]").
             part("product").
-            user_value("root.a[0]","1.2").""",
+            user_value("root.a[0]","1.2").
+            consistent("root.a[0]","1.2").""",
     },
     "set_value_float_no_range": {  # Constraint handler only
         "test": StableModels({'value("root.a[0]","1.2")'}),
@@ -1082,24 +1088,25 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             constraint(("root.a",1),"lowerbound").
             set("root.a","root.a[0]").
             part("product").
-            user_value("root.a[0]","1.2").""",
+            user_value("root.a[0]","1.2").
+            consistent("root.a[0]","1.2").""",
     },
-    "set_value_int_to_float": {  # Constraint handler only
-        "test": StableModels({'value("root.a[0]","1.0")'}),
-        # "ftest": StableModels({'value("root.a[0]","1.2")'}, flingo=True),
-        "program": """
-            type("root","product").
-            type("root.a[0]","A").
-            numeric("A",float).
-            precision("A",1).
-            range("A",1,2).
-            index("root.a[0]",0).
-            parent("root.a[0]","root").
-            constraint(("root.a",1),"lowerbound").
-            set("root.a","root.a[0]").
-            part("product").
-            user_value("root.a[0]",1).""",
-    },
+    # "set_value_int_to_float": {  # Constraint handler only
+    #     "test": StableModels({'value("root.a[0]","1.0")'}),
+    #     # "ftest": StableModels({'value("root.a[0]","1.2")'}, flingo=True),
+    #     "program": """
+    #         type("root","product").
+    #         type("root.a[0]","A").
+    #         numeric("A",float).
+    #         precision("A",1).
+    #         range("A",1,2).
+    #         index("root.a[0]",0).
+    #         parent("root.a[0]","root").
+    #         constraint(("root.a",1),"lowerbound").
+    #         set("root.a","root.a[0]").
+    #         part("product").
+    #         user_value("root.a[0]",1).""",
+    # },
     "add_invalid_variable": {
         "test": StableModels(set()),
         "program": """
@@ -1129,8 +1136,11 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             constraint(("root.color",1),"lowerbound").
             set("root.color","root.color[0]").""",
     },
-    "set_invalid_value_num": {
+    "set_greater_value_int": {
         "test": StableModels({'value("root.size[0]",1)'}, {'value("root.size[0]",2)'}, {'value("root.size[0]",3)'}),
+        "ftest": StableModels(
+            {'value("root.size[0]",1)'}, {'value("root.size[0]",2)'}, {'value("root.size[0]",3)'}, flingo=True
+        ),
         "program": """
             part("product").
             numeric("product.size",int).
@@ -1142,5 +1152,73 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             constraint(("root.size",1),"lowerbound").
             set("root.size","root.size[0]").
             user_value("root.size[0]",11).""",
+    },
+    "set_lesser_value_int": {
+        "test": StableModels({'value("root.size[0]",2)'}, {'value("root.size[0]",3)'}, {'value("root.size[0]",4)'}),
+        "program": """
+            part("product").
+            numeric("product.size",int).
+            range("product.size",2,4).
+            type("root","product").
+            type("root.size[0]","product.size").
+            parent("root.size[0]","root").
+            index("root.size[0]",0).
+            constraint(("root.size",1),"lowerbound").
+            set("root.size","root.size[0]").
+            user_value("root.size[0]",1).""",
+    },
+    "set_greater_value_float": {
+        "test": StableModels(
+            {'value("root.size[0]","2.0")'},
+            {'value("root.size[0]","2.1")'},
+            {'value("root.size[0]","2.2")'},
+            {'value("root.size[0]","2.3")'},
+            {'value("root.size[0]","2.4")'},
+            {'value("root.size[0]","2.5")'},
+            {'value("root.size[0]","2.6")'},
+            {'value("root.size[0]","2.7")'},
+            {'value("root.size[0]","2.8")'},
+            {'value("root.size[0]","2.9")'},
+            {'value("root.size[0]","3.0")'},
+        ),
+        "program": """
+            part("product").
+            numeric("product.size",float).
+            range("product.size",2,3).
+            precision("product.size",1).
+            type("root","product").
+            type("root.size[0]","product.size").
+            parent("root.size[0]","root").
+            index("root.size[0]",0).
+            constraint(("root.size",1),"lowerbound").
+            set("root.size","root.size[0]").
+            user_value("root.size[0]","3.2").""",
+    },
+    "set_lesser_value_float": {
+        "test": StableModels(
+            {'value("root.size[0]","2.0")'},
+            {'value("root.size[0]","2.1")'},
+            {'value("root.size[0]","2.2")'},
+            {'value("root.size[0]","2.3")'},
+            {'value("root.size[0]","2.4")'},
+            {'value("root.size[0]","2.5")'},
+            {'value("root.size[0]","2.6")'},
+            {'value("root.size[0]","2.7")'},
+            {'value("root.size[0]","2.8")'},
+            {'value("root.size[0]","2.9")'},
+            {'value("root.size[0]","3.0")'},
+        ),
+        "program": """
+            part("product").
+            numeric("product.size",float).
+            range("product.size",2,3).
+            precision("product.size",1).
+            type("root","product").
+            type("root.size[0]","product.size").
+            parent("root.size[0]","root").
+            index("root.size[0]",0).
+            constraint(("root.size",1),"lowerbound").
+            set("root.size","root.size[0]").
+            user_value("root.size[0]","1.7").""",
     },
 }
