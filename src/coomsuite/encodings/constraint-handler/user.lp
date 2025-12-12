@@ -9,15 +9,6 @@
 % consistent(X,V,EV) :- user_value(X,V), type(X,T), numeric(T,int),       range(T,Min,Max), Min <= V <= Max, EV=val(int,V).
 % %consistent(X,V,EV) :- user_value(X,V), type(X,T), numeric(T,float),     range(T,Min,Max), Min <= V <= Max, EV=val(float,float(V)). % TODO: Not working correctly
 
-
-
-
-
-% user_value(X,CT,V)
 include(X) :- user_include(X), consistent(X).
 include(X) :- user_value(X,V), consistent(X,V).
-assign(user,X,EV) :- user_value(X,V), consistent(X,V), type(X,T), convert(X,V,EV).
-
-#show convert/3.
-#show user_value/2.
-#show consistent/2.
+assign(user,X,EV) :- user_value(X,V), consistent(X,V), convert_user(X,V,EV).

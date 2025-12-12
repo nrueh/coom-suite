@@ -55,10 +55,7 @@ class ASPUserInputVisitor(UserInputVisitor):
             try:
                 self.output_asp.append(f'user_value("root.{path}",{int(value)}).')
             except ValueError:
-                try:
-                    self.output_asp.append(f'user_value("root.{path}","{float(value)}").')
-                except ValueError:
-                    raise ValueError(f"Not a number: {value}")
+                self.output_asp.append(f'user_value("root.{path}","{float(value)}").')
         super().visitSet_value(ctx)
 
     def visitAdd_instance(self, ctx: UserInputParser.Add_instanceContext):

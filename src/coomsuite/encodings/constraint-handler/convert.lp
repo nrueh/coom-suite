@@ -7,7 +7,8 @@ convert(T,V,E)          :- range(T,Min,Max), numeric(T,float), precision(T,P), F
                            V = Factor*Min..Factor*Max, E = operation(fdiv,(val(float,float(V)),(val(float,float(Factor)),()))).
 
 
-convert(T,V,val(CT,V))           :- type(X,T), discrete(T,CT),    user_value(X,V), CT = (symbol;str;bool;int).
-convert(T,V,val(float,float(V))) :- type(X,T), discrete(T,float), user_value(X,V).
-convert(T,V,val(int,V))          :- type(X,T), numeric(T,int),    user_value(X,V).
-convert(T,V,val(float,float(V))) :- type(X,T), numeric(T,float),  user_value(X,V).
+% Conver user input values
+convert_user(X,V,val(CT,V))           :- type(X,T), discrete(T,CT),    user_value(X,V), CT = (symbol;str;bool;int).
+convert_user(X,V,val(float,float(V))) :- type(X,T), discrete(T,float), user_value(X,V).
+convert_user(X,V,val(int,V))          :- type(X,T), numeric(T,int),    user_value(X,V).
+convert_user(X,V,val(float,float(V))) :- type(X,T), numeric(T,float),  user_value(X,V).

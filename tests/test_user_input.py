@@ -8,7 +8,7 @@ from unittest import TestCase
 from coomsuite.preprocess import check_user_input
 from coomsuite.utils.logging import get_logger
 
-from .clintests.tests_user_input import TESTS_USER
+from .clintests.tests_solve import TESTS_SOLVE
 
 log = get_logger("main")
 
@@ -23,18 +23,23 @@ class TestUserInputCheck(TestCase):
         Runs a test checking if the correct warning is logged for invalid user input
         and the correct consistent/1 and consistent/2 predicates are returned for consistent user input.
         """
+        program = TESTS_SOLVE[test_name]["program"]
+        test = TESTS_SOLVE[test_name]["user_test"]
+        for a in test:
+            program.replace(a, "")
+
         if expected_msg is None:
             with self.assertNoLogs(log, level="WARNING") as ctx:
-                consistent_inputs = check_user_input(TESTS_USER[test_name]["program"])
+                consistent_inputs = check_user_input(program)
         else:
             with self.assertLogs(log, level="WARNING") as ctx:
-                consistent_inputs = check_user_input(TESTS_USER[test_name]["program"])
+                consistent_inputs = check_user_input(program)
             self.assertEqual(ctx.output, [f"WARNING:main:{expected_msg}"])
-        self.assertEqual(set(consistent_inputs), TESTS_USER[test_name]["test"])
+        self.assertEqual(set(consistent_inputs), test)
 
     def test_user_input(self) -> None:
         """
-        Test warning about invalid user input
+        Test user input check
         """
         self.run_test("add_part")
         self.run_test("add_attribute")

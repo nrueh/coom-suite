@@ -8,6 +8,7 @@ Some tests contain a "ftest" entry which is a test modified especially to work w
 All other tests work with both clingo and flingo.
 """
 
+# pylint: disable=line-too-long, too-many-lines
 from typing import Any
 
 from clintest.quantifier import Exact
@@ -988,6 +989,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
     },
     "add_part": {
         "test": StableModels({'include("root.a[0]")'}),
+        "user_test": {'consistent("root.a[0]").'},
         "program": """
             type("root","product").
             type("root.a[0]","A").
@@ -1000,6 +1002,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
     },
     "add_attribute": {
         "test": StableModels({'value("root.basket[0]","White")'}, {'value("root.basket[0]","Black")'}),
+        "user_test": {'consistent("root.basket[0]").'},
         "program": """
             part("product").
             discrete("Basket",str).
@@ -1013,6 +1016,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
     },
     "set_value_discrete": {
         "test": StableModels({'value("root.a[0]","A1")'}),
+        "user_test": {'consistent("root.a[0]","A1").'},
         "program": """
             type("root","product").
             type("root.a[0]","A").
@@ -1030,6 +1034,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
     "set_value_integer": {
         "test": StableModels({'value("root.a[0]",1)'}),
         "ftest": StableModels({'value("root.a[0]",1)'}, flingo=True),
+        "user_test": {'consistent("root.a[0]",1).'},
         "program": """
             type("root","product").
             type("root.a[0]","A").
@@ -1046,6 +1051,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
     "set_value_integer_no_range": {
         "test": StableModels({'value("root.a[0]",1)'}),
         "ftest": StableModels({'value("root.a[0]",1)'}, flingo=True),
+        "user_test": {'consistent("root.a[0]",1).'},
         "program": """
             type("root","product").
             type("root.a[0]","A").
@@ -1060,7 +1066,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
     },
     "set_value_float": {  # Constraint handler only
         "test": StableModels({'value("root.a[0]","1.2")'}),
-        # "ftest": StableModels({'value("root.a[0]","1.2")'}, flingo=True),
+        "user_test": {'consistent("root.a[0]","1.2").'},
         "program": """
             type("root","product").
             type("root.a[0]","A").
@@ -1077,7 +1083,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
     },
     "set_value_float_no_range": {  # Constraint handler only
         "test": StableModels({'value("root.a[0]","1.2")'}),
-        # "ftest": StableModels({'value("root.a[0]","1.2")'}, flingo=True),
+        "user_test": {'consistent("root.a[0]","1.2").'},
         "program": """
             type("root","product").
             type("root.a[0]","A").
@@ -1109,12 +1115,18 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
     # },
     "add_invalid_variable": {
         "test": StableModels(set()),
+        "user_test": set(),
         "program": """
             user_include("root.basket[0]").""",
     },
-    "set_invalid_variable": {"test": StableModels(set()), "program": """user_value("root.color[0]","Yellow")."""},
+    "set_invalid_variable": {
+        "test": StableModels(set()),
+        "user_test": set(),
+        "program": """user_value("root.color[0]","Yellow").""",
+    },
     "set_invalid_type": {
         "test": StableModels(set(), {'include("root.basket[0]")'}),
+        "user_test": set(),
         "program": """
             part("product").
             part("Basket").
@@ -1125,6 +1137,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
     },
     "set_invalid_value_discrete": {
         "test": StableModels({'value("root.color[0]","Red")'}),
+        "user_test": set(),
         "program": """
             part("product").
             discrete("Color",str).
@@ -1141,6 +1154,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "ftest": StableModels(
             {'value("root.size[0]",1)'}, {'value("root.size[0]",2)'}, {'value("root.size[0]",3)'}, flingo=True
         ),
+        "user_test": set(),
         "program": """
             part("product").
             numeric("product.size",int).
@@ -1155,6 +1169,10 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
     },
     "set_lesser_value_int": {
         "test": StableModels({'value("root.size[0]",2)'}, {'value("root.size[0]",3)'}, {'value("root.size[0]",4)'}),
+        "ftest": StableModels(
+            {'value("root.size[0]",2)'}, {'value("root.size[0]",3)'}, {'value("root.size[0]",4)'}, flingo=True
+        ),
+        "user_test": set(),
         "program": """
             part("product").
             numeric("product.size",int).
@@ -1181,6 +1199,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             {'value("root.size[0]","2.9")'},
             {'value("root.size[0]","3.0")'},
         ),
+        "user_test": set(),
         "program": """
             part("product").
             numeric("product.size",float).
@@ -1208,6 +1227,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             {'value("root.size[0]","2.9")'},
             {'value("root.size[0]","3.0")'},
         ),
+        "user_test": set(),
         "program": """
             part("product").
             numeric("product.size",float).

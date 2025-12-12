@@ -318,8 +318,8 @@ class TestFlingo(TestCase):
         self.run_test("add_invalid_variable")
         self.run_test("set_invalid_type")
         self.run_test("set_invalid_value_discrete")
-        # self.run_test("set_greater_value_int") # TODO: fix, not working
-        # self.run_test("set_lesser_value_int") # TODO: fix, not working
+        self.run_test("set_greater_value_int")
+        self.run_test("set_lesser_value_int")
 
 
 class TestConstraintHandler(TestCase):
@@ -481,7 +481,7 @@ class TestConstraintHandler(TestCase):
         self.run_test("set_value_discrete")
         self.run_test("set_value_integer")
         self.run_test("set_value_integer_no_range")
-        self.run_test("set_value_float")  # TODO: Fix test
+        self.run_test("set_value_float")
         self.run_test("set_value_float_no_range")
         # self.run_test("set_value_int_to_float")  # No implicit casts (for now)
 
@@ -491,3 +491,5 @@ class TestConstraintHandler(TestCase):
         self.run_test("set_invalid_value_discrete")
         self.run_test("set_greater_value_int")
         self.run_test("set_lesser_value_int")
+        self.run_test("set_greater_value_float")
+        self.run_test("set_lesser_value_float")

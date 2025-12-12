@@ -24,6 +24,7 @@ class TestCOOMUserParser(TestCase):
             parse_coom("set frontWheel[0].size[0] = 23", grammar="user"),
             ['user_value("root.frontWheel[0].size[0]",23).'],
         )
+        self.assertEqual(parse_coom("set a[0] = 2.2", grammar="user"), ['user_value("root.a[0]","2.2").'])
 
     def test_add(self) -> None:
         """
