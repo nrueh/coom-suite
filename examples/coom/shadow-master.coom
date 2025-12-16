@@ -11,7 +11,7 @@ product {
 			num.##/qm	area
 			num.##/kg	weight
 
-	0..1	Pole		pole
+	0..1	Pole		poleLeft
 	0..1 	Pole		poleRight
 
 			Cover		cover // this feature alone makes the grounding large, discrete enumeration but depending on chosen values
@@ -94,26 +94,28 @@ behavior {
 
 	imply weight = area * (cover.weight / 1000)
 
-	// imply debugValues.deltaHeight = ((assemblyHeight - 8.82) + (90 - passageHeight))
-
-	// imply debugValues.deltaWidth = (125 - inputWidth)
-
-	// imply debugValues.deltaWidthPow2 = ((125 - inputWidth) ^ 2)
-
-	// imply debugValues.deltaHeightPow2 = (((assemblyHeight - 8.82) + (90 - passageHeight)) ^ 2)
-
-	// imply debugValues.sqrtValue = sqrt(((((assemblyHeight - 8.82) + (90 - passageHeight)) ^ 2) + ((125 - inputWidth) ^ 2)))
-
-	// imply debugValues.acosValue = acos((48.4985 / sqrt(((((assemblyHeight - 8.82) + (90 - passageHeight)) ^ 2) + ((125 - inputWidth) ^ 2)))))
-
-	// imply debugValues.atanValue = atan(((125 - inputWidth) / ((assemblyHeight - 8.82) + (90 - passageHeight))))
-
-	// imply debugValues.acosArg = (48.4985 / sqrt(((((assemblyHeight - 8.82) + (90 - passageHeight)) ^ 2) + ((125 - inputWidth) ^ 2))))
-
-	// imply debugValues.atanArg = ((125 - inputWidth) / ((assemblyHeight - 8.82) + (90 - passageHeight)))
-
 	// default 	cover = _AcrylAllWeather
 }
+
+// behavior Debug {
+	// imply deltaHeight = ((root.assemblyHeight - 8.82) + (90 - root.passageHeight))
+
+	// imply deltaWidth = (125 - root.inputWidth)
+
+	// imply deltaWidthPow2 = ((125 - root.inputWidth) ^ 2)
+
+	// imply deltaHeightPow2 = (((root.assemblyHeight - 8.82) + (90 - root.passageHeight)) ^ 2)
+
+	// imply sqrtValue = sqrt(((((root.assemblyHeight - 8.82) + (90 - root.passageHeight)) ^ 2) + ((125 - root.inputWidth) ^ 2)))
+
+	// imply acosValue = acos((48.4985 / sqrt(((((root.assemblyHeight - 8.82) + (90 - root.passageHeight)) ^ 2) + ((125 - root.inputWidth) ^ 2)))))
+
+	// imply atanValue = atan(((125 - root.inputWidth) / ((root.assemblyHeight - 8.82) + (90 - root.passageHeight))))
+
+	// imply acosArg = (48.4985 / sqrt(((((root.assemblyHeight - 8.82) + (90 - root.passageHeight)) ^ 2) + ((125 - root.inputWidth) ^ 2))))
+
+	// imply atanArg = ((125 - root.inputWidth) / ((root.assemblyHeight - 8.82) + (90 - root.passageHeight)))
+// }
 
 // Other constraints
 
