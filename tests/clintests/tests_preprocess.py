@@ -154,7 +154,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
             coom_structure("product").
             coom_feature("product","boolean","Bool",1,1).""",
     },
-    "attribute": {
+    "attribute_int": {
         "test": StableModels(
             {
                 'discrete("Wheel",str)',
@@ -184,7 +184,41 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
             coom_structure("product").
             coom_feature("product","wheel","Wheel",1,1).
             coom_enumeration("Wheel").
-            coom_attribute("Wheel","size","num").
+            coom_attribute("Wheel","size","int").
+            coom_option("Wheel", "W14").
+            coom_attribute_value("Wheel","W14","size",14).""",
+    },
+    "attribute_float": {
+        "test": StableModels(
+            {
+                'discrete("Wheel",str)',
+                'discrete("Wheel.size",float)',
+                'part("product")',
+                'constraint(("root.wheel",1),"lowerbound")',
+                'constraint(("root.wheel[0].size",1),"lowerbound")',
+                'constraint(("Wheel","root.wheel[0]"),"table")',
+                'domain("Wheel","W14")',
+                'index("root.wheel[0]",0)',
+                'index("root.wheel[0].size[0]",0)',
+                'parent("root.wheel[0]","root")',
+                'parent("root.wheel[0].size[0]","root.wheel[0]")',
+                'set("root.wheel","root.wheel[0]")',
+                'set("root.wheel[0].size","root.wheel[0].size[0]")',
+                'type("root","product")',
+                'type("root.wheel[0]","Wheel")',
+                'type("root.wheel[0].size[0]","Wheel.size")',
+                'allow("Wheel",(0,0),"W14")',
+                'allow("Wheel",(1,0),14)',
+                'domain("Wheel.size",14)',
+                'column(("Wheel","root.wheel[0]"),0,1,"root.wheel[0].size[0]")',
+                'column(("Wheel","root.wheel[0]"),0,0,"root.wheel[0]")',
+            }
+        ),
+        "program": """
+            coom_structure("product").
+            coom_feature("product","wheel","Wheel",1,1).
+            coom_enumeration("Wheel").
+            coom_attribute("Wheel","size","float").
             coom_option("Wheel", "W14").
             coom_attribute_value("Wheel","W14","size",14).""",
     },

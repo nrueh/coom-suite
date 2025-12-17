@@ -59,7 +59,7 @@ def solve(
     processed_facts = preprocess(
         serialized_facts,
         max_bound=max_bound,
-        discrete=solver == "clingo",
+        discrete=solver != "flingo",
     )
     consistent_inputs = check_user_input(processed_facts)
 

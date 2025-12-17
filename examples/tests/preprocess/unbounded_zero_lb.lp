@@ -28,7 +28,7 @@ coom_option("Closure", "Zipper").
 coom_option("Closure", "Velcro").
 
 coom_enumeration("Size").
-coom_attribute("Size","volume","num").
+coom_attribute("Size","volume","int").
 coom_option("Size", "small").
 coom_attribute_value("Size","small","volume",12).
 coom_option("Size", "medium").

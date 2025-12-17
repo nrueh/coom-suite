@@ -149,7 +149,9 @@ class ASPModelVisitor(ModelVisitor):
         parent_name = self.parent_enum.name().getText()
         field: ModelParser.FieldContext = ctx.field()
         if field.number_def() is not None:
-            field_type = "num"
+            field_type = "int"
+            if field.number_def().fraction() is not None:
+                field_type = "float"
         else:
             field_type = "str"
         field_name = field.fieldName.getText()
@@ -171,6 +173,8 @@ class ASPModelVisitor(ModelVisitor):
                 attr_name = field.fieldName.getText()
                 if c.floating() is not None:
                     option_value = c.floating().getText()
+                    if c.floating().FLOATING() is not None:
+                        option_value = f'"{option_value}"'
                 elif c.name() is not None:
                     option_value = f'"{prepare_value(c.name().getText())}"'
                 self.output_asp.append(

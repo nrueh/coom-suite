@@ -2,19 +2,19 @@
 // Provided by denkbares GmbH
 
 product {
-			num/mm 		assemblyHeight
-			num/mm		passageHeight
-			num.#/mm	inputWidth
-			num/mm		length
-			num.##/rad	inclination
-			num.#/mm	orderWidth
-			num.##/qm	area
-			num.##/kg	weight
+			num/mm 			assemblyHeight
+			num/mm			passageHeight
+			num.#/mm		inputWidth
+			num/mm			length
+			num.####/rad	inclination
+			num.#/mm		orderWidth
+			num.##/qm		area
+			num.##/kg		weight
 
-	0..1	Pole		poleLeft
-	0..1 	Pole		poleRight
+	0..1	Pole			poleLeft
+	0..1 	Pole			poleRight
 
-			Cover		cover // this feature alone makes the grounding large, discrete enumeration but depending on chosen values
+			Cover			cover // this feature alone makes the grounding large, discrete enumeration but depending on chosen values
 
 	// Debug		debugValues
 }
@@ -32,10 +32,10 @@ product {
 // }
 
 structure Pole {
-	num.####/mm		height
-	num.####		distance
-	num.####		overhang
-	PoleType		poleType
+	num.##/mm			height
+	num.##/mm		 	distance
+	num.##/mm			overhang
+	PoleType			poleType
 }
 
 enumeration PoleType {

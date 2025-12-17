@@ -156,9 +156,10 @@ class COOMSolverApp(Application):
         for f in files:
             control.load(f)
         if self._options["solver"] in ["clingo", "constraint-handler"]:
-            enable_python()
-            with ProgramBuilder(control) as bld:
-                constraint_handler.add_encoding_to_program_builder(bld)
+            if self._options["solver"] == "constraint-handler":
+                enable_python()
+                # with ProgramBuilder(control) as bld:
+                constraint_handler.add_to_control(control)
             control.load(encoding)
             control.load(show)
             control.ground()

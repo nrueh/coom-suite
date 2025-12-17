@@ -1,0 +1,14 @@
+// TODO: Fix table constraint with floats for constraint handler, currently gives UNSAT
+
+product {
+	Material	material
+
+}
+
+enumeration Material {
+	attribute	num.###/kg	weight
+
+	_AcrylLumera		= (	   1.104	)
+	_AcrylPerfora		= (	   1.238	)
+	_AcrylAllWeather	= (	   2.607	)
+}

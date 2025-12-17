@@ -193,14 +193,33 @@ class TestCOOMModelParser(TestCase):
             ),
             [
                 'enumeration("Capacity").',
-                'attribute("Capacity","volume","num").',
-                'attribute("Capacity","weight","num").',
+                'attribute("Capacity","volume","int").',
+                'attribute("Capacity","weight","int").',
                 'option("Capacity", "B10").',
                 'attribute_value("Capacity","B10","volume",10).',
                 'attribute_value("Capacity","B10","weight",100).',
                 'option("Capacity", "B20").',
                 'attribute_value("Capacity","B20","volume",20).',
                 'attribute_value("Capacity","B20","weight",250).',
+            ],
+        )
+
+        self.assertEqual(
+            parse_coom(
+                """\
+                enumeration Material {
+                        attribute num.#/kg weight
+                        A  = ( 1.2 )
+                        B  = ( 2.5)
+                    }"""
+            ),
+            [
+                'enumeration("Material").',
+                'attribute("Material","weight","float").',
+                'option("Material", "A").',
+                'attribute_value("Material","A","weight","1.2").',
+                'option("Material", "B").',
+                'attribute_value("Material","B","weight","2.5").',
             ],
         )
 

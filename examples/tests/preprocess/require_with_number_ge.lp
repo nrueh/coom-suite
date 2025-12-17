@@ -2,7 +2,7 @@ coom_structure("product").
 coom_feature("product","wheel","Wheel",1,1).
 
 coom_enumeration("Wheel").
-coom_attribute("Wheel","size","num").
+coom_attribute("Wheel","size","int").
 coom_option("Wheel", "W27").
 coom_attribute_value("Wheel","W27","size",27).
 coom_option("Wheel", "W28").
