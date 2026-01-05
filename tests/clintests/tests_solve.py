@@ -808,18 +808,14 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
     },
     "multiple_conditions_imply": {
         "test": StableModels(
-            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
-            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Small")'},
-            {'value("root.color[0]","Blue")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
-            {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",3)', 'value("root.size[0]","Big")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",4)', 'value("root.size[0]","Small")'},
             {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
             {'value("root.color[0]","Red")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
         ),
         "ftest": StableModels(
-            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
-            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Small")'},
-            {'value("root.color[0]","Blue")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
-            {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",3)', 'value("root.size[0]","Big")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",4)', 'value("root.size[0]","Small")'},
             {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
             {'value("root.color[0]","Red")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
             flingo=True,

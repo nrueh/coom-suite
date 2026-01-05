@@ -19,4 +19,5 @@
 &sum{ -X } = F :- unary(F,"-", X).
 
 % Assign values of imply statements if object is included
-&sum{F} = X :- imply((C,X),F), include(X), satisfied(Con) : condition((C,X),Con).
+&sum{F} = X :- imply((C,X),F), include(X), not condition((C,X),_).
+&sum{F} = X :- imply((C,X),F), include(X), condition((C,X),Con), satisfied(Con).

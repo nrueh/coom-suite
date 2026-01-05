@@ -23,7 +23,10 @@ operatorMap1("asin",asin).
 operatorMap1("tan",tan).
 operatorMap1("atan",atan).
 operatorMap1("sum",sumIntEntries).
-operatorMap1("count",length).
+operatorMap1("max",maxEntries).
+operatorMap1("min",minEntries).
+operatorMap1("count",countEntries).
+%operatorMap1("count",length).
 operatorMap1("-",minus).
 
 

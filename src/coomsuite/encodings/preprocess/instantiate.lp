@@ -114,7 +114,6 @@ conditions_aux(C,X,T)         :- conditions_aux(C,X,I,T), not coom_condition(C,I
 
 conditions_binary(C,X,@binary(L,"&&",R),L,R,T) :- conditions_aux(C,X,(R,(L,T))).
 conditions_binary(C,X,@binary(L,"&&",R),L,R,T) :- conditions_binary(C,X,R,_,_,(L,T)).
-
 conditions(C,X,G)              :- conditions_aux(C,X,(G,())).
 conditions(C,X,@unary(G,"()")) :- conditions_binary(C,X,G,_,_,()).
 

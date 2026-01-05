@@ -444,8 +444,8 @@ class TestConstraintHandler(TestCase):
         """
         self.run_test("count")
         self.run_test("sum")
-        # self.run_test("min")
-        # self.run_test("max")
+        self.run_test("min")
+        self.run_test("max")
 
     def test_imply(self) -> None:
         """
