@@ -7,7 +7,7 @@ experimentation with **industrial-scale product configuration problems**. It
 includes a (customizable) [ANTLR v4](https://www.antlr.org/) parser to convert
 COOM specifications into facts, and currently contains two ASP encodings for
 solving: one for [clingo](https://potassco.org/clingo) and one for hybrid
-solver [fclingo](https://github.com/potassco/fclingo).
+solver [flingo](https://github.com/potassco/fclingo).
 
 In addition, a prototypical UI, a range of examples and a benchmark collection
 with four scalable benchmark sets is provided.
@@ -59,9 +59,9 @@ The COOM Suite contains a range of (product) configuration examples encoded in
 the COOM language. They can be found in the [`examples/coom`](examples/coom)
 directory. We highlight here only the *Bike* collection, containing three
 examples in increasing complexity that correspond to the three COOM language
-fragments defined above: the [Kids](examples/coom/kids-bike.coom),
-[City](examples/coom/city-bike.coom), and
-[Travel](examples/coom/travel-bike.coom) Bike.
+fragments defined above: the [Kids](examples/coom/bike/kids-bike.coom),
+[City](examples/coom/bike/city-bike.coom), and
+[Travel](examples/coom/bike/travel-bike.coom) Bike.
 
 We also provide the corresponding (serialized and refined) facts to these
 examples under [`examples/asp`](examples/asp).

@@ -1,8 +1,10 @@
 # Generated from /home/ruehling/projects/coom-suite-fork/src/coomsuite/utils/coom_grammar/user/UserInput.g4 by ANTLR 4.13.2
 # encoding: utf-8
-from antlr4 import *
-from io import StringIO
 import sys
+from io import StringIO
+
+from antlr4 import *
+
 if sys.version_info[1] > 5:
 	from typing import TextIO
 else:
@@ -54,15 +56,15 @@ class UserInputParser ( Parser ):
 
     sharedContextCache = PredictionContextCache()
 
-    literalNames = [ "<INVALID>", "'blockinput'", "'{'", "'}'", "'set'", 
-                     "'='", "'add'", "'-'", "'\\u221E'", "'.'", "'['", "'..'", 
+    literalNames = [ "<INVALID>", "'blockinput'", "'{'", "'}'", "'set'",
+                     "'='", "'add'", "'-'", "'\\u221E'", "'.'", "'['", "'..'",
                      "']'", "'last'", "';'", "'true'", "'false'" ]
 
-    symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "NAME", "INTEGER", "FLOATING", "NEWLINE", 
+    symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "NAME", "INTEGER", "FLOATING", "NEWLINE",
                       "WHITESPACE", "COMMENT", "MULTILINE_COMMENT" ]
 
     RULE_user_input = 0
@@ -78,8 +80,8 @@ class UserInputParser ( Parser ):
     RULE_stmt_end = 10
     RULE_formula_atom = 11
 
-    ruleNames =  [ "user_input", "input_block", "input_operation", "set_value", 
-                   "add_instance", "floating", "path", "path_item", "path_index", 
+    ruleNames =  [ "user_input", "input_block", "input_operation", "set_value",
+                   "add_instance", "floating", "path", "path_item", "path_index",
                    "name", "stmt_end", "formula_atom" ]
 
     EOF = Token.EOF

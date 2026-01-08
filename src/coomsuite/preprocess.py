@@ -14,7 +14,7 @@ from .utils.logging import get_logger
 log = get_logger("main")
 
 
-def preprocess(files: List[str], max_bound: int = 99, fclingo: bool = False) -> List[str]:
+def preprocess(files: List[str], max_bound: int = 99, discrete: bool = False, multishot: bool = False) -> List[str]:
     """
     Preprocesses COOM ASP facts into a "grounded" configuration fact format
     """
@@ -25,10 +25,10 @@ def preprocess(files: List[str], max_bound: int = 99, fclingo: bool = False) -> 
         ctl.load(f)
 
     enable_python()
-    ctl.load(get_encoding("preprocess.lp"))
+    ctl.load(get_encoding("preprocess.lp" if not multishot else "preprocess-multishot.lp"))
 
-    if fclingo:
-        ctl.add("base", [], "fclingo.")  # nocoverage
+    if discrete:
+        ctl.add("base", [], "discrete.")  # nocoverage
 
     ctl.ground()
     with ctl.solve(yield_=True) as handle:
@@ -37,7 +37,7 @@ def preprocess(files: List[str], max_bound: int = 99, fclingo: bool = False) -> 
     return facts
 
 
-def check_user_input(facts: str) -> None:
+def check_user_input(facts: List[str]) -> None:
     """
     Checks if the user input is valid and returns a clingo.SolveResult
     """

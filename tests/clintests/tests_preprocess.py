@@ -10,7 +10,8 @@ All tests run with clingo.
 # pylint: disable=line-too-long, too-many-lines
 from typing import Any
 
-from . import TEST_EMPTY, StableModels
+from .. import get_model_from_file
+from . import TEST_EMPTY, StableModels, Supersets
 
 TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "empty": {"test": TEST_EMPTY, "program": ""},
@@ -432,6 +433,50 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         ),
         "files": ["multiple_conditions.lp"],
     },
+    "require_with_optional_part": {
+        "test": StableModels(
+            {
+                'integer("A.b")',
+                'range("A.b",1,2)',
+                'type("root","product")',
+                'type("root.a[0]","A")',
+                'type("root.a[0].b[0]","A.b")',
+                'index("root.a[0]",0)',
+                'index("root.a[0].b[0]",0)',
+                'parent("root.a[0]","root")',
+                'parent("root.a[0].b[0]","root.a[0]")',
+                'constraint(("root.a",0),"lowerbound")',
+                'constraint(("root.a[0].b",1),"lowerbound")',
+                'constraint((0,"!count(root.a[0])=1||sum(root.a[0].b)>1"),"boolean")',
+                'function("sum(root.a[0].b)","sum","root.a[0].b")',
+                'function("count(root.a[0])","count","root.a[0]")',
+                'set("root.a","root.a[0]")',
+                'set("root.a[0].b","root.a[0].b[0]")',
+                'set("root.a[0]","root.a[0]")',
+                'binary("sum(root.a[0].b)>1","sum(root.a[0].b)",">","1")',
+                'binary("count(root.a[0])=1","count(root.a[0])","=","1")',
+                'binary("!count(root.a[0])=1||sum(root.a[0].b)>1","!count(root.a[0])=1","||","sum(root.a[0].b)>1")',
+                'number("1",1)',
+                'unary("!count(root.a[0])=1","!","count(root.a[0])=1")',
+                'part("product")',
+                'part("A")',
+            }
+        ),
+        "program": """
+        coom_structure("product").
+        coom_feature("product","a","A",0,1).
+        coom_structure("A").
+        coom_feature("A","b","num",1,1).
+        coom_range("A","b",1,2).
+        coom_behavior(0).
+        coom_context(0,"A").
+        coom_require(0,"sum(b)>1").
+        coom_binary("sum(b)>1","sum(b)",">","1").
+        coom_function("A","sum(b)","sum","b").
+        coom_path("b",0,"b").
+        coom_number("1",1).
+        """,
+    },
     "conditional_require_undef": {
         "test": StableModels(
             {
@@ -497,7 +542,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'part("Basket")',
                 'constraint(("root.basket",1),"lowerbound")',
                 'constraint(("root.basket[0].color",1),"lowerbound")',
-                'constraint((0,"root.basket[0].color[0]=Red"),"boolean")',
+                'constraint((0,"!count(root.basket[0])=1||root.basket[0].color[0]=Red"),"boolean")',
                 'domain("Color","Red")',
                 'domain("Color","Yellow")',
                 'index("root.basket[0]",0)',
@@ -510,6 +555,12 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'type("root.basket[0]","Basket")',
                 'type("root.basket[0].color[0]","Color")',
                 'binary("root.basket[0].color[0]=Red","root.basket[0].color[0]","=","Red")',
+                'binary("!count(root.basket[0])=1||root.basket[0].color[0]=Red","!count(root.basket[0])=1","||","root.basket[0].color[0]=Red")',
+                'unary("!count(root.basket[0])=1","!","count(root.basket[0])=1")',
+                'binary("count(root.basket[0])=1","count(root.basket[0])","=","1")',
+                'function("count(root.basket[0])","count","root.basket[0]")',
+                'set("root.basket[0]","root.basket[0]")',
+                'number("1",1)',
             }
         ),
         "files": ["require_with_partonomy.lp"],
@@ -524,14 +575,15 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'constraint(("root.bag",2),"lowerbound")',
                 'constraint(("root.bag[0].color",1),"lowerbound")',
                 'constraint(("root.bag[1].color",1),"lowerbound")',
-                'constraint((0,"root.bag[0].color[0]=Red"),"boolean")',
-                'constraint((0,"root.bag[1].color[0]=Red"),"boolean")',
+                'constraint((0,"!count(root.bag[0])=1||root.bag[0].color[0]=Red"),"boolean")',
+                'constraint((0,"!count(root.bag[1])=1||root.bag[1].color[0]=Red"),"boolean")',
                 'domain("Color","Red")',
                 'domain("Color","Yellow")',
                 'index("root.bag[0]",0)',
                 'index("root.bag[1]",1)',
                 'index("root.bag[1].color[0]",0)',
                 'index("root.bag[0].color[0]",0)',
+                'number("1",1)',
                 'parent("root.bag[0]","root")',
                 'parent("root.bag[1]","root")',
                 'parent("root.bag[1].color[0]","root.bag[1]")',
@@ -540,13 +592,23 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'set("root.bag","root.bag[1]")',
                 'set("root.bag[0].color","root.bag[0].color[0]")',
                 'set("root.bag[1].color","root.bag[1].color[0]")',
+                'set("root.bag[0]","root.bag[0]")',
+                'set("root.bag[1]","root.bag[1]")',
                 'type("root","product")',
                 'type("root.bag[0]","Bag")',
                 'type("root.bag[1]","Bag")',
                 'type("root.bag[1].color[0]","Color")',
                 'type("root.bag[0].color[0]","Color")',
+                'function("count(root.bag[0])","count","root.bag[0]")',
+                'function("count(root.bag[1])","count","root.bag[1]")',
+                'unary("!count(root.bag[0])=1","!","count(root.bag[0])=1")',
+                'unary("!count(root.bag[1])=1","!","count(root.bag[1])=1")',
                 'binary("root.bag[1].color[0]=Red","root.bag[1].color[0]","=","Red")',
                 'binary("root.bag[0].color[0]=Red","root.bag[0].color[0]","=","Red")',
+                'binary("count(root.bag[0])=1","count(root.bag[0])","=","1")',
+                'binary("count(root.bag[1])=1","count(root.bag[1])","=","1")',
+                'binary("!count(root.bag[0])=1||root.bag[0].color[0]=Red","!count(root.bag[0])=1","||","root.bag[0].color[0]=Red")',
+                'binary("!count(root.bag[1])=1||root.bag[1].color[0]=Red","!count(root.bag[1])=1","||","root.bag[1].color[0]=Red")',
             }
         ),
         "files": ["require_with_partonomy2.lp"],
@@ -566,10 +628,10 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'constraint(("root.compartment[1].bag[1].color",1),"lowerbound")',
                 'constraint(("root.compartment[0].bag[0].color",1),"lowerbound")',
                 'constraint(("root.compartment[0].bag[1].color",1),"lowerbound")',
-                'constraint((0,"root.compartment[0].bag[0].color[0]=Red"),"boolean")',
-                'constraint((0,"root.compartment[0].bag[1].color[0]=Red"),"boolean")',
-                'constraint((0,"root.compartment[1].bag[0].color[0]=Red"),"boolean")',
-                'constraint((0,"root.compartment[1].bag[1].color[0]=Red"),"boolean")',
+                'constraint((0,"!count(root.compartment[0])=1||root.compartment[0].bag[0].color[0]=Red"),"boolean")',
+                'constraint((0,"!count(root.compartment[0])=1||root.compartment[0].bag[1].color[0]=Red"),"boolean")',
+                'constraint((0,"!count(root.compartment[1])=1||root.compartment[1].bag[0].color[0]=Red"),"boolean")',
+                'constraint((0,"!count(root.compartment[1])=1||root.compartment[1].bag[1].color[0]=Red"),"boolean")',
                 'domain("Color","Red")',
                 'domain("Color","Yellow")',
                 'domain("Color","Green")',
@@ -583,6 +645,7 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'index("root.compartment[0].bag[0].color[0]",0)',
                 'index("root.compartment[1].bag[1].color[0]",0)',
                 'index("root.compartment[1].bag[0].color[0]",0)',
+                'number("1",1)',
                 'parent("root.compartment[0]","root")',
                 'parent("root.compartment[1]","root")',
                 'parent("root.compartment[1].bag[0]","root.compartment[1]")',
@@ -603,6 +666,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'set("root.compartment[1].bag[1].color","root.compartment[1].bag[1].color[0]")',
                 'set("root.compartment[0].bag[0].color","root.compartment[0].bag[0].color[0]")',
                 'set("root.compartment[0].bag[1].color","root.compartment[0].bag[1].color[0]")',
+                'set("root.compartment[0]","root.compartment[0]")',
+                'set("root.compartment[1]","root.compartment[1]")',
                 'type("root","product")',
                 'type("root.compartment[0]","Compartment")',
                 'type("root.compartment[1]","Compartment")',
@@ -614,10 +679,20 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'type("root.compartment[0].bag[0].color[0]","Color")',
                 'type("root.compartment[1].bag[1].color[0]","Color")',
                 'type("root.compartment[1].bag[0].color[0]","Color")',
+                'function("count(root.compartment[0])","count","root.compartment[0]")',
+                'function("count(root.compartment[1])","count","root.compartment[1]")',
+                'unary("!count(root.compartment[0])=1","!","count(root.compartment[0])=1")',
+                'unary("!count(root.compartment[1])=1","!","count(root.compartment[1])=1")',
                 'binary("root.compartment[1].bag[1].color[0]=Red","root.compartment[1].bag[1].color[0]","=","Red")',
                 'binary("root.compartment[1].bag[0].color[0]=Red","root.compartment[1].bag[0].color[0]","=","Red")',
                 'binary("root.compartment[0].bag[1].color[0]=Red","root.compartment[0].bag[1].color[0]","=","Red")',
                 'binary("root.compartment[0].bag[0].color[0]=Red","root.compartment[0].bag[0].color[0]","=","Red")',
+                'binary("count(root.compartment[0])=1","count(root.compartment[0])","=","1")',
+                'binary("count(root.compartment[1])=1","count(root.compartment[1])","=","1")',
+                'binary("!count(root.compartment[0])=1||root.compartment[0].bag[0].color[0]=Red","!count(root.compartment[0])=1","||","root.compartment[0].bag[0].color[0]=Red")',
+                'binary("!count(root.compartment[0])=1||root.compartment[0].bag[1].color[0]=Red","!count(root.compartment[0])=1","||","root.compartment[0].bag[1].color[0]=Red")',
+                'binary("!count(root.compartment[1])=1||root.compartment[1].bag[0].color[0]=Red","!count(root.compartment[1])=1","||","root.compartment[1].bag[0].color[0]=Red")',
+                'binary("!count(root.compartment[1])=1||root.compartment[1].bag[1].color[0]=Red","!count(root.compartment[1])=1","||","root.compartment[1].bag[1].color[0]=Red")',
             }
         ),
         "files": ["require_with_partonomy_multiple_instances.lp"],
@@ -947,8 +1022,8 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'allow(0,(0,1),"False")',
                 'allow(0,(1,1),"W18")',
                 'allow(0,(1,1),"W20")',
-                'column((0,"root"),0,0,"root.wheelSupport[0]")',
-                'column((0,"root"),0,1,"root.wheel[0]")',
+                'column((0,"root"),("root.wheelSupport[0]",("root.wheel[0]",())),0,"root.wheelSupport[0]")',
+                'column((0,"root"),("root.wheelSupport[0]",("root.wheel[0]",())),1,"root.wheel[0]")',
             }
         ),
         "files": ["combination.lp"],
@@ -998,10 +1073,10 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'allow(0,(0,1),"False")',
                 'allow(0,(1,1),"W18")',
                 'allow(0,(1,1),"W20")',
-                'column((0,"root"),0,0,"root.wheelSupport[0]")',
-                'column((0,"root"),0,1,"root.wheel[0].size[0]")',
-                'column((0,"root"),1,0,"root.wheelSupport[0]")',
-                'column((0,"root"),1,1,"root.wheel[1].size[0]")',
+                'column((0,"root"),("root.wheelSupport[0]",("root.wheel[0].size[0]",())),0,"root.wheelSupport[0]")',
+                'column((0,"root"),("root.wheelSupport[0]",("root.wheel[1].size[0]",())),0,"root.wheelSupport[0]")',
+                'column((0,"root"),("root.wheelSupport[0]",("root.wheel[1].size[0]",())),1,"root.wheel[1].size[0]")',
+                'column((0,"root"),("root.wheelSupport[0]",("root.wheel[0].size[0]",())),1,"root.wheel[0].size[0]")',
             }
         ),
         "files": ["combination_with_structure.lp"],
@@ -1060,10 +1135,10 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'binary("root.wheel[0].size[0]=root.wheel[0].size[0]","root.wheel[0].size[0]","=","root.wheel[0].size[0]")',
                 'binary("root.wheel[1].size[0]=root.wheel[1].size[0]","root.wheel[1].size[0]","=","root.wheel[1].size[0]")',
                 'binary("root.wheel[0].size[0]=root.wheel[1].size[0]","root.wheel[0].size[0]","=","root.wheel[1].size[0]")',
-                'column((0,"root.wheel[1]"),0,0,"root.wheel[1].size[0]")',
-                'column((0,"root.wheel[1]"),0,1,"root.wheel[1].material[0]")',
-                'column((0,"root.wheel[0]"),0,0,"root.wheel[0].size[0]")',
-                'column((0,"root.wheel[0]"),0,1,"root.wheel[0].material[0]")',
+                'column((0,"root.wheel[1]"),("root.wheel[1].size[0]",("root.wheel[1].material[0]",())),0,"root.wheel[1].size[0]")',
+                'column((0,"root.wheel[0]"),("root.wheel[0].size[0]",("root.wheel[0].material[0]",())),0,"root.wheel[0].size[0]")',
+                'column((0,"root.wheel[1]"),("root.wheel[1].size[0]",("root.wheel[1].material[0]",())),1,"root.wheel[1].material[0]")',
+                'column((0,"root.wheel[0]"),("root.wheel[0].size[0]",("root.wheel[0].material[0]",())),1,"root.wheel[0].material[0]")',
             }
         ),
         "files": ["combination_at_part_with_wildcard.lp"],
@@ -1082,14 +1157,14 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'constraint(("root.bike[1].material",1),"lowerbound")',
                 'constraint((0,"root.bike[0]"),"table")',
                 'constraint((0,"root.bike[1]"),"table")',
-                'constraint((1,"root.bike[1].wheel[1]=root.bike[1].wheel[0]"),"boolean")',
-                'constraint((1,"root.bike[1].wheel[0]=root.bike[1].wheel[0]"),"boolean")',
-                'constraint((1,"root.bike[1].wheel[1]=root.bike[1].wheel[1]"),"boolean")',
-                'constraint((1,"root.bike[1].wheel[0]=root.bike[1].wheel[1]"),"boolean")',
-                'constraint((1,"root.bike[0].wheel[1]=root.bike[0].wheel[0]"),"boolean")',
-                'constraint((1,"root.bike[0].wheel[0]=root.bike[0].wheel[0]"),"boolean")',
-                'constraint((1,"root.bike[0].wheel[1]=root.bike[0].wheel[1]"),"boolean")',
-                'constraint((1,"root.bike[0].wheel[0]=root.bike[0].wheel[1]"),"boolean")',
+                # 'constraint((1,"root.bike[1].wheel[1]=root.bike[1].wheel[0]"),"boolean")',
+                # 'constraint((1,"root.bike[1].wheel[0]=root.bike[1].wheel[0]"),"boolean")',
+                # 'constraint((1,"root.bike[1].wheel[1]=root.bike[1].wheel[1]"),"boolean")',
+                # 'constraint((1,"root.bike[1].wheel[0]=root.bike[1].wheel[1]"),"boolean")',
+                # 'constraint((1,"root.bike[0].wheel[1]=root.bike[0].wheel[0]"),"boolean")',
+                # 'constraint((1,"root.bike[0].wheel[0]=root.bike[0].wheel[0]"),"boolean")',
+                # 'constraint((1,"root.bike[0].wheel[1]=root.bike[0].wheel[1]"),"boolean")',
+                # 'constraint((1,"root.bike[0].wheel[0]=root.bike[0].wheel[1]"),"boolean")',
                 'domain("Wheel","W28")',
                 'domain("Wheel","W30")',
                 'domain("Material","Carbon")',
@@ -1131,22 +1206,22 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
                 'allow(0,(1,0),"Carbon")',
                 'allow(0,(0,1),"W30")',
                 'allow(0,(1,1),"Aluminum")',
-                'binary("root.bike[0].wheel[0]=root.bike[0].wheel[1]","root.bike[0].wheel[0]","=","root.bike[0].wheel[1]")',
-                'binary("root.bike[0].wheel[1]=root.bike[0].wheel[1]","root.bike[0].wheel[1]","=","root.bike[0].wheel[1]")',
-                'binary("root.bike[0].wheel[0]=root.bike[0].wheel[0]","root.bike[0].wheel[0]","=","root.bike[0].wheel[0]")',
-                'binary("root.bike[0].wheel[1]=root.bike[0].wheel[0]","root.bike[0].wheel[1]","=","root.bike[0].wheel[0]")',
-                'binary("root.bike[1].wheel[0]=root.bike[1].wheel[1]","root.bike[1].wheel[0]","=","root.bike[1].wheel[1]")',
-                'binary("root.bike[1].wheel[1]=root.bike[1].wheel[1]","root.bike[1].wheel[1]","=","root.bike[1].wheel[1]")',
-                'binary("root.bike[1].wheel[0]=root.bike[1].wheel[0]","root.bike[1].wheel[0]","=","root.bike[1].wheel[0]")',
-                'binary("root.bike[1].wheel[1]=root.bike[1].wheel[0]","root.bike[1].wheel[1]","=","root.bike[1].wheel[0]")',
-                'column((0,"root.bike[1]"),0,0,"root.bike[1].wheel[0]")',
-                'column((0,"root.bike[1]"),1,0,"root.bike[1].wheel[1]")',
-                'column((0,"root.bike[0]"),0,0,"root.bike[0].wheel[0]")',
-                'column((0,"root.bike[0]"),1,0,"root.bike[0].wheel[1]")',
-                'column((0,"root.bike[1]"),0,1,"root.bike[1].material[0]")',
-                'column((0,"root.bike[1]"),1,1,"root.bike[1].material[0]")',
-                'column((0,"root.bike[0]"),0,1,"root.bike[0].material[0]")',
-                'column((0,"root.bike[0]"),1,1,"root.bike[0].material[0]")',
+                # 'binary("root.bike[0].wheel[0]=root.bike[0].wheel[1]","root.bike[0].wheel[0]","=","root.bike[0].wheel[1]")',
+                # 'binary("root.bike[0].wheel[1]=root.bike[0].wheel[1]","root.bike[0].wheel[1]","=","root.bike[0].wheel[1]")',
+                # 'binary("root.bike[0].wheel[0]=root.bike[0].wheel[0]","root.bike[0].wheel[0]","=","root.bike[0].wheel[0]")',
+                # 'binary("root.bike[0].wheel[1]=root.bike[0].wheel[0]","root.bike[0].wheel[1]","=","root.bike[0].wheel[0]")',
+                # 'binary("root.bike[1].wheel[0]=root.bike[1].wheel[1]","root.bike[1].wheel[0]","=","root.bike[1].wheel[1]")',
+                # 'binary("root.bike[1].wheel[1]=root.bike[1].wheel[1]","root.bike[1].wheel[1]","=","root.bike[1].wheel[1]")',
+                # 'binary("root.bike[1].wheel[0]=root.bike[1].wheel[0]","root.bike[1].wheel[0]","=","root.bike[1].wheel[0]")',
+                # 'binary("root.bike[1].wheel[1]=root.bike[1].wheel[0]","root.bike[1].wheel[1]","=","root.bike[1].wheel[0]")',
+                'column((0,"root.bike[1]"),("root.bike[1].wheel[0]",("root.bike[1].material[0]",())),0,"root.bike[1].wheel[0]")',
+                'column((0,"root.bike[1]"),("root.bike[1].wheel[1]",("root.bike[1].material[0]",())),0,"root.bike[1].wheel[1]")',
+                'column((0,"root.bike[0]"),("root.bike[0].wheel[0]",("root.bike[0].material[0]",())),0,"root.bike[0].wheel[0]")',
+                'column((0,"root.bike[0]"),("root.bike[0].wheel[1]",("root.bike[0].material[0]",())),0,"root.bike[0].wheel[1]")',
+                'column((0,"root.bike[1]"),("root.bike[1].wheel[1]",("root.bike[1].material[0]",())),1,"root.bike[1].material[0]")',
+                'column((0,"root.bike[1]"),("root.bike[1].wheel[0]",("root.bike[1].material[0]",())),1,"root.bike[1].material[0]")',
+                'column((0,"root.bike[0]"),("root.bike[0].wheel[1]",("root.bike[0].material[0]",())),1,"root.bike[0].material[0]")',
+                'column((0,"root.bike[0]"),("root.bike[0].wheel[0]",("root.bike[0].material[0]",())),1,"root.bike[0].material[0]")',
             }
         ),
         "files": ["combination_at_part_multiple_instances.lp"],
@@ -1426,6 +1501,215 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
         ),
         "files": ["sum.lp"],
     },
+    "minimize": {
+        "test": StableModels(
+            {
+                'integer("product.totalWeight")',
+                'range("product.totalWeight",1,10)',
+                'type("root","product")',
+                'type("root.totalWeight[0]","product.totalWeight")',
+                'index("root.totalWeight[0]",0)',
+                'parent("root.totalWeight[0]","root")',
+                'constraint(("root.totalWeight",1),"lowerbound")',
+                'set("root.totalWeight","root.totalWeight[0]")',
+                'part("product")',
+                'minimize("root.totalWeight[0]",0)',
+            }
+        ),
+        "program": """
+            coom_structure("product").
+            coom_feature("product","totalWeight","num",1,1).
+            coom_range("product","totalWeight",1,10).
+            coom_behavior(0).
+            coom_context(0,"product").
+            coom_minimize(0,0,"totalWeight").
+            coom_path("totalWeight",0,"totalWeight").
+            """,
+    },
+    "maximize": {
+        "test": StableModels(
+            {
+                'integer("product.totalOutput")',
+                'range("product.totalOutput",1,10)',
+                'type("root","product")',
+                'type("root.totalOutput[0]","product.totalOutput")',
+                'index("root.totalOutput[0]",0)',
+                'parent("root.totalOutput[0]","root")',
+                'constraint(("root.totalOutput",1),"lowerbound")',
+                'set("root.totalOutput","root.totalOutput[0]")',
+                'part("product")',
+                'maximize("root.totalOutput[0]",1)',
+            }
+        ),
+        "program": """
+            coom_structure("product").
+            coom_feature("product","totalOutput","num",1,1).
+            coom_range("product","totalOutput",1,10).
+            coom_behavior(0).
+            coom_context(0,"product").
+            coom_maximize(0,1,"totalOutput").
+            coom_path("totalOutput",0,"totalOutput").
+            """,
+    },
+    "minimize_non_root_path": {
+        "test": StableModels(
+            {
+                'integer("Bag.weight")',
+                'range("Bag.weight",0,10)',
+                'type("root","product")',
+                'type("root.bags[0]","Bag")',
+                'type("root.bags[0].weight[0]","Bag.weight")',
+                'index("root.bags[0]",0)',
+                'index("root.bags[0].weight[0]",0)',
+                'parent("root.bags[0]","root")',
+                'parent("root.bags[0].weight[0]","root.bags[0]")',
+                'constraint(("root.bags",1),"lowerbound")',
+                'constraint(("root.bags[0].weight",1),"lowerbound")',
+                'set("root.bags","root.bags[0]")',
+                'set("root.bags[0].weight","root.bags[0].weight[0]")',
+                'part("product")',
+                'part("Bag")',
+                'minimize("root.bags[0].weight[0]",1)',
+            }
+        ),
+        "program": """
+            coom_structure("product").
+            coom_feature("product","bags","Bag",1,1).
+            coom_structure("Bag").
+            coom_feature("Bag","weight","num",1,1).
+            coom_range("Bag","weight",0,10).
+            coom_behavior(0).
+            coom_context(0,"product").
+            coom_minimize(0,1,"bags.weight").
+            coom_path("bags.weight",0,"bags").
+            coom_path("bags.weight",1,"weight").
+            """,
+    },
+    "maximize_non_root_path": {
+        "test": StableModels(
+            {
+                'integer("Bag.volume")',
+                'range("Bag.volume",0,10)',
+                'type("root","product")',
+                'type("root.bags[0]","Bag")',
+                'type("root.bags[0].volume[0]","Bag.volume")',
+                'index("root.bags[0]",0)',
+                'index("root.bags[0].volume[0]",0)',
+                'parent("root.bags[0]","root")',
+                'parent("root.bags[0].volume[0]","root.bags[0]")',
+                'constraint(("root.bags",1),"lowerbound")',
+                'constraint(("root.bags[0].volume",1),"lowerbound")',
+                'set("root.bags","root.bags[0]")',
+                'set("root.bags[0].volume","root.bags[0].volume[0]")',
+                'part("product")',
+                'part("Bag")',
+                'minimize("root.bags[0].volume[0]",1)',
+            }
+        ),
+        "program": """
+            coom_structure("product").
+            coom_feature("product","bags","Bag",1,1).
+            coom_structure("Bag").
+            coom_feature("Bag","volume","num",1,1).
+            coom_range("Bag","volume",0,10).
+            coom_behavior(0).
+            coom_context(0,"product").
+            coom_minimize(0,1,"bags.volume").
+            coom_path("bags.volume",0,"bags").
+            coom_path("bags.volume",1,"volume").
+            """,
+    },
+    "minimize_function": {
+        "test": StableModels(
+            {
+                'integer("Bag.volume")',
+                'range("Bag.volume",0,10)',
+                'type("root","product")',
+                'type("root.bags[0]","Bag")',
+                'type("root.bags[1]","Bag")',
+                'type("root.bags[1].volume[0]","Bag.volume")',
+                'type("root.bags[0].volume[0]","Bag.volume")',
+                'index("root.bags[0]",0)',
+                'index("root.bags[1]",1)',
+                'index("root.bags[1].volume[0]",0)',
+                'index("root.bags[0].volume[0]",0)',
+                'parent("root.bags[0]","root")',
+                'parent("root.bags[1]","root")',
+                'parent("root.bags[1].volume[0]","root.bags[1]")',
+                'parent("root.bags[0].volume[0]","root.bags[0]")',
+                'constraint(("root.bags",0),"lowerbound")',
+                'constraint(("root.bags[0].volume",1),"lowerbound")',
+                'constraint(("root.bags[1].volume",1),"lowerbound")',
+                'function("count(root.bags)","count","root.bags")',
+                'set("root.bags","root.bags[0]")',
+                'set("root.bags","root.bags[1]")',
+                'set("root.bags[0].volume","root.bags[0].volume[0]")',
+                'set("root.bags[1].volume","root.bags[1].volume[0]")',
+                'part("product")',
+                'part("Bag")',
+                'minimize("count(root.bags)",0)',
+            }
+        ),
+        "program": """
+            coom_structure("product").
+            coom_feature("product","bags","Bag",0,2).
+            coom_structure("Bag").
+            coom_feature("Bag","volume","num",1,1).
+            coom_range("Bag","volume",0,10).
+            coom_behavior(0).
+            coom_context(0,"product").
+            coom_minimize(0,0,"count(bags)").
+            coom_function("product","count(bags)","count","bags").
+            coom_path("bags",0,"bags").
+        """,
+    },
+    "maximize_function": {
+        "test": StableModels(
+            {
+                'integer("Bag.volume")',
+                'range("Bag.volume",0,10)',
+                'type("root","product")',
+                'type("root.bags[0]","Bag")',
+                'type("root.bags[1]","Bag")',
+                'type("root.bags[1].volume[0]","Bag.volume")',
+                'type("root.bags[0].volume[0]","Bag.volume")',
+                'index("root.bags[0]",0)',
+                'index("root.bags[1]",1)',
+                'index("root.bags[1].volume[0]",0)',
+                'index("root.bags[0].volume[0]",0)',
+                'parent("root.bags[0]","root")',
+                'parent("root.bags[1]","root")',
+                'parent("root.bags[1].volume[0]","root.bags[1]")',
+                'parent("root.bags[0].volume[0]","root.bags[0]")',
+                'constraint(("root.bags",0),"lowerbound")',
+                'constraint(("root.bags[0].volume",1),"lowerbound")',
+                'constraint(("root.bags[1].volume",1),"lowerbound")',
+                'function("sum(root.bags.volume)","sum","root.bags.volume")',
+                'set("root.bags","root.bags[0]")',
+                'set("root.bags","root.bags[1]")',
+                'set("root.bags[0].volume","root.bags[0].volume[0]")',
+                'set("root.bags[1].volume","root.bags[1].volume[0]")',
+                'set("root.bags.volume","root.bags[1].volume[0]")',
+                'set("root.bags.volume","root.bags[0].volume[0]")',
+                'part("product")',
+                'part("Bag")',
+                'maximize("sum(root.bags.volume)",0)',
+            }
+        ),
+        "program": """
+            coom_structure("product").
+            coom_feature("product","bags","Bag",0,2).
+            coom_structure("Bag").
+            coom_feature("Bag","volume","num",1,1).
+            coom_range("Bag","volume",0,10).
+            coom_behavior(0).
+            coom_context(0,"product").
+            coom_maximize(0,0,"sum(bags.volume)").
+            coom_function("product","sum(bags.volume)","sum","bags.volume").
+            coom_path("bags.volume",0,"bags").
+            coom_path("bags.volume",1,"volume").
+        """,
+    },
     "set_constant": {
         "test": StableModels({'user_value("root.color[0]","Yellow")'}),
         "program": 'coom_user_value("root.color[0]","Yellow").',
@@ -1437,5 +1721,156 @@ TESTS_PREPROCESS: dict[str, dict[str, Any]] = {
     "add": {
         "test": StableModels({'user_include("root.bag[0]")'}),
         "program": 'coom_user_include("root.bag[0]").',
+    },
+    "unbounded_singleshot_zero_lb_zero_max": {
+        "test": StableModels(get_model_from_file("unbounded_singleshot_zero_lb_zero_max.lp")),
+        "files": ["unbounded_zero_lb.lp"],
+    },
+    "unbounded_singleshot_zero_lb_one_max": {
+        "test": StableModels(get_model_from_file("unbounded_singleshot_zero_lb_one_max.lp")),
+        "files": ["unbounded_zero_lb.lp"],
+    },
+    "unbounded_singleshot_two_lb_zero_max": {
+        "test": StableModels(get_model_from_file("unbounded_singleshot_two_lb_zero_max.lp")),
+        "files": ["unbounded_two_lb.lp"],
+    },
+    "unbounded_singleshot_two_lb_one_max": {
+        "test": StableModels(get_model_from_file("unbounded_singleshot_two_lb_one_max.lp")),
+        "files": ["unbounded_two_lb.lp"],
+    },
+    "unbounded_singleshot_optimize": {
+        "test": StableModels(get_model_from_file("unbounded_singleshot_optimize.lp")),
+        "files": ["unbounded_optimize.lp"],
+    },
+    "unbounded_multishot_zero_lb_zero_max_superset": {
+        "test": Supersets(get_model_from_file("unbounded_singleshot_zero_lb_zero_max.lp")),
+        "files": ["unbounded_zero_lb.lp"],
+    },
+    "unbounded_multishot_zero_lb_one_max_superset": {
+        "test": Supersets(get_model_from_file("unbounded_singleshot_zero_lb_one_max.lp")),
+        "files": ["unbounded_zero_lb.lp"],
+    },
+    "unbounded_multishot_two_lb_zero_max_superset": {
+        "test": Supersets(get_model_from_file("unbounded_singleshot_two_lb_zero_max.lp")),
+        "files": ["unbounded_two_lb.lp"],
+    },
+    "unbounded_multishot_two_lb_one_max_superset": {
+        "test": Supersets(get_model_from_file("unbounded_singleshot_two_lb_one_max.lp")),
+        "files": ["unbounded_two_lb.lp"],
+    },
+    "unbounded_multishot_optimize_superset": {
+        "test": Supersets(get_model_from_file("unbounded_singleshot_optimize.lp")),
+        "files": ["unbounded_optimize.lp"],
+    },
+    "unbounded_multishot_optimize": {
+        "test": StableModels(
+            get_model_from_file("unbounded_singleshot_optimize.lp")
+            | {
+                'inc_set("root.bags")',
+                'incremental("function","count(root.bags)","root.bags",("count(root.bags)","count","root.bags"))',
+                'incremental("minimize","count(root.bags)","root.bags",("count(root.bags)",0))',
+            }
+        ),
+        "files": ["unbounded_optimize.lp"],
+    },
+    "unbounded_multishot_zero_lb_zero_max": {
+        "test": StableModels(
+            get_model_from_file("unbounded_singleshot_zero_lb_zero_max.lp")
+            | {
+                'inc_set("root.bags.size.volume")',
+                'inc_set("root.bags.pockets")',
+                'incremental("function","sum(root.bags.size.volume)","root.bags.size.volume",("sum(root.bags.size.volume)","sum","root.bags.size.volume"))',
+                'incremental("function","count(root.bags.pockets)","root.bags.pockets",("count(root.bags.pockets)","count","root.bags.pockets"))',
+                'incremental("binary","root.totalVolume[0]=sum(root.bags.size.volume)","root.bags.size.volume",("root.totalVolume[0]=sum(root.bags.size.volume)","root.totalVolume[0]","=","sum(root.bags.size.volume)"))',
+                'incremental("binary","5<count(root.bags.pockets)","root.bags.pockets",("5<count(root.bags.pockets)","5","<","count(root.bags.pockets)"))',
+                'incremental("constraint","root.totalVolume[0]=sum(root.bags.size.volume)","root.bags.size.volume",((0,"root.totalVolume[0]=sum(root.bags.size.volume)"),"boolean"))',
+                'incremental("constraint","5<count(root.bags.pockets)","root.bags.pockets",((4,"5<count(root.bags.pockets)"),"boolean"))',
+            }
+        ),
+        "files": ["unbounded_zero_lb.lp"],
+    },
+    "unbounded_multishot_two_lb_zero_max": {
+        "test": StableModels(
+            get_model_from_file("unbounded_singleshot_two_lb_zero_max.lp")
+            | {
+                'inc_set("root.bags.size.volume")',
+                'inc_set("root.bags.pockets")',
+                'inc_set("root.bags[0].pockets")',
+                'inc_set("root.bags[1].pockets")',
+                'incremental("function","sum(root.bags.size.volume)","root.bags.size.volume",("sum(root.bags.size.volume)","sum","root.bags.size.volume"))',
+                'incremental("function","count(root.bags.pockets)","root.bags.pockets",("count(root.bags.pockets)","count","root.bags.pockets"))',
+                'incremental("function","count(root.bags[0].pockets)","root.bags[0].pockets",("count(root.bags[0].pockets)","count","root.bags[0].pockets"))',
+                'incremental("function","count(root.bags[1].pockets)","root.bags[1].pockets",("count(root.bags[1].pockets)","count","root.bags[1].pockets"))',
+                'incremental("constraint","root.bags[0]","root.bags[0].pockets",((7,"root.bags[0]"),"table"))',
+                'incremental("constraint","root.bags[1]","root.bags[1].pockets",((7,"root.bags[1]"),"table"))',
+                'incremental("binary","root.totalVolume[0]=sum(root.bags.size.volume)","root.bags.size.volume",("root.totalVolume[0]=sum(root.bags.size.volume)","root.totalVolume[0]","=","sum(root.bags.size.volume)"))',
+                'incremental("binary","5<count(root.bags.pockets)","root.bags.pockets",("5<count(root.bags.pockets)","5","<","count(root.bags.pockets)"))',
+                'incremental("binary","2<=count(root.bags[0].pockets)","root.bags[0].pockets",("2<=count(root.bags[0].pockets)","2","<=","count(root.bags[0].pockets)"))',
+                'incremental("binary","2<=count(root.bags[1].pockets)","root.bags[1].pockets",("2<=count(root.bags[1].pockets)","2","<=","count(root.bags[1].pockets)"))',
+                'incremental("constraint","root.totalVolume[0]=sum(root.bags.size.volume)","root.bags.size.volume",((0,"root.totalVolume[0]=sum(root.bags.size.volume)"),"boolean"))',
+                'incremental("constraint","5<count(root.bags.pockets)","root.bags.pockets",((4,"5<count(root.bags.pockets)"),"boolean"))',
+                'incremental("binary","!count(root.bags[0])=1||2<=count(root.bags[0].pockets)","root.bags[0].pockets",("!count(root.bags[0])=1||2<=count(root.bags[0].pockets)","!count(root.bags[0])=1","||","2<=count(root.bags[0].pockets)"))',
+                'incremental("binary","!count(root.bags[1])=1||2<=count(root.bags[1].pockets)","root.bags[1].pockets",("!count(root.bags[1])=1||2<=count(root.bags[1].pockets)","!count(root.bags[1])=1","||","2<=count(root.bags[1].pockets)"))',
+                'incremental("constraint","!count(root.bags[0])=1||2<=count(root.bags[0].pockets)","root.bags[0].pockets",((5,"!count(root.bags[0])=1||2<=count(root.bags[0].pockets)"),"boolean"))',
+                'incremental("constraint","!count(root.bags[1])=1||2<=count(root.bags[1].pockets)","root.bags[1].pockets",((5,"!count(root.bags[1])=1||2<=count(root.bags[1].pockets)"),"boolean"))',
+            }
+        ),
+        "files": ["unbounded_two_lb.lp"],
+    },
+    "unbounded_multishot_zero_lb_one_max": {
+        "test": StableModels(
+            get_model_from_file("unbounded_singleshot_zero_lb_one_max.lp")
+            | {
+                'inc_set("root.bags.size.volume")',
+                'inc_set("root.bags.pockets")',
+                'inc_set("root.bags[0].pockets")',
+                'incremental("function","sum(root.bags.size.volume)","root.bags.size.volume",("sum(root.bags.size.volume)","sum","root.bags.size.volume"))',
+                'incremental("function","count(root.bags.pockets)","root.bags.pockets",("count(root.bags.pockets)","count","root.bags.pockets"))',
+                'incremental("function","count(root.bags[0].pockets)","root.bags[0].pockets",("count(root.bags[0].pockets)","count","root.bags[0].pockets"))',
+                'incremental("constraint","root.bags[0]","root.bags[0].pockets",((7,"root.bags[0]"),"table"))',
+                'incremental("binary","root.totalVolume[0]=sum(root.bags.size.volume)","root.bags.size.volume",("root.totalVolume[0]=sum(root.bags.size.volume)","root.totalVolume[0]","=","sum(root.bags.size.volume)"))',
+                'incremental("binary","5<count(root.bags.pockets)","root.bags.pockets",("5<count(root.bags.pockets)","5","<","count(root.bags.pockets)"))',
+                'incremental("binary","2<=count(root.bags[0].pockets)","root.bags[0].pockets",("2<=count(root.bags[0].pockets)","2","<=","count(root.bags[0].pockets)"))',
+                'incremental("constraint","root.totalVolume[0]=sum(root.bags.size.volume)","root.bags.size.volume",((0,"root.totalVolume[0]=sum(root.bags.size.volume)"),"boolean"))',
+                'incremental("constraint","5<count(root.bags.pockets)","root.bags.pockets",((4,"5<count(root.bags.pockets)"),"boolean"))',
+                'incremental("binary","!count(root.bags[0])=1||2<=count(root.bags[0].pockets)","root.bags[0].pockets",("!count(root.bags[0])=1||2<=count(root.bags[0].pockets)","!count(root.bags[0])=1","||","2<=count(root.bags[0].pockets)"))',
+                'incremental("constraint","!count(root.bags[0])=1||2<=count(root.bags[0].pockets)","root.bags[0].pockets",((5,"!count(root.bags[0])=1||2<=count(root.bags[0].pockets)"),"boolean"))',
+            }
+        ),
+        "files": ["unbounded_zero_lb.lp"],
+    },
+    "unbounded_multishot_two_lb_one_max": {
+        "test": StableModels(
+            get_model_from_file("unbounded_singleshot_two_lb_one_max.lp")
+            | {
+                'inc_set("root.bags.size.volume")',
+                'inc_set("root.bags.pockets")',
+                'inc_set("root.bags[0].pockets")',
+                'inc_set("root.bags[1].pockets")',
+                'inc_set("root.bags[2].pockets")',
+                'incremental("function","sum(root.bags.size.volume)","root.bags.size.volume",("sum(root.bags.size.volume)","sum","root.bags.size.volume"))',
+                'incremental("function","count(root.bags.pockets)","root.bags.pockets",("count(root.bags.pockets)","count","root.bags.pockets"))',
+                'incremental("function","count(root.bags[0].pockets)","root.bags[0].pockets",("count(root.bags[0].pockets)","count","root.bags[0].pockets"))',
+                'incremental("function","count(root.bags[1].pockets)","root.bags[1].pockets",("count(root.bags[1].pockets)","count","root.bags[1].pockets"))',
+                'incremental("function","count(root.bags[2].pockets)","root.bags[2].pockets",("count(root.bags[2].pockets)","count","root.bags[2].pockets"))',
+                'incremental("constraint","root.bags[0]","root.bags[0].pockets",((7,"root.bags[0]"),"table"))',
+                'incremental("constraint","root.bags[1]","root.bags[1].pockets",((7,"root.bags[1]"),"table"))',
+                'incremental("constraint","root.bags[2]","root.bags[2].pockets",((7,"root.bags[2]"),"table"))',
+                'incremental("binary","root.totalVolume[0]=sum(root.bags.size.volume)","root.bags.size.volume",("root.totalVolume[0]=sum(root.bags.size.volume)","root.totalVolume[0]","=","sum(root.bags.size.volume)"))',
+                'incremental("binary","5<count(root.bags.pockets)","root.bags.pockets",("5<count(root.bags.pockets)","5","<","count(root.bags.pockets)"))',
+                'incremental("binary","2<=count(root.bags[0].pockets)","root.bags[0].pockets",("2<=count(root.bags[0].pockets)","2","<=","count(root.bags[0].pockets)"))',
+                'incremental("binary","2<=count(root.bags[1].pockets)","root.bags[1].pockets",("2<=count(root.bags[1].pockets)","2","<=","count(root.bags[1].pockets)"))',
+                'incremental("binary","2<=count(root.bags[2].pockets)","root.bags[2].pockets",("2<=count(root.bags[2].pockets)","2","<=","count(root.bags[2].pockets)"))',
+                'incremental("constraint","root.totalVolume[0]=sum(root.bags.size.volume)","root.bags.size.volume",((0,"root.totalVolume[0]=sum(root.bags.size.volume)"),"boolean"))',
+                'incremental("constraint","5<count(root.bags.pockets)","root.bags.pockets",((4,"5<count(root.bags.pockets)"),"boolean"))',
+                'incremental("binary","!count(root.bags[0])=1||2<=count(root.bags[0].pockets)","root.bags[0].pockets",("!count(root.bags[0])=1||2<=count(root.bags[0].pockets)","!count(root.bags[0])=1","||","2<=count(root.bags[0].pockets)"))',
+                'incremental("binary","!count(root.bags[1])=1||2<=count(root.bags[1].pockets)","root.bags[1].pockets",("!count(root.bags[1])=1||2<=count(root.bags[1].pockets)","!count(root.bags[1])=1","||","2<=count(root.bags[1].pockets)"))',
+                'incremental("binary","!count(root.bags[2])=1||2<=count(root.bags[2].pockets)","root.bags[2].pockets",("!count(root.bags[2])=1||2<=count(root.bags[2].pockets)","!count(root.bags[2])=1","||","2<=count(root.bags[2].pockets)"))',
+                'incremental("constraint","!count(root.bags[0])=1||2<=count(root.bags[0].pockets)","root.bags[0].pockets",((5,"!count(root.bags[0])=1||2<=count(root.bags[0].pockets)"),"boolean"))',
+                'incremental("constraint","!count(root.bags[1])=1||2<=count(root.bags[1].pockets)","root.bags[1].pockets",((5,"!count(root.bags[1])=1||2<=count(root.bags[1].pockets)"),"boolean"))',
+                'incremental("constraint","!count(root.bags[2])=1||2<=count(root.bags[2].pockets)","root.bags[2].pockets",((5,"!count(root.bags[2])=1||2<=count(root.bags[2].pockets)"),"boolean"))',
+            }
+        ),
+        "files": ["unbounded_two_lb.lp"],
     },
 }

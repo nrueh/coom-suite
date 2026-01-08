@@ -4,6 +4,7 @@ Test cases for solving.
 
 # pylint: disable=R0801
 
+from typing import List, Optional
 from unittest import TestCase
 
 from . import run_test, unpack_test
@@ -15,12 +16,15 @@ class TestClingo(TestCase):
     Test cases for the clingo encoding.
     """
 
-    def run_test(self, test_name: str) -> None:
+    def run_test(self, test_name: str, extra_ctl_args: Optional[List[str]] = None) -> None:
         """
         Runs a clintest test with the clingo encoding.
         """
+        ctl_args = ["0"]
+        if extra_ctl_args:
+            ctl_args += extra_ctl_args
         test, program, files = unpack_test(test_name, TESTS_SOLVE)
-        run_test(test, files=files, program=program, ctl_args=["0"], solver="clingo")
+        run_test(test, files=files, program=program, ctl_args=ctl_args, solver="clingo")
 
     def test_structure(self) -> None:
         """
@@ -133,9 +137,20 @@ class TestClingo(TestCase):
         self.run_test("conditional_imply")
         self.run_test("multiple_conditions_imply")
 
+    def test_optimization(self) -> None:
+        """
+        Test solving optimization statements (clingo)
+        """
+        self.run_test("minimize", extra_ctl_args=["--opt-mode=optN"])
+        self.run_test("maximize", extra_ctl_args=["--opt-mode=optN"])
+        self.run_test("minimize_priority", extra_ctl_args=["--opt-mode=optN"])
+        self.run_test("maximize_priority", extra_ctl_args=["--opt-mode=optN"])
+        self.run_test("minimize_maximize_function", extra_ctl_args=["--opt-mode=optN"])
+        self.run_test("maximize_minimize_function", extra_ctl_args=["--opt-mode=optN"])
+
     def test_user_input(self) -> None:
         """
-        Test solving user input (clingo).
+        Test solving user input (clingo)
         """
         self.run_test("add_part")
         self.run_test("add_attribute")
@@ -149,21 +164,24 @@ class TestClingo(TestCase):
         self.run_test("set_invalid_value_num")
 
 
-class TestFclingo(TestCase):
+class TestFlingo(TestCase):
     """
-    Test cases for the fclingo encoding.
+    Test cases for the flingo encoding.
     """
 
-    def run_test(self, test_name: str) -> None:
+    def run_test(self, test_name: str, extra_ctl_args: Optional[List[str]] = None) -> None:
         """
-        Runs a clintest test with the fclingo encoding.
+        Runs a clintest test with the flingo encoding.
         """
-        test, program, files = unpack_test(test_name, TESTS_SOLVE, fclingo=True)
-        run_test(test, files=files, program=program, ctl_args=["0"], solver="fclingo", preprocess="False")
+        ctl_args = ["0"]
+        if extra_ctl_args:
+            ctl_args += extra_ctl_args  # nocoverage
+        test, program, files = unpack_test(test_name, TESTS_SOLVE, flingo=True)
+        run_test(test, files=files, program=program, ctl_args=ctl_args, solver="flingo", preprocess="False")
 
     def test_structure(self) -> None:
         """
-        Test structure generation (fclingo).
+        Test structure generation (flingo).
         """
         self.run_test("empty")
         self.run_test("optional_part")
@@ -173,7 +191,7 @@ class TestFclingo(TestCase):
 
     def test_attributes(self) -> None:
         """
-        Test attribute generation (fclingo).
+        Test attribute generation (flingo).
         """
         self.run_test("simple_discrete")
         self.run_test("optional_discrete")
@@ -188,7 +206,7 @@ class TestFclingo(TestCase):
 
     def test_boolean_constraints(self) -> None:
         """
-        Test Boolean constraints (fclingo).
+        Test Boolean constraints (flingo).
         """
         self.run_test("eq_sat")
         self.run_test("neq_sat")
@@ -219,7 +237,7 @@ class TestFclingo(TestCase):
 
     def test_table_constraints(self) -> None:
         """
-        Test table constraints (fclingo).
+        Test table constraints (flingo).
         """
         self.run_test("table_discrete")
         self.run_test("table_wildcard")
@@ -231,7 +249,7 @@ class TestFclingo(TestCase):
 
     def test_arithmetics(self) -> None:
         """
-        Test arithmetic formulas (fclingo).
+        Test arithmetic formulas (flingo).
         """
         self.run_test("plus_sat")
         self.run_test("minus_sat")
@@ -254,7 +272,7 @@ class TestFclingo(TestCase):
 
     def test_aggregates(self) -> None:
         """
-        Test aggregation functions (fclingo).
+        Test aggregation functions (flingo).
         """
         self.run_test("count")
         self.run_test("sum")
@@ -273,9 +291,20 @@ class TestFclingo(TestCase):
         self.run_test("conditional_imply")
         self.run_test("multiple_conditions_imply")
 
+    def test_optimization(self) -> None:
+        """
+        Test solving optimization statements (flingo)
+        """
+        self.run_test("minimize")
+        self.run_test("maximize")
+        # self.run_test("minimize_priority")
+        # self.run_test("maximize_priority")
+        self.run_test("minimize_maximize_function")
+        self.run_test("maximize_minimize_function")
+
     def test_user_input(self) -> None:
         """
-        Test solving user input (fclingo).
+        Test solving user input (flingo)
         """
         self.run_test("add_part")
         self.run_test("add_attribute")
