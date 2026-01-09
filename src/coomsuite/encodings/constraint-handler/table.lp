@@ -3,8 +3,9 @@ defined((C,ID))   :- column(C,ID,_,_), include(X) : column(C,ID,_,X).
 
 % Create formulas with variables and values or "True" for empty entries
 entry((C,ID),(Col,Row)) :- column(C,ID,Col,_), C=(Idx,_), allow(Idx,(_,Row),_).
-map_value(CID,Entry,operation(eq,(variable(X),(V,())))) :- convert(CID,Entry,X,V), include(X). % TODO: include needed?
-map_value(CID,Entry,val(bool,true))                    :- entry(CID,Entry), not convert(CID,Entry,_,_). % TODO: defined needed?
+
+map_value(CID,Entry,operation(eq,(variable(X),(V,())))) :- defined(CID), convert(CID,Entry,X,V).           % TODO: defined needed?
+map_value(CID,Entry,val(bool,true))                     :- defined(CID), entry(CID,Entry), not convert(CID,Entry,_,_). % TODO: defined needed?
 
 % For single-valued (or empty) entries, map is just the single expression
 % For multi-valued entries, map is disjunction of all values
