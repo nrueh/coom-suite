@@ -1,14 +1,26 @@
-% A table constraint is defined if none of its columns are undefined
-undefined(C,ID) :- column(C,ID,_,X), not include(X).
-defined(C,ID)   :- column(C,ID,_,_), not undefined(C,ID).
+% A table constraint is defined if all of its columns are defined
+defined((C,ID))   :- column(C,ID,_,_), include(X) : column(C,ID,_,X).
 
-% A row of a table is not satisfied if any of its entries is not satisfied.
-% Note that a table entry can contain multiple values.
-% This is incompatible with fclingo (mixed check of values).
-not_hit(C,ID,Row) :- allow(Idx,(Col,Row),_), column(C,ID,Col,X), C=(Idx,_), not value(X,_,V) : allow(Idx,(Col,Row),V).
+% Create formulas with variables and values or "True" for empty entries
+entry((C,ID),(Col,Row)) :- column(C,ID,Col,_), C=(Idx,_), allow(Idx,(_,Row),_).
+map_value(CID,Entry,operation(eq,(variable(X),(V,())))) :- convert(CID,Entry,X,V), include(X). % TODO: include needed?
+map_value(CID,Entry,val(bool,true))                    :- entry(CID,Entry), not convert(CID,Entry,_,_). % TODO: defined needed?
 
-% A table constraint is satisfied if one of its rows is satisfied (not not satisfied)
-satisfied(C,ID) :- allow(Idx,(_,Row),_), column(C,ID,_,_), C=(Idx,_), not not_hit(C,ID,Row).
+% For single-valued (or empty) entries, map is just the single expression
+% For multi-valued entries, map is disjunction of all values
+map_entry_aux(CID,Entry,E,I) :- map_value(CID,Entry,E), I = #count{ E' : map_value(CID,Entry,E'), E' < E }.
 
-% A table constraint is violated if is defined and not satisfied
-violated((C,ID)) :- constraint(C,"table"), defined(C,ID), not satisfied(C,ID).
+map_entry(CID,Entry,E)                 :- map_entry_aux(CID,Entry,E,0),   not map_entry_aux(CID,Entry,_,1).
+map_entry_tuple(CID,Entry,(E,()),0)    :- map_entry_aux(CID,Entry,E,0),       map_entry_aux(CID,Entry,_,1).
+map_entry_tuple(CID,Entry,(E',E),I+1)  :- map_entry_tuple(CID,Entry,E,I),     map_entry_aux(CID,Entry,E',I+1).
+map_entry(CID,Entry,operation(disj,E)) :- map_entry_tuple(CID,Entry,E,I), not map_entry_aux(CID,Entry,_,I+1).
+
+% Build conjunction of all entries in a row
+map_row_aux(CID,Row,0,  (E,()))    :- map_entry(CID,(0,Row),E).
+map_row_aux(CID,Row,I+1,(E',E))    :- map_row_aux(CID,Row,I,E),     map_entry(CID,(I+1,Row),E').
+map_row(CID,Row,operation(conj,E)) :- map_row_aux(CID,Row,I,E), not map_entry(CID,(I+1,Row),_).
+
+% Build disjunction of all rows
+table_aux(CID,0,(E,()))       :- map_row(CID,0,E).
+table_aux(CID,I+1,(E',E))     :- table_aux(CID,I,E),     map_row(CID,I+1,E').
+ensure(CID,operation(disj,E)) :- table_aux(CID,I,E), not map_row(CID,I+1,_), defined(CID).

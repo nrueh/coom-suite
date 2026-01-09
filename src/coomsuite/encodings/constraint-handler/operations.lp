@@ -1,36 +1,36 @@
 % Operator maps for arithmetic and logical operations
-operatorMap2("+",add).
-operatorMap2("*",mult).
-operatorMap2("-",sub).
-operatorMap2("/",fdiv).
-operatorMap2("^",pow).
+map_operator2("+",add).
+map_operator2("*",mult).
+map_operator2("-",sub).
+map_operator2("/",fdiv).
+map_operator2("^",pow).
 
-operatorMap2(">",gt).
-operatorMap2(">=",geq).
-operatorMap2("<",lt).
-operatorMap2("<=",leq).
-operatorMap2("=",eq).
-operatorMap2("!=",neq).
-operatorMap2("||",disj).
-operatorMap2("&&",conj).
+map_operator2(">",gt).
+map_operator2(">=",geq).
+map_operator2("<",lt).
+map_operator2("<=",leq).
+map_operator2("=",eq).
+map_operator2("!=",neq).
+map_operator2("||",disj).
+map_operator2("&&",conj).
 
-operatorMap1("!",lnot).
-operatorMap1("sqrt",sqrt).
-operatorMap1("cos",cos).
-operatorMap1("acos",acos).
-operatorMap1("sin",sin).
-operatorMap1("asin",asin).
-operatorMap1("tan",tan).
-operatorMap1("atan",atan).
-operatorMap1("sum",sumIntEntries).
-operatorMap1("max",maxEntries).
-operatorMap1("min",minEntries).
-operatorMap1("count",countEntries).
-%operatorMap1("count",length).
-operatorMap1("-",minus).
+map_operator1("!",lnot).
+map_operator1("sqrt",sqrt).
+map_operator1("cos",cos).
+map_operator1("acos",acos).
+map_operator1("sin",sin).
+map_operator1("asin",asin).
+map_operator1("tan",tan).
+map_operator1("atan",atan).
+map_operator1("sum",sumIntEntries).
+map_operator1("max",maxEntries).
+map_operator1("min",minEntries).
+map_operator1("count",countEntries).
+%map_operator1("count",length).
+map_operator1("-",minus).
 
 
-operatorMap1("()",brackets).
+map_operator1("()",brackets).
 computed(brackets,ARGS,val(T,V)) :- compute(brackets,ARGS), ARGS=(val(T,V),()).
 
 
