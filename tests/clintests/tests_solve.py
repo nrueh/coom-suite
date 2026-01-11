@@ -76,7 +76,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            discrete("A").
+            discrete("A",str).
             domain("A","A1").
             domain("A","A2").
             index("root.a[0]",0).
@@ -90,7 +90,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            discrete("A").
+            discrete("A",str).
             domain("A","A1").
             domain("A","A2").
             index("root.a[0]",0).
@@ -108,7 +108,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             type("root","product").
             type("root.a[0]","A").
             type("root.a[1]","A").
-            discrete("A").
+            discrete("A",str).
             domain("A","A1").
             domain("A","A2").
             index("root.a[0]",0).
@@ -126,7 +126,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            integer("A").
+            numeric("A",int).
             range("A",1,2).
             index("root.a[0]",0).
             parent("root.a[0]","root").
@@ -145,7 +145,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            integer("A").
+            numeric("A",int).
             range("A",1,2).
             index("root.a[0]",0).
             parent("root.a[0]","root").
@@ -169,7 +169,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             type("root","product").
             type("root.a[0]","A").
             type("root.a[1]","A").
-            integer("A").
+            numeric("A",int).
             range("A",1,2).
             index("root.a[0]",0).
             index("root.a[1]",1).
@@ -186,7 +186,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            integer("A").
+            numeric("A",int).
             index("root.a[0]",0).
             parent("root.a[0]","root").
             constraint(("root.a",1),"lowerbound").
@@ -205,7 +205,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            integer("A").
+            numeric("A",int).
             range("A",#inf,2).
             index("root.a[0]",0).
             parent("root.a[0]","root").
@@ -222,7 +222,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "program": """
             type("root","product").
             type("root.a[0]","A").
-            integer("A").
+            numeric("A",int).
             range("A",1,#sup).
             index("root.a[0]",0).
             parent("root.a[0]","root").
@@ -232,6 +232,32 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             constraint((0,"root.a[0]<3"),"boolean").
             binary("root.a[0]<3","root.a[0]","<","3").
             number("3",3).""",
+    },
+    "simple_float": {
+        "test": StableModels(
+            {'value("root.a[0]","1.0")'},
+            {'value("root.a[0]","1.1")'},
+            {'value("root.a[0]","1.2")'},
+            {'value("root.a[0]","1.3")'},
+            {'value("root.a[0]","1.4")'},
+            {'value("root.a[0]","1.5")'},
+            {'value("root.a[0]","1.6")'},
+            {'value("root.a[0]","1.7")'},
+            {'value("root.a[0]","1.8")'},
+            {'value("root.a[0]","1.9")'},
+            {'value("root.a[0]","2.0")'},
+        ),
+        "program": """
+            type("root","product").
+            type("root.a[0]","A").
+            numeric("A",float).
+            range("A",1,2).
+            precision("A",1).
+            index("root.a[0]",0).
+            parent("root.a[0]","root").
+            constraint(("root.a",1),"lowerbound").
+            set("root.a","root.a[0]").
+            part("product").""",
     },
     "eq_sat": {
         "test": TEST_EMPTY,
@@ -479,7 +505,7 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             part("product").
             type("root","product").
             type("root.a[0]","A").
-            discrete("A").
+            discrete("A",str).
             index("root.a[0]",0).
             parent("root.a[0]","root").
             constraint((0,"root"),"table").
@@ -643,6 +669,26 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             number("2",2).
             number("6",6).""",
     },
+    "plus_sat_float": {
+        "test": TEST_EMPTY,
+        "program": """
+            constraint((0,"5.5=1.1+4.4"),"boolean").
+            binary("5.5=1.1+4.4","5.5","=","1.1+5.5").
+            binary("1.1+4.4","1.1","+","4.4").
+            float("1.1").
+            float("5.5").
+            float("4.4").""",
+    },
+    "plus_unsat_float": {
+        "test": TEST_UNSAT,
+        "program": """
+            constraint((0,"5.5=1.1+4.5"),"boolean").
+            binary("5.5=1.1+4.5","5.5","=","1.1+5.5").
+            binary("1.1+4.5","1.1","+","4.5").
+            float("1.1").
+            float("5.5").
+            float("4.5").""",
+    },
     "count": {
         "test": StableModels({'include("root.x[0]")', 'include("root.x[1]")'}),
         "files": ["count.lp"],
@@ -677,10 +723,107 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
         "ftest": StableModels({'value("root.x[0]",3)', 'value("root.x[1]",3)'}, flingo=True),
         "files": ["max.lp"],
     },
-    "minimize": {
-        "test": OptimalModel({'value("root.totalWeight[0]",1)'}),
-        "ftest": OptimalModel({'value("root.totalWeight[0]",1)'}, flingo=True),
-        "program": """
+    "imply_with_number": {
+        "test": StableModels({'value("root.wheel[0]","W27")', 'value("root.wheel[0].size[0]",27)'}),
+        "files": ["imply_with_number.lp"],
+    },
+    "imply_with_float": {  # Constraint handler only
+        "test": StableModels({'value("root.a[0]","2.24")'}),
+        "files": ["imply_with_float.lp"],
+    },
+    "imply_with_variable": {
+        "test": StableModels(
+            {'value("root.a[0]",1)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",2)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",3)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.a[0]",1)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",2)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",3)'},
+            flingo=True,
+        ),
+        "files": ["imply_with_variable.lp"],
+    },
+    "imply_with_binary": {
+        "test": StableModels(
+            {'value("root.a[0]",4)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",5)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",6)', 'value("root.b[0]",3)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.a[0]",4)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",5)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",6)', 'value("root.b[0]",3)'},
+            flingo=True,
+        ),
+        "files": ["imply_with_binary.lp"],
+    },
+    "imply_with_unary": {
+        "test": StableModels(
+            {'value("root.a[0]",-1)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",-2)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",-3)', 'value("root.b[0]",3)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.a[0]",-1)', 'value("root.b[0]",1)'},
+            {'value("root.a[0]",-2)', 'value("root.b[0]",2)'},
+            {'value("root.a[0]",-3)', 'value("root.b[0]",3)'},
+            flingo=True,
+        ),
+        "files": ["imply_with_unary.lp"],
+    },
+    "imply_with_sum": {
+        "test": StableModels(
+            {'value("root.a[0]",2)', 'value("root.b[0]",1)', 'value("root.b[1]",1)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",2)', 'value("root.b[1]",1)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",1)', 'value("root.b[1]",2)'},
+            {'value("root.a[0]",4)', 'value("root.b[0]",2)', 'value("root.b[1]",2)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.a[0]",2)', 'value("root.b[0]",1)', 'value("root.b[1]",1)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",2)', 'value("root.b[1]",1)'},
+            {'value("root.a[0]",3)', 'value("root.b[0]",1)', 'value("root.b[1]",2)'},
+            {'value("root.a[0]",4)', 'value("root.b[0]",2)', 'value("root.b[1]",2)'},
+            flingo=True,
+        ),
+        "files": ["imply_with_sum.lp"],
+    },
+    "conditional_imply": {
+        "test": StableModels(
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)'},
+        ),
+        "ftest": StableModels(
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)'},
+            flingo=True,
+        ),
+        "files": ["conditional_imply.lp"],
+    },
+    "multiple_conditions_imply": {
+        "test": StableModels(
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
+        ),
+        "ftest": StableModels(
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",2)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Blue")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",1)', 'value("root.size[0]","Small")'},
+            {'value("root.color[0]","Red")', 'value("root.option[0]",2)', 'value("root.size[0]","Big")'},
+            flingo=True,
+        ),
+        "files": ["multiple_conditions_imply.lp"],
+        "minimize": {
+            "test": OptimalModel({'value("root.totalWeight[0]",1)'}),
+            "ftest": OptimalModel({'value("root.totalWeight[0]",1)'}, flingo=True),
+            "program": """
             integer("product.totalWeight").
             range("product.totalWeight",1,10).
             type("root","product").
@@ -691,11 +834,11 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             set("root.totalWeight","root.totalWeight[0]").
             part("product").
             minimize("root.totalWeight[0]",0).""",
-    },
-    "maximize": {
-        "test": OptimalModel({'value("root.totalOutput[0]",10)'}),
-        "ftest": OptimalModel({'value("root.totalOutput[0]",10)'}, flingo=True),
-        "program": """
+        },
+        "maximize": {
+            "test": OptimalModel({'value("root.totalOutput[0]",10)'}),
+            "ftest": OptimalModel({'value("root.totalOutput[0]",10)'}, flingo=True),
+            "program": """
             integer("product.totalOutput").
             range("product.totalOutput",1,10).
             type("root","product").
@@ -706,11 +849,11 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             set("root.totalOutput","root.totalOutput[0]").
             part("product").
             maximize("root.totalOutput[0]",0).""",
-    },
-    "minimize_priority": {
-        "test": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",0) '}),
-        "ftest": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",0) '}, flingo=True),
-        "program": """
+        },
+        "minimize_priority": {
+            "test": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",0) '}),
+            "ftest": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",0) '}, flingo=True),
+            "program": """
             integer("Bag.volume").
             range("Bag.volume",0,10).
             type("root","product").
@@ -728,11 +871,11 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             part("Bag").
             minimize("root.bags[0].volume[0]",1).
             maximize("root.bags[0].volume[0]",0).""",
-    },
-    "maximize_priority": {
-        "test": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",10)'}),
-        "ftest": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",10) '}, flingo=True),
-        "program": """
+        },
+        "maximize_priority": {
+            "test": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",10)'}),
+            "ftest": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",10) '}, flingo=True),
+            "program": """
             integer("Bag.volume").
             range("Bag.volume",0,10).
             type("root","product").
@@ -750,11 +893,11 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             part("Bag").
             minimize("root.bags[0].volume[0]",0).
             maximize("root.bags[0].volume[0]",1).""",
-    },
-    "minimize_maximize_function": {
-        "test": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",10)'}),
-        "ftest": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",10)'}, flingo=True),
-        "program": """
+        },
+        "minimize_maximize_function": {
+            "test": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",10)'}),
+            "ftest": OptimalModel({'include("root.bags[0]")', 'value("root.bags[0].volume[0]",10)'}, flingo=True),
+            "program": """
             integer("Bag.volume").
             range("Bag.volume",0,10).
             type("root","product").
@@ -786,26 +929,26 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             minimize("count(root.bags)",1).
             maximize("sum(root.bags.volume)",0).
         """,
-    },
-    "maximize_minimize_function": {
-        "test": OptimalModel(
-            {
-                'include("root.bags[0]")',
-                'include("root.bags[1]")',
-                'value("root.bags[0].volume[0]",10)',
-                'value("root.bags[1].volume[0]",10)',
-            }
-        ),
-        "ftest": OptimalModel(
-            {
-                'include("root.bags[0]")',
-                'include("root.bags[1]")',
-                'value("root.bags[0].volume[0]",10)',
-                'value("root.bags[1].volume[0]",10)',
-            },
-            flingo=True,
-        ),
-        "program": """
+        },
+        "maximize_minimize_function": {
+            "test": OptimalModel(
+                {
+                    'include("root.bags[0]")',
+                    'include("root.bags[1]")',
+                    'value("root.bags[0].volume[0]",10)',
+                    'value("root.bags[1].volume[0]",10)',
+                }
+            ),
+            "ftest": OptimalModel(
+                {
+                    'include("root.bags[0]")',
+                    'include("root.bags[1]")',
+                    'value("root.bags[0].volume[0]",10)',
+                    'value("root.bags[1].volume[0]",10)',
+                },
+                flingo=True,
+            ),
+            "program": """
             integer("Bag.volume").
             range("Bag.volume",0,10).
             type("root","product").
@@ -837,10 +980,10 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             minimize("count(root.bags)",0).
             maximize("sum(root.bags.volume)",1).
         """,
-    },
-    "add_part": {
-        "test": StableModels({'include("root.a[0]")'}),
-        "program": """
+        },
+        "add_part": {
+            "test": StableModels({'include("root.a[0]")'}),
+            "program": """
             type("root","product").
             type("root.a[0]","A").
             index("root.a[0]",0).
@@ -848,25 +991,25 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             part("product").
             part("A").
             user_include("root.a[0]").""",
-    },
-    "add_attribute": {
-        "test": StableModels({'value("root.basket[0]","White")'}, {'value("root.basket[0]","Black")'}),
-        "program": """
+        },
+        "add_attribute": {
+            "test": StableModels({'value("root.basket[0]","White")'}, {'value("root.basket[0]","Black")'}),
+            "program": """
             part("product").
-            discrete("Basket").
+            discrete("Basket",str).
             domain("Basket","Black").
             domain("Basket","White").
             type("root.basket[0]","Basket").
             parent("root.basket[0]","root").
             index("root.basket[0]",0).
             user_include("root.basket[0]").""",
-    },
-    "set_value_discrete": {
-        "test": StableModels({'value("root.a[0]","A1")'}),
-        "program": """
+        },
+        "set_value_discrete": {
+            "test": StableModels({'value("root.a[0]","A1")'}),
+            "program": """
             type("root","product").
             type("root.a[0]","A").
-            discrete("A").
+            discrete("A",str).
             domain("A","A1").
             domain("A","A2").
             index("root.a[0]",0).
@@ -875,14 +1018,14 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             set("root.a","root.a[0]").
             part("product").
             user_value("root.a[0]","A1").""",
-    },
-    "set_value_integer": {
-        "test": StableModels({'value("root.a[0]",1)'}),
-        "ftest": StableModels({'value("root.a[0]",1)'}, flingo=True),
-        "program": """
+        },
+        "set_value_integer": {
+            "test": StableModels({'value("root.a[0]",1)'}),
+            "ftest": StableModels({'value("root.a[0]",1)'}, flingo=True),
+            "program": """
             type("root","product").
             type("root.a[0]","A").
-            integer("A").
+            numeric("A",int).
             range("A",1,2).
             index("root.a[0]",0).
             parent("root.a[0]","root").
@@ -890,28 +1033,28 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             set("root.a","root.a[0]").
             part("product").
             user_value("root.a[0]",1).""",
-    },
-    "add_invalid_variable": {
-        "test": StableModels(set()),
-        "program": """
+        },
+        "add_invalid_variable": {
+            "test": StableModels(set()),
+            "program": """
             user_include("root.basket[0]").""",
-    },
-    "set_invalid_variable": {"test": StableModels(set()), "program": """user_value("root.color[0]","Yellow")."""},
-    "set_invalid_type": {
-        "test": StableModels(set(), {'include("root.basket[0]")'}),
-        "program": """
+        },
+        "set_invalid_variable": {"test": StableModels(set()), "program": """user_value("root.color[0]","Yellow")."""},
+        "set_invalid_type": {
+            "test": StableModels(set(), {'include("root.basket[0]")'}),
+            "program": """
             part("product").
             part("Basket").
             type("root.basket[0]","Basket").
             parent("root.basket[0]","root").
             index("root.basket[0]",0).
             user_value("root.basket[0]","Yellow").""",
-    },
-    "set_invalid_value_discrete": {
-        "test": StableModels({'value("root.color[0]","Red")'}),
-        "program": """
+        },
+        "set_invalid_value_discrete": {
+            "test": StableModels({'value("root.color[0]","Red")'}),
+            "program": """
             part("product").
-            discrete("Color").
+            discrete("Color",str).
             domain("Color","Red").
             type("root.color[0]","Color").
             parent("root.color[0]","root").
@@ -919,12 +1062,12 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             user_value("root.color[0]","Yellow").
             constraint(("root.color",1),"lowerbound").
             set("root.color","root.color[0]").""",
-    },
-    "set_invalid_value_num": {
-        "test": StableModels({'value("root.size[0]",1)'}, {'value("root.size[0]",2)'}, {'value("root.size[0]",3)'}),
-        "program": """
+        },
+        "set_invalid_value_num": {
+            "test": StableModels({'value("root.size[0]",1)'}, {'value("root.size[0]",2)'}, {'value("root.size[0]",3)'}),
+            "program": """
             part("product").
-            integer("product.size").
+            numeric("product.size",int).
             range("product.size",1,3).
             type("root","product").
             type("root.size[0]","product.size").
@@ -933,5 +1076,6 @@ TESTS_SOLVE: dict[str, dict[str, Any]] = {
             constraint(("root.size",1),"lowerbound").
             set("root.size","root.size[0]").
             user_value("root.size[0]",11).""",
+        },
     },
 }

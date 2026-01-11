@@ -1,7 +1,9 @@
-# Generated from /home/heuer/tools/coom-suite/src/coomsuite/utils/coom_grammar/user/UserInput.g4 by ANTLR 4.13.2
-from antlr4 import *
-from io import StringIO
+# Generated from /home/ruehling/projects/coom-suite-fork/src/coomsuite/utils/coom_grammar/user/UserInput.g4 by ANTLR 4.13.2
 import sys
+from io import StringIO
+
+from antlr4 import *
+
 if sys.version_info[1] > 5:
     from typing import TextIO
 else:
@@ -135,19 +137,19 @@ class UserInputLexer(Lexer):
     modeNames = [ "DEFAULT_MODE" ]
 
     literalNames = [ "<INVALID>",
-            "'blockinput'", "'{'", "'}'", "'set'", "'='", "'add'", "'-'", 
-            "'\\u221E'", "'.'", "'['", "'..'", "']'", "'last'", "';'", "'true'", 
+            "'blockinput'", "'{'", "'}'", "'set'", "'='", "'add'", "'-'",
+            "'\\u221E'", "'.'", "'['", "'..'", "']'", "'last'", "';'", "'true'",
             "'false'" ]
 
     symbolicNames = [ "<INVALID>",
-            "NAME", "INTEGER", "FLOATING", "NEWLINE", "WHITESPACE", "COMMENT", 
+            "NAME", "INTEGER", "FLOATING", "NEWLINE", "WHITESPACE", "COMMENT",
             "MULTILINE_COMMENT" ]
 
-    ruleNames = [ "T__0", "T__1", "T__2", "T__3", "T__4", "T__5", "T__6", 
-                  "T__7", "T__8", "T__9", "T__10", "T__11", "T__12", "T__13", 
-                  "T__14", "T__15", "NAME", "ALPHANUMERIC", "ALPHA", "DIGIT", 
-                  "QUOTED_SINGLE", "QUOTED_DOUBLE", "ESC", "UNICODE", "HEX", 
-                  "INTEGER", "FLOATING", "NEWLINE", "WHITESPACE", "COMMENT", 
+    ruleNames = [ "T__0", "T__1", "T__2", "T__3", "T__4", "T__5", "T__6",
+                  "T__7", "T__8", "T__9", "T__10", "T__11", "T__12", "T__13",
+                  "T__14", "T__15", "NAME", "ALPHANUMERIC", "ALPHA", "DIGIT",
+                  "QUOTED_SINGLE", "QUOTED_DOUBLE", "ESC", "UNICODE", "HEX",
+                  "INTEGER", "FLOATING", "NEWLINE", "WHITESPACE", "COMMENT",
                   "MULTILINE_COMMENT" ]
 
     grammarFileName = "UserInput.g4"

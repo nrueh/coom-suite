@@ -2,18 +2,18 @@ part("product").
 part("Carrier").
 part("Frame").
 
-integer("product.totalVolume").
+numeric("product.totalVolume",int).
 range("product.totalVolume",0,200).
 
-integer("product.requestedVolume").
-range("product.requestedVolume",200,200).
+numeric("product.requestedVolume",int).
+range("product.requestedVolume",0,200).
 
-discrete("Bag").
+discrete("Bag",str).
 domain("Bag","B20").
 domain("Bag","B50").
 domain("Bag","B100").
 
-discrete("Bag.volume").
+discrete("Bag.volume",int).
 domain("Bag.volume",20).
 domain("Bag.volume",50).
 domain("Bag.volume",100).
@@ -78,16 +78,17 @@ set("root.frame[0].bag[1]","root.frame.bag").
 number("4",4).
 
 explanation(1,"The total volume is equal to the sum of the volumes of all bags on the carrier and the frame.").
-constraint((1,"root.totalVolume[0]=sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)"),"boolean").
-binary("root.totalVolume[0]=sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)","root.totalVolume[0]","=","sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)").
+% constraint((1,"root.totalVolume[0]=sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)"),"boolean").
+% binary("root.totalVolume[0]=sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)","root.totalVolume[0]","=","sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)").
+imply((1,"root.totalVolume[0]"),"sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)").
 binary("sum(root.carrier.bag.volume)+sum(root.frame.bag.volume)","sum(root.carrier.bag.volume)","+","sum(root.frame.bag.volume)").
 function("sum(root.carrier.bag.volume)","sum","root.carrier.bag.volume").
-set("root.carrier[0].bag[2].volume[0]","root.carrier.bag.volume").
-set("root.carrier[0].bag[1].volume[0]","root.carrier.bag.volume").
-set("root.carrier[0].bag[0].volume[0]","root.carrier.bag.volume").
+set("root.carrier.bag.volume","root.carrier[0].bag[0].volume[0]").
+set("root.carrier.bag.volume","root.carrier[0].bag[1].volume[0]").
+set("root.carrier.bag.volume","root.carrier[0].bag[2].volume[0]").
 function("sum(root.frame.bag.volume)","sum","root.frame.bag.volume").
-set("root.frame[0].bag[1].volume[0]","root.frame.bag.volume").
-set("root.frame[0].bag[0].volume[0]","root.frame.bag.volume").
+set("root.frame.bag.volume","root.frame[0].bag[0].volume[0]").
+set("root.frame.bag.volume","root.frame[0].bag[1].volume[0]").
 
 explanation(2,"The total volume must be greater than or equal to the requested volume.").
 constraint((2,"root.totalVolume[0]>=root.requestedVolume[0]"),"boolean").
@@ -116,27 +117,37 @@ allow("Bag",(1,2),50).
 allow("Bag",(1,1),20).
 
 constraint(("root.totalVolume",1),"lowerbound").
+set("root.totalVolume","root.totalVolume[0]").
+
 constraint(("root.requestedVolume",1),"lowerbound").
+set("root.requestedVolume","root.requestedVolume[0]").
+
 constraint(("root.carrier",1),"lowerbound").
+set("root.carrier","root.carrier[0]").
+
 constraint(("root.frame",1),"lowerbound").
+set("root.frame","root.frame[0]").
+
 constraint(("root.carrier[0].bag",0),"lowerbound").
-constraint(("root.frame[0].bag",0),"lowerbound").
-constraint(("root.frame[0].bag[0].volume",1),"lowerbound").
-constraint(("root.frame[0].bag[1].volume",1),"lowerbound").
+set("root.carrier[0].bag","root.carrier[0].bag[0]").
+set("root.carrier[0].bag","root.carrier[0].bag[1]").
+set("root.carrier[0].bag","root.carrier[0].bag[2]").
+
 constraint(("root.carrier[0].bag[0].volume",1),"lowerbound").
+set("root.carrier[0].bag[0].volume","root.carrier[0].bag[0].volume[0]").
+
 constraint(("root.carrier[0].bag[1].volume",1),"lowerbound").
+set("root.carrier[0].bag[1].volume","root.carrier[0].bag[1].volume[0]").
+
 constraint(("root.carrier[0].bag[2].volume",1),"lowerbound").
-set("root.totalVolume[0]","root.totalVolume").
-set("root.requestedVolume[0]","root.requestedVolume").
-set("root.carrier[0]","root.carrier").
-set("root.frame[0]","root.frame").
-set("root.carrier[0].bag[0]","root.carrier[0].bag").
-set("root.carrier[0].bag[1]","root.carrier[0].bag").
-set("root.carrier[0].bag[2]","root.carrier[0].bag").
-set("root.frame[0].bag[0]","root.frame[0].bag").
-set("root.frame[0].bag[1]","root.frame[0].bag").
-set("root.frame[0].bag[0].volume[0]","root.frame[0].bag[0].volume").
-set("root.frame[0].bag[1].volume[0]","root.frame[0].bag[1].volume").
-set("root.carrier[0].bag[0].volume[0]","root.carrier[0].bag[0].volume").
-set("root.carrier[0].bag[1].volume[0]","root.carrier[0].bag[1].volume").
-set("root.carrier[0].bag[2].volume[0]","root.carrier[0].bag[2].volume").
+set("root.carrier[0].bag[2].volume","root.carrier[0].bag[2].volume[0]").
+
+constraint(("root.frame[0].bag",0),"lowerbound").
+set("root.frame[0].bag","root.frame[0].bag[0]").
+set("root.frame[0].bag","root.frame[0].bag[1]").
+
+constraint(("root.frame[0].bag[0].volume",1),"lowerbound").
+set("root.frame[0].bag[0].volume","root.frame[0].bag[0].volume[0]").
+
+constraint(("root.frame[0].bag[1].volume",1),"lowerbound").
+set("root.frame[0].bag[1].volume","root.frame[0].bag[1].volume[0]").

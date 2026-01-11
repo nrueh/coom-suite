@@ -1,0 +1,2802 @@
+// VM_minipema_constraints_Unterposition
+
+behavior Unterposition {
+
+define foo = grundmerkmale.bestellBreite
+
+    // Nutzereingaben
+    define eingabeBreite = grundmerkmale.eingabeBreite
+    define montageHoehe = grundmerkmale.montagehoehe
+    define durchgangshoehe = grundmerkmale.durchgangshoehe
+
+    // Konstanten aus der Konstruktion
+    define UKKUKK = 8.82  // Unterkante Kasten zu Unterkante Konsole
+    define UKKKTW = 90 // Unterkante Kasten zu Achse TW
+    define ATWW = 125 // Achse TW zur Wand
+    define r = 48.4985 // Parallele Drehpunkt Pfosten zu Achse T
+    define FSCH_Hoehe = 80 // Dachdicke
+
+    // Berechnung von Hilfsvariablen
+    define debug_deltaHoehe = montageHoehe - UKKUKK + UKKKTW - durchgangshoehe
+    define debug_deltaBreite = ATWW - eingabeBreite
+
+    define debug_deltaHoehePow2 = debug_deltaHoehe^2
+    define debug_deltaBreitePow2 = debug_deltaBreite^2
+    define debug_sqrtValue = sqrt(debug_deltaHoehePow2 + debug_deltaBreitePow2 )
+
+
+
+
+    // Zu berechnende Zielvariablen
+    define bestellBreite = grundmerkmale.bestellBreite
+    define neigungswinkel = grundmerkmale.neigungswinkelAnlage
+
+    // Berechnung
+    define debug_atanArg = debug_deltaBreite / debug_deltaHoehe
+    define debug_acosArg = r / debug_sqrtValue
+    define debug_acosValue = acos(debug_acosArg)
+    define debug_atanValue = atan(debug_atanArg)
+    require neigungswinkel = debug_atanValue + debug_acosValue
+    require bestellBreite = eingabeBreite + tan(neigungswinkel) * FSCH_Hoehe
+    require grundmerkmale.flaeche = grundmerkmale.laenge * bestellBreite / 1000000 // mm x mm to m^2
+    require grundmerkmale.weight = grundmerkmale.flaeche * cover.weight / 1000 // gramm to Kg
+
+
+
+
+    // debug Ausgaben
+    require grundmerkmale.debugValues.deltaHoehe = debug_deltaHoehe
+    require grundmerkmale.debugValues.deltaBreite = debug_deltaBreite
+    require grundmerkmale.debugValues.deltaBreitePow2 = debug_deltaBreitePow2
+    require grundmerkmale.debugValues.deltaHoehePow2 = debug_deltaHoehePow2
+    require grundmerkmale.debugValues.sqrtValue = debug_sqrtValue
+    require grundmerkmale.debugValues.acosValue = debug_acosValue
+    require grundmerkmale.debugValues.atanValue = debug_atanValue
+    require grundmerkmale.debugValues.acosArg = debug_acosArg
+    require grundmerkmale.debugValues.atanArg = debug_atanArg
+
+}
+
+
+
+// VM_minipema_constraints_Unterposition
+behavior Unterposition {
+	imply konstruktion.pfostenLI.unterposition = this
+    imply konstruktion.pfostenRE.unterposition = this
+
+}
+
+
+
+// VM_minipema_constraints_Pfosten
+
+behavior Pfosten {
+
+    // Ausgangswerte für die Bestimmung der Pfosten
+    define eingabeBreite = unterposition.grundmerkmale.eingabeBreite
+    define montageHoehe = unterposition.grundmerkmale.montagehoehe
+    define durchgangshoehe = unterposition.grundmerkmale.durchgangshoehe
+    define neigungswinkel = unterposition.grundmerkmale.neigungswinkelAnlage
+
+    require ueberstand = eingabeBreite - km_mittePfosten
+
+    require km_gesamthoehe = durchgangshoehe + tan(neigungswinkel) * ueberstand
+
+}
+
+
+
+// VM_minipema_constraints_Pfosten
+
+behavior Pfosten {
+
+    require ueberstand > 105
+	require km_mittePfosten < 4000
+	require km_gesamthoehe > 1000
+	require km_gesamthoehe < 3200
+
+
+	condition km_gesamthoehe > 2200
+	require typPfosten != _Doppelpfosten
+
+	 // these defaults are only here for technical reasons -> currently COOM shows unsat if no default for constrained num values exists
+	default ueberstand = 150
+	default km_mittePfosten = 3000
+	default km_gesamthoehe = 2000
+}
+
+
+
+// VM_minipema_terms_Home
+product {
+//			Konfigurationskontext	konfigurationskontext
+
+	1..25	Unterposition    		unterposition
+
+//	1..25	Anlagenverbund			anlagenverbund
+}
+
+
+// VM_minipema_terms_Unterposition
+behavior Unterposition {
+    default cover = _AcrylAllWeather
+}
+
+
+// VM_minipema_terms_Grundmerkmale
+behavior Grundmerkmale {
+readonly 	bestellBreite
+readonly    flaeche
+readonly    weight
+readonly 	debugValues.deltaHoehe
+readonly 	debugValues.deltaBreite
+readonly 	debugValues.deltaHoehePow2
+readonly 	debugValues.deltaBreitePow2
+readonly 	debugValues.sqrtValue
+readonly 	debugValues.atanValue
+readonly 	debugValues.acosValue
+readonly 	debugValues.atanArg
+readonly 	debugValues.acosArg
+readonly 	neigungswinkelAnlage
+}
+
+
+
+// VM_minipema_terms_Pfosten
+
+behavior Pfosten {
+    default typPfosten = _Starr
+}
+
+
+// VM_200_terms_Absturzsicherung
+structure Absturzsicherung {
+//Hauptposition
+
+	static	bool				absturzsicherungVorhanden
+
+	static	num/mm			500-1200		hoeheGlas
+	static	num/mm			40-2000			unterkanteGlas
+
+	static	EinbaubereichEdbRichtlinie		einbaubereichEdbRichtlinie
+	static	Windlastzone					windlastzone
+
+//Unterposition
+			num/mm			0-5000			breiteAbsturzsicherungLI
+			num/mm			0-5000			breiteAbsturzsicherungMI
+			num/mm			0-5000			breiteAbsturzsicherungRE
+
+			num/mm			0-5000			breiteAbsturzsicherungGesamt
+
+			VarianteAbsturzsicherung		varianteAbsturzsicherung
+}
+
+
+// VM_200_terms_Anlagenverbund
+structure Anlagenverbund {
+	reference	1x..20x	Unterposition			unterposition
+
+	num/mm				gesamtbreite
+}
+
+
+// VM_200_terms_Antrieb
+structure Antrieb {
+	static	Antriebsart			antriebsart
+
+			Motor				motor
+			Kurbel				kurbel
+
+			Ausrichtung			bedienseite
+}
+
+
+// VM_200_terms_Antriebsart
+enumeration Antriebsart {
+	_Ohne
+	_Motor
+	_Kurbel
+	_Akku
+}
+
+
+// VM_200_terms_Antriebsverbund
+structure Antriebsverbund {
+	reference	1x..3x	Unterposition			unterposition
+
+	num.#/qm			gesamtflaeche
+
+	Ausrichtung			bedienseiteVerbund
+	Ausrichtung 		kabelaustrittVerbund
+
+}
+
+
+// VM_200_terms_Ausfallwinkel
+enumeration Ausfallwinkel {
+	attribute num Grad
+	_0		=	(0)
+	_90		=	(90)
+	_135	=	(135)
+}
+
+
+// VM_200_terms_Ausfuehrung
+enumeration Ausfuehrung {
+	_Ohne
+	_Standard
+	_WeatherEdition
+}
+
+
+// VM_200_terms_AusfuehrungFuehrungsschiene
+enumeration AusfuehrungFuehrungsschiene {
+	_Gerade
+	_Gebogen
+
+}
+
+
+// VM_200_terms_AusfuehrungGehaeuse
+enumeration AusfuehrungGehaeuse {
+	attribute	num		hoehe
+	attribute	num		tiefe
+
+	_130	=	(130, 130)
+	_150	=	(150, 110)
+	_180	=	(180, 130)
+	_220	=	(220, 130)
+}
+
+
+// VM_200_terms_AusfuehrungVerstaerkungsprofil
+enumeration AusfuehrungVerstaerkungsprofil {
+	_Ohne
+	_Starr
+	_Mitlaufend
+
+}
+
+
+// VM_200_terms_Ausrichtung
+enumeration Ausrichtung {
+	_Ohne
+	_Links
+	_Rechts
+	_Oben
+	_Unten
+	_Hinten
+	_Vorne
+	_Seite
+	_Beidseitig
+	_Mitte
+}
+
+
+// VM_200_terms_Aussenfarbe
+enumeration Aussenfarbe {
+	_Ohne
+	_Weiss
+	_Sand
+	_Silber
+	_Schwarz
+	_Grau
+	_Anthrazit
+	_Seidenfarben
+}
+
+
+// VM_200_terms_Bahnbreite
+enumeration Bahnbreite {
+	attribute	num/mm	laenge
+
+	_Ohne	=	(0)
+	_1200	=	(1200)
+	_1770	=	(1770)
+	_2000	=	(2000)
+	_2600	=	(2600)
+	_2900	=	(2900)
+	_3200	=	(3200)
+}
+
+
+// VM_200_terms_Befestigungsbohrung
+enumeration Befestigungsbohrung {
+	_Ohne
+	_Seitlich
+	_Vorne
+}
+
+
+// VM_200_terms_Befestigungstyp
+enumeration Befestigungstyp {
+
+	_Laibungsmontage
+	_Wandmontage
+	_Haltepfosten
+	_Pfosten
+	_Winkel
+	_Ohne
+
+}
+
+
+// VM_200_terms_Beleuchtung
+structure Beleuchtung {
+
+			Ausrichtung			integrierteBeleuchtung
+			bool				dimmer
+
+	static	TypLichtschiene		typLichtschiene
+	static	Steuerungsart		steuerungLichtschiene
+			num/mm				laengeLichtschiene
+}
+
+
+// VM_200_terms_BeschriftungTuch
+enumeration BeschriftungTuch {
+	_Ohne
+	_Mit
+	_DirektdruckFertigkonfektioniert
+	_DirektdruckTeilkonfektioniert
+	_DirektdruckSunprintGewebe
+	_SchabloneFertigkonfektioniert
+	_SchabloneTeilkonfektioniert
+	_SchabloneWarema
+}
+
+
+// VM_200_terms_Bodenplatte
+enumeration Bodenplatte {
+	_Ohne
+	_Rund200
+}
+
+
+// VM_200_terms_DaemmungHinten
+enumeration DaemmungHinten {
+	attribute	num/mm	staerke
+
+	_Ohne	=	(0)
+	_20		=	(20)
+	_30		=	(30)
+	_35		=	(35)
+	_40		=	(40)
+	_50		=	(50)
+	_60		=	(60)
+	_70		=	(70)
+	_80		=	(80)
+	_90		=	(90)
+}
+
+
+// VM_200_terms_DaemmungOben
+enumeration DaemmungOben {
+	attribute	num/mm	staerke
+
+	_Ohne	=	(0)
+	_15		=	(15)
+	_20		=	(20)
+	_30		=	(30)
+	_40		=	(40)
+	_50		=	(50)
+	_60		=	(60)
+	_70		=	(70)
+	_80		=	(80)
+	_90		=	(90)
+}
+
+
+// VM_200_terms_Dessin
+enumeration Dessin {
+	attribute	Stoffart		stoffart
+	attribute	bool			unifarben
+	attribute	Stoffqualitaet	stoffqualitaet
+
+
+	_Ohne	= (_Ohne, false, _Ohne) //Keine Baugruppe Tuch
+	_7750	= (_AcrylStandard, true, _Standard)    // Unifarbe JA & Außenfarbe Tuch hide
+	_7820	= (_AcrylStandard, true, _Standard)    // Unifarbe JA & Außenfarbe Tuch hide
+	_6200	= (_AcrylStandard, true, _Standard)    // Unifarbe JA & Außenfarbe Tuch hide
+	_2851	= (_AcrylStandard, false, _Standard)    // Unifarbe NEIN & Außenfarbe Tuch hide
+	_2642	= (_AcrylStandard, false, _Standard)    // Unifarbe NEIN & Außenfarbe Tuch hide
+	_2818	= (_AcrylStandard, false, _Standard)    // Unifarbe NEIN & Außenfarbe Tuch hide
+	_4000	= (_AcrylLumera, true, _Lumera)      // Unifarbe JA & Außenfarbe Tuch hide
+	_4004	= (_AcrylLumera, true, _Lumera)      // Unifarbe JA & Außenfarbe Tuch hide
+	_4018	= (_AcrylLumera, true, _Lumera)      // Unifarbe JA & Außenfarbe Tuch hide
+	_4102	= (_AcrylLumera, false, _Lumera)      // Unifarbe NEIN & Außenfarbe Tuch hide
+	_4104	= (_AcrylLumera, false, _Lumera)      // Unifarbe NEIN & Außenfarbe Tuch hide
+	_4237	= (_AcrylLumera, false, _Lumera)      // Unifarbe NEIN & Außenfarbe Tuch hide
+	_6822	= (_AcrylPerfora, true, _Perfora)     // Unifarbe hidden & Außenfarbe Tuch hide
+	_6012	= (_AcrylPerfora, true, _Perfora)     // Unifarbe hidden & Außenfarbe Tuch hide
+	_6062	= (_AcrylPerfora, true, _Perfora)     // Unifarbe hidden & Außenfarbe Tuch hide
+	_6821	= (_AcrylAllWeather, true, _AllWeather) // Unifarbe hidden & Außenfarbe Tuch hide
+	_6011	= (_AcrylAllWeather, true, _AllWeather) // Unifarbe hidden & Außenfarbe Tuch hide
+	_6061	= (_AcrylAllWeather, true, _AllWeather) // Unifarbe hidden & Außenfarbe Tuch hide
+	_3502	= (_Screen, true, _Screen) // Unifarbe hide & Außenfarbe Tuch
+	_3503	= (_Screen, true, _Screen) // Unifarbe hide & Außenfarbe Tuch
+	_3504	= (_Screen, true, _Screen) // Unifarbe hide & Außenfarbe Tuch
+	_3520	= (_Screen, true, _Screen) // Unifarbe hide & Außenfarbe Tuch hide
+	_3519	= (_Screen, true, _Screen) // Unifarbe hide & Außenfarbe Tuch hide
+	_3518	= (_Screen, true, _Screen) // Unifarbe hide & Außenfarbe Tuch hide
+	_068	= (_Soltis92, true, _Soltis) // Unifarbe hide & Außenfarbe Tuch
+	_074	= (_Soltis92, true, _Soltis) // Unifarbe hide & Außenfarbe Tuch
+	_046	= (_Soltis92, true, _Soltis) // Unifarbe hide & Außenfarbe Tuch
+	_260	= (_Soltis92, true, _Soltis) // Unifarbe hide & Außenfarbe Tuch hide
+	_273	= (_Soltis92, true, _Soltis) // Unifarbe hide & Außenfarbe Tuch hide
+	_274	= (_Soltis92, true, _Soltis) // Unifarbe hide & Außenfarbe Tuch hide
+	_9513	= (_SoltisRainproofW36, true, _Soltis) // Unifarbe hide & Außenfarbe Tuch hide
+	_9514	= (_SoltisRainproofW36, true, _Soltis) // Unifarbe hide & Außenfarbe Tuch hide
+	_9534	= (_SoltisRainproofW36, true, _Soltis) // Unifarbe hide & Außenfarbe Tuch hide
+	_9533	= (_SoltisRainproofW36, true, _Soltis) // Unifarbe hide & Außenfarbe Tuch hide
+	_22053	= (_SoltisB92, true, _SoltisB92)     // Unifarbe hide & Außenfarbe Tuch
+	_3791	= (_SoltisVeozip, true, _Veozip) // Unifarbe hide & Außenfarbe Tuch hide
+	_3786	= (_SoltisVeozip, true, _Veozip) // Unifarbe hide & Außenfarbe Tuch hide
+	_3788	= (_SoltisVeozip, true, _Veozip) // Unifarbe hide & Außenfarbe Tuch hide
+	_8747	= (_TwilightPearl, true, _Pearl) // Unifarbe hide & Außenfarbe Tuch hide
+	_8746	= (_TwilightPearl, true, _Pearl) // Unifarbe hide & Außenfarbe Tuch hide
+	_8755	= (_TwilightPearl, true, _Pearl) // Unifarbe hide & Außenfarbe Tuch hide
+	_8722	= (_TwilightMetal, true, _Pearl) // Unifarbe hide & Außenfarbe Tuch hide
+	_8721	= (_TwilightMetal, true, _Pearl) // Unifarbe hide & Außenfarbe Tuch hide
+	_8723	= (_TwilightMetal, true, _Pearl) // Unifarbe hide & Außenfarbe Tuch hide
+	_44500	= (_SecuTexA2, true, _Silikon)     // Unifarbe hide & Außenfarbe Tuch
+	_44502	= (_SecuTexA2, true, _Silikon)     // Unifarbe hide & Außenfarbe Tuch
+	_44501	= (_SecuTexA2, true, _Silikon)    // Unifarbe hide & Außenfarbe Tuch hide
+	_Sonder	= (_Sonder, false, _Sonder)
+
+	//_8533	//= (Gewebelack) // Unifarbe hide & Außenfarbe Tuch hide
+	//_8538	//= (Gewebelack) // Unifarbe hide & Außenfarbe Tuch hide
+	//_8515	//= (Gewebelack) // Unifarbe hide & Außenfarbe Tuch hide
+
+//Pema
+	_9540	= (_SunworkerTop, false, _Soltis)
+	_9541	= (_SunworkerTop, false, _Soltis)
+    _9542	= (_SunworkerTop, false, _Soltis)
+    _9543	= (_SunworkerTop, false, _Soltis)
+    _9544	= (_SunworkerTop, false, _Soltis)
+    _9545	= (_SunworkerTop, false, _Soltis)
+    _9600	= (_SunvasPerlaFR, false, _Sunsilk)
+    _9601	= (_SunvasPerlaFR, false, _Sunsilk)
+    _9602	= (_SunvasPerlaFR, false, _Sunsilk)
+    _9603	= (_SunvasPerlaFR, false, _Sunsilk)
+    _9604	= (_SunvasPerlaFR, false, _Sunsilk)
+}
+
+
+// VM_200_terms_DurchgaengigeBlende
+enumeration DurchgaengigeBlende {
+	_Anfang
+	_Mitte
+	_Ende
+	_Ohne
+}
+
+
+// VM_200_terms_DurchmesserSteckdose
+enumeration DurchmesserSteckdose {
+	_Ohne
+	_68	//Deutschland
+	_83	//Schweiz
+}
+
+
+// VM_200_terms_EinbaubereichEdbRichtlinie
+enumeration EinbaubereichEdbRichtlinie {
+	_Ohne
+	_Einbaubereich1
+	_Einbaubereich2
+}
+
+
+// VM_200_terms_Endschiene
+structure Endschiene {
+	bool				buerstenkeder
+	num/mm				breiteEndschiene
+	KunststoffFarben	kunststofffarbeEndschiene
+	Profiltyp			profiltyp
+}
+
+
+// VM_200_terms_Ermittlungsart
+enumeration Ermittlungsart {
+	_Ohne
+	_Automatisch
+	_Manuell
+}
+
+
+// VM_200_terms_Fallarm
+structure Fallarm {
+	Ausfallwinkel			ausfallwinkel
+}
+
+
+// VM_200_terms_Farbe
+enumeration Farbe{
+	attribute	Oberflaechenstruktur		oberflaechenstruktur
+	attribute	string						label
+	attribute	string						oberflaechenbehandlung
+
+	_DB502			= (_Matt, Blaueisenglimmer, pulverbeschichtet)
+	_DB603			= (_Matt, Grüneisenglimmer, pulverbeschichtet)
+	_DB701			= (_Matt, GrauEisenglimmer, pulverbeschichtet)
+	_DB702			= (_Matt, GrauEisenglimmer, pulverbeschichtet)
+	_DB703			= (_Matt, AnthrazitEisenglimmer, pulverbeschichtet)
+	_DB704			= (_Matt, Graueisenglimmer, pulverbeschichtet)
+	_RAL1001		= (_Seidenglaenzend, Beige, pulverbeschichtet)
+	_RAL1002		= (_Seidenglaenzend, Sandgelb, pulverbeschichtet)
+	_RAL1003		= (_Seidenglaenzend, Signalgelb, pulverbeschichtet)
+	_RAL1004		= (_Seidenglaenzend, Goldgelb, pulverbeschichtet)
+	_RAL1006		= (_Seidenglaenzend, Maisgelb, pulverbeschichtet)
+	_RAL1007		= (_Seidenglaenzend, Narzissengelb, pulverbeschichtet)
+	_RAL1011		= (_Seidenglaenzend, Braunbeige, pulverbeschichtet)
+	_RAL1013		= (_Seidenglaenzend, Perlweiss, pulverbeschichtet)
+	_RAL1014		= (_Seidenglaenzend, Elfenbein, pulverbeschichtet)
+	_RAL1015		= (_Seidenglaenzend, Hellelfenbein, pulverbeschichtet)
+	_RAL1016		= (_Seidenglaenzend, Schwefelgelb, pulverbeschichtet)
+	_RAL1017		= (_Seidenglaenzend, Safrangelb, pulverbeschichtet)
+	_RAL1018		= (_Seidenglaenzend, Zinkgelb, pulverbeschichtet)
+	_RAL1019		= (_Seidenglaenzend, Graubeige, pulverbeschichtet)
+	_RAL1023		= (_Seidenglaenzend, Verkehrsgelb, pulverbeschichtet)
+	_RAL1024		= (_Seidenglaenzend, Ockergelb, pulverbeschichtet)
+	_RAL1027		= (_Seidenglaenzend, Currygelb, pulverbeschichtet)
+	_RAL1032		= (_Seidenglaenzend, Ginstergelb, pulverbeschichtet)
+	_RAL1034		= (_Seidenglaenzend, Pastellgelb, pulverbeschichtet)
+	_RAL1035		= (_PerlglimmerSeidenglaenzend, Perlbeige, pulverbeschichtet)
+	_RAL1036		= (_PerlglimmerSeidenglaenzend, Perlgold, pulverbeschichtet)
+	_RAL2000		= (_Seidenglaenzend, Gelborange, pulverbeschichtet)
+	_RAL2012		= (_Seidenglaenzend, Lachsorange, pulverbeschichtet)
+	_RAL2013		= (_PerlglimmerMatt, Perlorange, pulverbeschichtet)
+	_RAL3000		= (_Seidenglaenzend, Feuerrot, pulverbeschichtet)
+	_RAL3001		= (_Seidenglaenzend, Signalrot, pulverbeschichtet)
+	_RAL3002		= (_Seidenglaenzend, Karminrot, pulverbeschichtet)
+	_RAL3003		= (_Seidenglaenzend, Rubinrot, pulverbeschichtet)
+	_RAL3004		= (_Seidenglaenzend, Purpurrot, pulverbeschichtet)
+	_RAL3005		= (_Seidenglaenzend, Weinrot, pulverbeschichtet)
+	_RAL3007		= (_Seidenglaenzend, Schwarzrot, pulverbeschichtet)
+	_RAL3009		= (_Seidenglaenzend, Oxidrot, pulverbeschichtet)
+	_RAL3011    	= (_Seidenglaenzend, Braunrot, pulverbeschichtet)
+	_RAL3013		= (_Seidenglaenzend, Tomatenrot, pulverbeschichtet)
+	_RAL3016		= (_Seidenglaenzend, Korallenrot, pulverbeschichtet)
+	_RAL3020		= (_Seidenglaenzend, Verkehrsrot, pulverbeschichtet)
+	_RAL3032		= (_PerlglimmerMatt, Perlrubinrot, pulverbeschichtet)
+	_RAL5000		= (_Seidenglaenzend, Violettblau, pulverbeschichtet)
+	_RAL5002		= (_Seidenglaenzend, Ultramarineblau, pulverbeschichtet)
+	_RAL5003		= (_Seidenglaenzend, Saphirblau, pulverbeschichtet)
+	_RAL5005		= (_Seidenglaenzend, Signalblau, pulverbeschichtet)
+	_RAL5007		= (_Seidenglaenzend, Brillantblau, pulverbeschichtet)
+	_RAL5008		= (_Seidenglaenzend, Graublau, pulverbeschichtet)
+	_RAL5009		= (_Seidenglaenzend, Azurblau, pulverbeschichtet)
+	_RAL5010		= (_Seidenglaenzend, Enzianblau, pulverbeschichtet)
+	_RAL5011		= (_Seidenglaenzend, Stahlblau, pulverbeschichtet)
+	_RAL5012		= (_Seidenglaenzend, Lichtblau, pulverbeschichtet)
+	_RAL5013		= (_Seidenglaenzend, Kobaltblau, pulverbeschichtet)
+	_RAL5014		= (_Seidenglaenzend, Taubenblau, pulverbeschichtet)
+	_RAL5015		= (_Seidenglaenzend, Himmelblau, pulverbeschichtet)
+	_RAL5017		= (_Seidenglaenzend, Verkehrsblau, pulverbeschichtet)
+	_RAL5018		= (_Seidenglaenzend, Türkisblau, pulverbeschichtet)
+	_RAL5020		= (_Seidenglaenzend, Ozeanblau, pulverbeschichtet)
+	_RAL5021		= (_Seidenglaenzend, Wasserblau, pulverbeschichtet)
+	_RAL5022		= (_Seidenglaenzend, Nachtblau, pulverbeschichtet)
+	_RAL5023		= (_Seidenglaenzend, Fernblau, pulverbeschichtet)
+	_RAL5024		= (_Seidenglaenzend, Pastelblau, pulverbeschichtet)
+	_RAL6000		= (_Seidenglaenzend, Patinagrün, pulverbeschichtet)
+	_RAL6001		= (_Seidenglaenzend, Smaragdgrün, pulverbeschichtet)
+	_RAL6002		= (_Seidenglaenzend, Laubgrün, pulverbeschichtet)
+	_RAL6003		= (_Seidenglaenzend, Olivgrün, pulverbeschichtet)
+	_RAL6004		= (_Seidenglaenzend, Blaugrün, pulverbeschichtet)
+	_RAL6005		= (_Seidenglaenzend, Moosgrün, pulverbeschichtet)
+	_RAL6006		= (_Seidenglaenzend, Grauoliv, pulverbeschichtet)
+	_RAL6009		= (_Seidenglaenzend, Tannengrün, pulverbeschichtet)
+	_RAL6010		= (_Seidenglaenzend, Grasgrün, pulverbeschichtet)
+	_RAL6011		= (_Seidenglaenzend, Resedagrün, pulverbeschichtet)
+	_RAL6012		= (_Seidenglaenzend, Schwarzgrün, pulverbeschichtet)
+	_RAL6013		= (_Seidenglaenzend, Schilfgrün, pulverbeschichtet)
+	_RAL6015		= (_Seidenglaenzend, Schwarzoliv, pulverbeschichtet)
+	_RAL6016		= (_Seidenglaenzend, Türkisgrün, pulverbeschichtet)
+	_RAL6017		= (_Seidenglaenzend, Maigrün, pulverbeschichtet)
+	_RAL6018		= (_Seidenglaenzend, Gelbgrün, pulverbeschichtet)
+	_RAL6019		= (_Seidenglaenzend, Weissgrün, pulverbeschichtet)
+	_RAL6020		= (_Seidenglaenzend, Chromoxigrün, pulverbeschichtet)
+	_RAL6021		= (_Seidenglaenzend, Blassgrün, pulverbeschichtet)
+	_RAL6025		= (_Seidenglaenzend, Farngrün, pulverbeschichtet)
+	_RAL6026		= (_Seidenglaenzend, Opalgrün, pulverbeschichtet)
+	_RAL6027		= (_Seidenglaenzend, Lichtgrün, pulverbeschichtet)
+	_RAL6028		= (_Seidenglaenzend, Kiefergrün, pulverbeschichtet)
+	_RAL6034		= (_Seidenglaenzend, Pastellgrün, pulverbeschichtet)
+	_RAL7000		= (_Seidenglaenzend, Fehgrau, pulverbeschichtet)
+	_RAL7001		= (_Seidenglaenzend, Silbergrau, pulverbeschichtet)
+	_RAL7002		= (_Seidenglaenzend, Olivgrau, pulverbeschichtet)
+	_RAL7003		= (_Seidenglaenzend, Moosgrau, pulverbeschichtet)
+	_RAL7004		= (_Seidenglaenzend, Signalgrau, pulverbeschichtet)
+	_RAL7005		= (_Seidenglaenzend, Mausgrau, pulverbeschichtet)
+	_RAL7006		= (_Seidenglaenzend, Beigegrau, pulverbeschichtet)
+	_RAL7008		= (_Seidenglaenzend, Khakigrau, pulverbeschichtet)
+	_RAL7009		= (_Seidenglaenzend, Grüngrau, pulverbeschichtet)
+	_RAL7010		= (_Seidenglaenzend, Zeltgrau, pulverbeschichtet)
+	_RAL7011		= (_Seidenglaenzend, Eisengrau, pulverbeschichtet)
+	_RAL7012		= (_Seidenglaenzend, Basaltgrau, pulverbeschichtet)
+	_RAL7013		= (_Seidenglaenzend, Braungrau, pulverbeschichtet)
+	_RAL7015		= (_Seidenglaenzend, Schiefergrau, pulverbeschichtet)
+	_RAL7016		= (_Seidenglaenzend, Anthrazitgrau, pulverbeschichtet)
+	_RAL7021		= (_Seidenglaenzend, Schwarzgrau, pulverbeschichtet)
+	_RAL7022		= (_Seidenglaenzend, Umbragrau, pulverbeschichtet)
+	_RAL7023		= (_Seidenglaenzend, Betongrau, pulverbeschichtet)
+	_RAL7024		= (_Seidenglaenzend, Graphitgrau, pulverbeschichtet)
+	_RAL7026		= (_Seidenglaenzend, Granitgrau, pulverbeschichtet)
+	_RAL7030		= (_Seidenglaenzend, Steingrau, pulverbeschichtet)
+	_RAL7031		= (_Seidenglaenzend, Blaugrau, pulverbeschichtet)
+	_RAL7032		= (_Seidenglaenzend, Kieselgrau, pulverbeschichtet)
+	_RAL7033		= (_Seidenglaenzend, Zementgrau, pulverbeschichtet)
+	_RAL7034		= (_Seidenglaenzend, Gelbgrau, pulverbeschichtet)
+	_RAL7035		= (_Seidenglaenzend, Lichtgrau, pulverbeschichtet)
+	_RAL7036		= (_Seidenglaenzend, Platingrau, pulverbeschichtet)
+	_RAL7037		= (_Seidenglaenzend, Staubgrau, pulverbeschichtet)
+	_RAL7038		= (_Seidenglaenzend, Achatgrau, pulverbeschichtet)
+	_RAL7039    	= (_Seidenglaenzend, Quarzgrau, pulverbeschichtet)
+	_RAL7040		= (_Seidenglaenzend, Fenstergrau, pulverbeschichtet)
+	_RAL7042		= (_Seidenglaenzend, VerkehrsgrauA, pulverbeschichtet)
+	_RAL7043		= (_Seidenglaenzend, VerkehrsgrauB, pulverbeschichtet)
+	_RAL7044		= (_Seidenglaenzend, Seidengrau, pulverbeschichtet)
+	_RAL7045		= (_Seidenglaenzend, Telegrau1, pulverbeschichtet)
+	_RAL7046		= (_Seidenglaenzend, Telegrau2, pulverbeschichtet)
+	_RAL7047		= (_Seidenglaenzend, Telegrau4, pulverbeschichtet)
+	_RAL7048		= (_PerlglimmerSeidenglaenzend, Perlmausgrau, pulverbeschichtet)
+	_RAL8000		= (_Seidenglaenzend, Grünbraun, pulverbeschichtet)
+	_RAL8001		= (_Seidenglaenzend, Ockerbraun, pulverbeschichtet)
+	_RAL8002		= (_Seidenglaenzend, Signalbraun, pulverbeschichtet)
+	_RAL8003		= (_Seidenglaenzend, Lehmbraun, pulverbeschichtet)
+	_RAL8004		= (_Seidenglaenzend, Kupferbraun, pulverbeschichtet)
+	_RAL8007		= (_Seidenglaenzend, Rehbraun, pulverbeschichtet)
+	_RAL8008		= (_Seidenglaenzend, Olivbraun, pulverbeschichtet)
+	_RAL8011		= (_Seidenglaenzend, Nussbraun, pulverbeschichtet)
+	_RAL8012		= (_Seidenglaenzend, Rotbraun, pulverbeschichtet)
+	_RAL8014		= (_Seidenglaenzend, Sepiabraun, pulverbeschichtet)
+	_RAL8015		= (_Seidenglaenzend, Kastaienbraun, pulverbeschichtet)
+	_RAL8016		= (_Seidenglaenzend, Mahagonibraun, pulverbeschichtet)
+	_RAL8017		= (_Seidenglaenzend, Schokoladenbraun, pulverbeschichtet)
+	_RAL8019		= (_Seidenglaenzend, Graubraun, pulverbeschichtet)
+	_RAL8022		= (_Seidenglaenzend, Schwarzbraun, pulverbeschichtet)
+	_RAL8023		= (_Seidenglaenzend, Orangenbraun, pulverbeschichtet)
+	_RAL8024		= (_Seidenglaenzend, Beigebraun, pulverbeschichtet)
+	_RAL8025		= (_Seidenglaenzend, Blassbraun, pulverbeschichtet)
+	_RAL8028		= (_Seidenglaenzend, Terrabraun, pulverbeschichtet)
+	_RAL8077		= (_Seidenglaenzend, Braun, pulverbeschichtet)
+	_RAL9001		= (_Seidenglaenzend, Cremeweiss, pulverbeschichtet)
+	_RAL9002		= (_Seidenglaenzend, Grauweiss, pulverbeschichtet)
+	_RAL9003		= (_Seidenglaenzend, Signalweiss, pulverbeschichtet)
+	_RAL9004		= (_Seidenglaenzend, Signalschwarz, pulverbeschichtet)
+	_RAL9005		= (_Seidenglaenzend, Tiefschwarz, pulverbeschichtet)
+	_RAL9006		= (_Seidenglaenzend, Weissaluminium, pulverbeschichtet)
+	_RAL9007		= (_Seidenglaenzend, Graualuminium, pulverbeschichtet)
+	_RAL9010		= (_Seidenglaenzend, Reinweiss, pulverbeschichtet)
+	_RAL9011		= (_Seidenglaenzend, Graphitschwarz, pulverbeschichtet)
+	_RAL9016		= (_Seidenglaenzend, Verkehrsweiss, pulverbeschichtet)
+	_RAL9017		= (_Seidenglaenzend, Verkehrsschwarz, pulverbeschichtet)
+	_RAL9018		= (_Seidenglaenzend, Papyrusweiss, pulverbeschichtet)
+	_RAL9022		= (_PerlglimmerMatt, Perlhellgrau, pulverbeschichtet)
+	_RAL9023		= (_PerlglimmerMatt, Perldunkelgrau, pulverbeschichtet)
+	_W3005			= (_HwfPerlglimmerSeidenglaenzend, WeinrotPerlglimmer, pulverbeschichtet)
+	_W4800			= (_Seidenglaenzend, Hellbeige, pulverbeschichtet)
+	_W4914			= (_Feinstruktur, Weissaluminium, pulverbeschichtet)
+	_W4915			= (_MetallicFeinstrukturMatt, Graualuminium, pulverbeschichtet)
+	_W4916    		= (_Feinstruktur, AnthrazitEisenglimmer, pulverbeschichtet)
+	_W4917			= (_MetallicFeinstrukturMatt, Schwarzgrau, pulverbeschichtet)
+	_W4918			= (_MetallicFeinstrukturMatt, Sepiabraun, pulverbeschichtet)
+	_W4919			= (_MetallicFeinstrukturMatt, ErdbraunEisenglimmer, pulverbeschichtet)
+	_W4922			= (_GlattMatt, Cappucino, pulverbeschichtet)
+	_W7329			= (_MetallicGlattSeidenglaenzend, Dunkelbronze, pulverbeschichtet)
+	_WC31			= (_MetallicGlattMatt, Leichtbronze_Eloxalnachbildung, pulverbeschichtet)
+	_WC32			= (_MetallicGlattMatt, Hellbronze_Eloxalnachbildung, pulverbeschichtet)
+	_WC33			= (_MetallicGlattMatt, Mittelbronze_Eloxalnachbildung, pulverbeschichtet)
+	_WC34			= (_GlattSeidenmatt, Dunkelbronze_Eloxalnachbildung, pulverbeschichtet)
+	_C0				= (_Ohne, Eloxal_C0, eloxiert)
+	_C31			= (_Ohne, Eloxal_C31, eloxiert)
+	_C32			= (_Ohne, Eloxal_C32, eloxiert)
+	_C33			= (_Ohne, Eloxal_C33, eloxiert)
+	_C34			= (_Ohne, Eloxal_C34, eloxiert)
+	_C35			= (_Ohne, Eloxal_C35, eloxiert)
+	_C0Metallic		= (_HwfMatt, SilberUltramatt, eloxiert)
+	_C31Metallic	= (_HwfMatt, LichtbronzeUltramatt, eloxiert)
+	_C32Metallic	= (_HwfMatt, HellbronzeUltramatt, eloxiert)
+	_C33Metallic	= (_HwfMatt, MittelbronzeUltramatt, eloxiert)
+	_C34Metallic	= (_HwfMatt, DunkelbronzeUltramatt, eloxiert)
+	_C35Metallic	= (_HwfMatt, SchwarzUltramatt, eloxiert)
+	_Sonder			= (_Ohne, Weitere_Farben, Sonder)
+	_Ohne			= (_Ohne, Ohne, Ohne)
+}
+
+
+// VM_200_terms_Finish
+structure Finish {
+	Farbe					farbe
+	Oberflaechenstruktur	oberflaechenstruktur
+
+	string					sonderfarbe
+}
+
+
+// VM_200_terms_FormEntwaesserung
+enumeration FormEntwaesserung {
+	_Ohne
+	_EckigMitSpeier
+	_EckigOhneSpeier
+	_Weiterfuehrend
+}
+
+
+// VM_200_terms_Fuehrung
+structure Fuehrung {
+	Fuehrungsart			fuehrungsart
+
+	Fuehrungsschiene		fuehrungsschieneLI
+	Fuehrungsschiene		fuehrungsschieneRE
+	Fuehrungsseil			fuehrungsseil
+	Fallarm					fallarm
+	KunststoffFarben		kstTeileFuehrung
+	Ermittlungsart			fuehrungErmitteln
+	Befestigungsbohrung		befestigungsbohrung
+	Halter					halterFuehrungsschiene
+
+	bool					fuehrungREWieLI
+	bool					schienenfuehrung
+
+}
+
+
+// VM_200_terms_Fuehrungsart
+enumeration Fuehrungsart {
+	_EasyZip
+	_Schiene
+	_Seil
+	_Markisolette
+	_Fallarm
+}
+
+
+// VM_200_terms_Fuehrungsschiene
+structure Fuehrungsschiene {
+	reference	Unterposition						unterposition
+	reference	Pfosten								pfosten
+
+				bool								einputzbar
+				bool								untenAbgeschraegt
+
+				num/Grad		0-10				winkelAbgeschraegt
+				num/mm			0-2000				verlaengerungFuehrung
+				num/mm			0-1200				ueberstandPfosten
+
+				num/mm								minUeberstandPfosten
+				num/mm								maxUeberstandPfosten
+
+				TypFuehrungsschiene					typFuehrungsschiene
+	static		AusfuehrungFuehrungsschiene			ausfuehrungFuehrungsschiene
+				RadiusFuehrungsschiene				radiusFuehrungsschiene
+
+	// ---KM TEST---
+				bool								ausfraesung
+}
+
+
+// VM_200_terms_Fuehrungsseil
+structure Fuehrungsseil {
+	num/mm		0-180		abstandMassA
+
+	TypFuehrungsseil		typFuehrungsseil
+}
+
+
+// VM_200_terms_Gehaeuse
+structure Gehaeuse {
+//Hauptposition
+
+	static	bool					revision
+	static	bool					putzplatte
+	static	bool					blind
+
+	static	num/mm		0-300		tiefe1
+	static	num/mm		0-80		tiefe2
+	static	num/mm		0-300		abstandGehaeuseBaukoerper
+	static	TypGehrung				typGehrung
+
+	static	AusfuehrungGehaeuse		ausfuehrungGehaeuse
+	static	KantungVorne			kantungVorne
+	static	KantungHinten			kantungHinten
+	static	DaemmungOben			daemmungOben
+	static	DaemmungHinten			daemmungHinten
+	static	bool					ohneH4
+
+	static	Seitendeckel			seitendeckelLI
+	static	Seitendeckel			seitendeckelRE
+
+//Unterposition
+			num/grad	0-180		gehrungswinkelGehaeuseRE
+			num/grad	0-180		gehrungswinkelGehaeuseLI
+			num/mm		0-250		kupplungsabstand
+			num/mm		0-500		verlaengerungGehaeuseRE
+			num/mm		0-500		verlaengerungGehaeuseLI
+
+			DurchgaengigeBlende		durchgaengigeBlende
+
+			Ausrichtung				gehrungGehaeuseRE
+			Ausrichtung				gehrungGehaeuseLI
+}
+
+
+// VM_200_terms_Gehaeuseverbund
+structure Gehaeuseverbund {
+		reference	1x..3x	Unterposition   unterposition
+
+		num/mm 	                     		gesamtbreite
+
+}
+
+
+// VM_200_terms_Halter
+structure Halter {
+
+	bool			halterREWieLI
+	TypHalter		typHalter
+
+	//num/mm			abstand
+	//num/mm			xMass
+}
+
+
+// VM_200_terms_Heizstrahler
+structure Heizstrahler {
+	static	TypHeizstrahler				typHeizstrahler
+	static	Steuerungsart				steuerungHeizstrahler
+	static	KunststoffFarben			farbeZwischensteckergehaeuse
+
+			num							anzHeizstrahler
+}
+
+
+// VM_200_terms_KantungHinten
+enumeration KantungHinten {
+	attribute	num/mm	laenge
+
+	_Ohne	=	(0)
+	_10		=	(10)
+	_20		=	(20)
+	_30		=	(30)
+	_35		=	(35)
+	_40		=	(40)
+	_50		=	(50)
+	_60		=	(60)
+	_70		=	(70)
+	_80		=	(80)
+	_90		=	(90)
+}
+
+
+// VM_200_terms_KantungVorne
+enumeration KantungVorne {
+	attribute	num/mm	laenge
+
+	_Ohne	=	(0)
+	_15		=	(15)
+	_20		=	(20)
+	_25		=	(25)
+	_40		=	(40)
+}
+
+
+// VM_200_terms_Konfigurationskontext
+structure Konfigurationskontext {
+	Vertriebskontext	vertriebskontext
+	Kundenfunktionen	kundenfunktionen
+}
+
+
+// VM_200_terms_Konsole
+structure Konsole {
+	static	num/mm				0-145		holzstaerke
+	static	num/mm							schwertlaenge
+
+	static	TypKonsole						typKonsole
+	static	Montageuntergrund				montageuntergrundKonsole
+
+	static	bool							befestigungsmaterialKonsole
+
+			TypThermax						typThermax
+			num								anzThermax
+			bool							injektionsmoertel
+			// Werden nur für Zulagen benötigt
+			num								anzInjektionsmoertel
+			num								mengeInjektionsmoertel
+
+			num								konsoleOben
+			num								konsoleUnten
+			num								konsoleFest
+}
+
+
+// VM_200_terms_Konstanten
+structure Konstanten {
+	// Konstanten für Pergola - relevant für VM
+	num.##				cUKGehaeuseUKWandkonsole
+	num.##				cUKGehaeueseAchseTW
+	num.##				cAchseTWFS
+	num.##				cDrehpunktTW
+	num.##				cFSHoehe
+	num.##				cAchseTWWand
+	num.##				cOKFSAchseTW
+	num.####			cDickeEndkappeFS
+}
+
+
+// VM_200_terms_Konstruktion
+structure Konstruktion {
+			Gehaeuse				gehaeuse
+			Fuehrung				fuehrung
+			Absturzsicherung		absturzsicherung
+			Pfosten					pfostenLI
+			Pfosten					pfostenRE
+			Regenschutz				regenschutz
+			Verstaerkungsprofil		verstaerkungsprofil1
+			Verstaerkungsprofil		verstaerkungsprofil2
+}
+
+
+// VM_200_terms_Kundenfunktionen
+structure Kundenfunktionen {
+	    0..25	string	nameKundenfunktionen
+}
+
+
+// VM_200_terms_KunststoffFarben
+enumeration KunststoffFarben {
+	_Ohne
+	_Schwarz
+	_Grau
+	_Weiss
+}
+
+
+// VM_200_terms_Kurbel
+structure Kurbel {
+	LaengeKurbel		laengeKurbel
+}
+
+
+// VM_200_terms_LaengeKurbel
+enumeration LaengeKurbel {
+	_0
+	_800
+	_1000
+	_1200
+	_1400
+	_1600
+	_1800
+	_2000
+	_2200
+	_2400
+}
+
+
+// VM_200_terms_Lamellentyp
+enumeration Lamellentyp {
+	_Ohne
+    _Sonder
+    _80S
+    _80
+}
+
+
+// VM_200_terms_Montage
+structure Montage {
+//Hauptposition
+
+	static	bool					       befestigungsmaterial
+	static	bool					       thermoplatte
+
+			MontageGehaeuse			       montageGehaeuse
+
+	static	Montageuntergrund		       montageuntergrundFuehrungsschiene
+	static	Montageuntergrund		       montageuntergrundSpannseilhalter
+
+//Unterposition
+	        MontageEndschiene				montageEndschiene1
+	        MontageEndschiene				montageEndschiene2
+
+	        MontageFuehrungsschiene			montageFuehrungsschieneLI
+	        MontageFuehrungsschiene			montageFuehrungsschieneRE
+
+	        MontagePfosten					montagePfostenLI
+	        MontagePfosten					montagePfostenRE
+}
+
+
+// VM_200_terms_MontageEndschiene
+structure MontageEndschiene {
+
+	Befestigungstyp			    	befestigungstypEndschiene
+	MontagePfosten					pfostenmontageEndschiene
+
+}
+
+
+// VM_200_terms_MontageFuehrungsschiene
+structure MontageFuehrungsschiene {
+	reference		Pfosten			pfosten
+
+	Befestigungstyp					befestigungstypFS
+	Montageuntergrund				montageuntergrundLaibungswinkel
+}
+
+
+// VM_200_terms_MontageGehaeuse
+structure MontageGehaeuse {
+
+	static	Befestigungstyp					befestigungstypGehaeuse
+	static	Montageuntergrund				montageuntergrundGehaeuse
+	static	Montageuntergrund				montageuntergrundBuegel
+			Konsole							konsole
+}
+
+
+// VM_200_terms_MontagePfosten
+structure MontagePfosten {
+	reference		Unterposition	unterposition
+	reference		Pfosten			pfosten
+
+	bool	    					befestigungsmaterialPfosten
+
+	PfostenFuss			    		grundplatte
+	PfostenFuss						abdeckung
+
+	Bodenplatte						bodenplatte
+
+	Montageuntergrund				montageuntergrundPfosten
+
+	num								anzSchraubfundament
+	num								anzBodenhuelseEinschub
+	num								anzBodenhuelseRohr
+	num								anzAbdeckkappe
+
+}
+
+
+// VM_200_terms_Montageuntergrund
+enumeration Montageuntergrund {
+	_Ohne
+	_Aluminium
+	_Beton
+	_Holz
+	_Kunststoff
+	_Schraubfundament
+	_Bodenhuelse
+	_Gewindestange
+	_Betonfundament
+	_Lochstein
+	_Porenbeton
+	_Vollstein
+	_Stahl
+	_Markisenfreigestell
+	_Sonstige
+}
+
+
+// VM_200_terms_Motor
+structure Motor {
+
+	reference	Unterposition	unterposition
+
+	static	Steuerungsart			steuerungMotor
+	static	PositionSteuerelemente	positionSteuerelemente
+
+			Motorkabel				motorkabel
+			Ausrichtung				kabelaustritt
+			bool					sensorik					//Windsensor
+}
+
+
+// VM_200_terms_Motorkabel
+enumeration Motorkabel {
+	attribute	num/mm	laenge
+	attribute	num.#	kabellaengeAbGehaeuseende
+	_400						= (	    400, 0.4)
+	_500						= (	    500, 0.5)
+	_1000						= (	   1000,   1)
+	_2000						= (    2000,   2)
+	_2500						= (    2500, 2.5)
+	_3000						= (	   3000,   3)
+	_5000						= (    5000, 4.7)
+	_10000						= (	  10000, 9.7)
+	_SomfySonderlaenge500cm		= (	    500, 0.5)
+}
+
+
+// VM_200_terms_Oberflaechen
+structure Oberflaechen {
+	reference	Unterposition	unterposition
+
+	Finish	finishGrundmerkmale
+
+	Finish	finishGehaeuse
+	Finish	finishRevision
+	Finish	finishEndschiene
+	Finish	finishFuehrungLI
+	Finish	finishFuehrungRE
+	Finish	finishFuehrungshalter
+	Finish	finishPfosten
+	Finish	finishLeitrohr
+	Finish	finishHeizstrahler
+}
+
+
+// VM_200_terms_Oberflaechenstruktur
+enumeration Oberflaechenstruktur {
+	attribute	bool	HWF
+
+	_Ohne								= ("false")
+	_Glatt								= ("false")
+	_GlattMatt							= ("false")
+	_GlattSeidenmatt					= ("false")
+	_Feinstruktur						= ("false")
+	_FeinstrukturMatt					= ("false")
+	_HwfFeinstruktur					= ("true")
+	_HwfFeinstrukturMatt				= ("true")
+	_HwfFeinstrukturMattMetallic		= ("true")
+	_HwfGlattMatt						= ("true")
+	_HwfMatt							= ("true")
+	_HwfPerlglimmerSeidenglaenzend		= ("true")
+	_Matt								= ("false")
+	_MetallicGlattSeidenglaenzend		= ("false")
+	_MetallicGlattMatt					= ("false")
+	_MetallicFeinstrukturMatt			= ("false")
+	_MetallicFeinstrukturSeidenmatt		= ("false")
+	_MetallicMatt						= ("false")
+	_PerlglimmerGlaenzend				= ("false")
+	_PerlglimmerMatt					= ("false")
+	_PerlglimmerSeidenglaenzend			= ("false")
+	_Seidenglaenzend					= ("false")
+	_SeidenglaenzendMattFeinstruktur	= ("false")
+}
+
+
+// VM_200_terms_Pfosten
+structure Pfosten {
+//Unterposition
+	reference		Unterposition		unterposition
+	reference		Fuehrungsschiene	fuehrungsschiene
+
+	//num/mm						laengePfostenLI
+	num/mm			0-2500			bodeneinstand
+	Ausrichtung						seiteEntwaesserung
+	num/mm							hoeheEntwaesserung
+	FormEntwaesserung				formEntwaesserung
+	//num/mm		100-1750		hoeheEntwaesserung
+	TypPfosten						typPfosten
+}
+
+
+// VM_200_terms_PfostenFuss
+enumeration PfostenFuss {
+
+//Bodenplatte; Grundplatte; Abdeckplatte (SeMa, PeMa)
+	_Ohne
+	_Mit
+	_Eckig
+	_Rund
+	_NischenmontageSeitlich
+	_NischenmontageVorne
+	_Innenliegend
+
+
+}
+
+
+// VM_200_terms_PositionAnlage
+enumeration PositionAnlage {
+	_Ohne
+	_Anfang
+	_Mitte
+	_Ende
+}
+
+
+// VM_200_terms_PositionSteuerelemente
+enumeration PositionSteuerelemente {
+	_Integriert
+	_Extern
+	_Bauseitig
+}
+
+
+// VM_200_terms_Preise
+structure Preise {
+			Preisparameter		preisparameter
+	0..50 	Zulagen   			zulagen
+}
+
+
+// VM_200_terms_Preisparameter
+structure Preisparameter {
+	num			preisliste
+	num/mm		massX
+	num/mm		massY
+	num			preisfaktor
+	num			rabattId
+}
+
+
+// VM_200_terms_Produkttyp
+enumeration Produkttyp {
+	_P20
+	_P40
+	_P60
+	_W7
+	_W10
+	_W10Q
+	_W19
+	_W20
+	_FSM
+	_RAFF
+}
+
+
+// VM_200_terms_Profiltyp
+enumeration Profiltyp {
+	_EckigMittel
+	_FP_D30
+	_D30N
+	_FP_D40
+	_D40A
+	_EckigAussen
+	_Ohne
+}
+
+
+// VM_200_terms_RadiusFuehrungsschiene
+enumeration RadiusFuehrungsschiene {
+	attribute	num.####		radius
+
+	_0		= (0.0000)
+	_10000	= (10000.0000)
+}
+
+
+// VM_200_terms_Raffstore
+structure Raffstore {
+
+
+	//		bool				unifarben
+	static	Lamellentyp			lamellentyp
+	static	Stoffart			stoffart
+
+}
+
+
+// VM_200_terms_Regendach
+structure Regendach {
+
+	reference	Unterposition	unterposition
+
+	TypRegendach			typRegendach
+}
+
+
+// VM_200_terms_Regenrinne
+structure Regenrinne {
+
+	reference	Unterposition	unterposition
+
+	TypRegenrinne		typRegenrinne
+	Ausrichtung			positionAnbauprodukt	//Zip-Markise
+}
+
+
+// VM_200_terms_Regenschutz
+structure Regenschutz {
+	static	bool					regenschutzVorhanden
+	static	bool					entwaesserungsstanzungen
+	static	bool					absenkbarerPfosten
+
+
+			Regenrinne				regenrinne
+			Regendach				regendach
+}
+
+
+// VM_200_terms_Rollertyp
+enumeration Rollertyp {
+	_Linksroller
+	_Rechtsroller
+}
+
+
+// VM_200_terms_Rollladen
+structure Rollladen {
+
+}
+
+
+// VM_200_terms_Seitendeckel
+structure Seitendeckel {
+
+	reference	Unterposition	unterposition
+
+	TypSeitendeckel		typSeitendeckel
+
+}
+
+
+// VM_200_terms_Sender
+structure Sender {
+	reference		Unterposition	unterposition
+
+	num/Anzahl		0-10			anzSender
+	TypSender						typSender
+	bool							wmsWandhalterung
+}
+
+
+// VM_200_terms_Sonnenschutzkomponente
+structure Sonnenschutzkomponente {
+			Tuch						tuch
+	static	Rollladen					rollladen
+	static	Raffstore					raffstore
+
+	static	Rollertyp					rollertyp
+	static	Endschiene					endschiene
+}
+
+
+// VM_200_terms_Steckdose
+structure Steckdose {
+	reference		Unterposition	unterposition
+
+	Ausrichtung						ausrichtungSteckdose
+	DurchmesserSteckdose			durchmesserBohrung
+	KunststoffFarben				farbeSteckdose			//Typ_Steckdose
+	num/mm							hoeheSteckdose
+	num/mm							laengeLeitung
+}
+
+
+// VM_200_terms_Steuerungsart
+enumeration Steuerungsart {
+	_Ohne
+	_Drahtgebunden	//_ElektroStandard
+	_WMSFunk
+	_EWFSFunk
+	_SomfyIOFunk	//_SomfyLS40
+	_SMI
+	_Pico
+	//_Bauseitig
+}
+
+
+// VM_200_terms_Stoffart
+enumeration Stoffart {
+	_Ohne
+	_AcrylStandard
+	_AcrylLumera
+	_AcrylPerfora
+	_AcrylAllWeather
+	_AcrylStandardFremd
+	_AcrylUniQuer
+//	_AcrylUniQuerFremd
+	_KombiAcryl
+	_KombiSoltis
+	_Satinee
+	_Screen
+	_Screen1Proz
+    _SecuTexA2
+	_Soltis86
+	_Soltis92
+	_SoltisB92
+	_SoltisVeozip
+	_StarlightBlue
+//	_SunworkerCristal
+	_SunvasPerlaFR
+	_SunworkerTop
+	_SoltisRainproofW36
+	_SoltisRainproofW96
+    _TwilightPearl
+	_TwilightMetal
+	_Lack
+//	_PreisManuell
+	_VerschleissfesteGaze
+    _Sonder
+
+/*
+	AcrylStandardLumera("A", "USBREStoffAcrylStandardLumera"),
+	AcrylStandard("AS", "USBREStoffAcrylStandard"),
+	AcrylLumera("AL", "USBREStoffAcrylLumera"),
+	AcrylPerfora("C", "USBREStoffAcrylPerfora"),
+	AcrylAllWeather("D", "USBREStoffAcrylAllWeather"),
+	AcrylStandardFremd("E", "USBREStoffAcrylStandardFremdkollektion"),
+	AcrylUniQuer("B", "USBREStoffAcrylUniquer"),
+	AcrylUniQuerFremd("F", "USBREStoffAcrylUniFremdkollektion"),
+	KombiAcryl("KA", "USBREKombiAcryl"),
+	KombiSoltis("KS", "USBREKombinationSoltis"),
+	Satinee("SA", "USBREStoffSatinee"),
+	Screen("H", "USBREStoffScreen"),
+	Screen1Proz("S1P", "USBREScreen1Prozent"),
+	SecuTexA2("ST", "USBRESecuTexA2"),
+	Soltis86("S86", "USBREStoffSoltis86"),
+	Soltis92("G", "USBREStoffSoltis92"),
+	SoltisB92("SB", "USBRESoltisB92"),
+	SoltisVeozip("SV", "USBRESoltisVeozip"),
+	Sonder("SO", "USBRESonderstoff"),
+	StarlightBlue("STB", "USBREStarlightBlue"),
+	SunworkerCristal("SC", "USBRESunworkerCristal"),
+	SunvasPerlaFR("SP", "USBRESunvasPerlaFR"),
+	SunworkerTop("SUT", "USBRESunworkerTop"),
+	RainproofW36("RP36", "USBRERainproofW36"),
+	RainproofW96("RP96", "USBRERainproofW96"),
+	TwilightPearl("TP", "USBRETwilightPearl"),
+	TwilightMetal("TM", "USBRETwilightMetal"),
+	Lack("I", "USBREStoffPrecontraint302"),
+	Leer("", ""),
+	Ohne("O", "USBREOhne"),
+	PreisManuell("MAN", "USBREPreisgruppeManuell"),
+	VerschleissfesteGaze("VG", "USBREVerschleissfesteGaze");
+*/
+}
+
+
+// VM_200_terms_Stoffqualitaet
+enumeration Stoffqualitaet {
+	_AllWeather
+	_Centauro
+	_Folie
+	_Insektenschutz
+	_Lack
+	_Lumera
+	_Pearl
+	_Perfora
+	_Reflect
+	_Screen
+	_Silikon
+	_Soltis
+	_SoltisB92
+	_Sonder
+	_Standard
+	_Sunsilk
+	_Twilight
+	_VDA
+	_Veozip
+	_Ohne
+}
+
+
+// VM_200_terms_Systemmerkmale
+structure Systemmerkmale {
+
+	static	string					vertriebsArtNr
+	static	bool					ersatzteil
+
+			bool					verbundMitVorgaenger
+
+			bool					anlageMitVorgaenger
+			bool					antriebMitVorgaenger
+			bool					gehaeuseMitVorgaenger
+			//bool					fuehrungMitVorgaenger
+
+			string    	15			kundenposition
+			string					bemerkung
+			string					rabattgruppe
+			string					werteflussgruppe
+
+			num			1-999		stueck
+
+			PositionAnlage			positionAnlage
+}
+
+
+// VM_200_terms_Tuch
+structure Tuch {
+//	Hauptposition
+			bool				unifarben
+	static	bool				stofffahne
+			bool				entwaesserungsstanzungen
+
+			Dessin				dessin
+			Stoffart			stoffart
+			VerbindungTuch		verbindungTuch
+			Aussenfarbe			aussenfarbe
+			Bahnbreite			bahnbreite
+
+		 	bool				tuchverlaufSchraeg
+
+//	Unterposition
+			bool 				einfacheNaht
+			VerarbeitungTuch	verarbeitungTuch
+			BeschriftungTuch	beschriftungTuch
+
+// Daten aus StoffDB
+	static	Stoffqualitaet		stoffqualitaet
+}
+
+
+// VM_200_terms_TypFuehrungsschiene
+enumeration TypFuehrungsschiene {
+    attribute	bool	einputzbar
+    attribute	num		breite
+    attribute	num		tiefe
+
+	_FS3_2646			= ("false", 26, 46)
+	_FS3_2672			= ("true" , 26, 72)
+	_FS3_2656C			= ("false", 26, 56)
+	_FS3_2666			= ("false", 26, 66)
+	_FS3_2692			= ("true" , 26, 92)
+	_FS3_2676			= ("false", 26, 76)
+	_FS3_26102			= ("true" , 26, 102)
+	_FS3_2686			= ("false", 26, 86)
+	_FS3_26112			= ("true" , 26, 112)
+	_FS3_2696			= ("false", 26, 96)
+	_FS3_26122			= ("true" , 26, 122)
+	_FS3_26106			= ("false", 26, 106)
+	_FS3_26132			= ("true" , 26, 132)
+	_FS3_26116			= ("false", 26, 116)
+	_FS3_26142			= ("true" , 26, 142)
+	_FS3_26126			= ("false", 26, 126)
+	_FS3_26152			= ("true" , 26, 152)
+	_FS3_26136			= ("false", 26, 136)
+	_FS3_60107			= ("false", 0 , 0)
+	_FS3_26107			= ("false", 26, 107)
+//	_SeilSchwarz		= ("false", 0 , 0)
+//	_SeilTransparent	= ("false", 0 , 0)
+}
+
+
+// VM_200_terms_TypFuehrungsseil
+enumeration TypFuehrungsseil {
+	_SeilSchwarz
+	_SeilTransparent
+}
+
+
+// VM_200_terms_TypGehrung
+enumeration TypGehrung {
+	_Innen
+	_Aussen
+	_Ohne
+}
+
+
+// VM_200_terms_TypHalter
+enumeration TypHalter {
+	_SpannseilhalterStandard
+	_SpannseilhalterQuerplBeidseitig
+	_Spannbuegel
+	_Ohne
+}
+
+
+// VM_200_terms_TypHeizstrahler
+enumeration TypHeizstrahler {
+	_Ohne
+	_Design
+	_DesignDimmer
+	_Basic
+}
+
+
+// VM_200_terms_TypKonsole
+enumeration TypKonsole {
+	_Ohne
+	_Wandkonsole
+	_Wandkonsole2Loch
+	_Wandkonsole3Loch
+	_Deckenkonsole
+	_Dachsparrenkonsole
+	_Markisenfreigestell
+}
+
+
+// VM_200_terms_TypLichtschiene
+enumeration TypLichtschiene {
+	_Ohne
+	_Rund
+	_Eckig
+}
+
+
+// VM_200_terms_TypPfosten
+enumeration TypPfosten {
+	_Ohne
+	_Starr
+	_Hoehenverstellbar
+	_Doppelpfosten
+}
+
+
+// VM_200_terms_TypRegendach
+enumeration TypRegendach {
+	_Ohne
+	_Klein	//TypC
+	_Gross	//TypD?
+}
+
+
+// VM_200_terms_TypRegenrinne
+enumeration TypRegenrinne {
+	attribute	num/mm	breite
+	attribute	num/mm	hoehe
+	_Ohne		  = (  0,	0)
+	_Klein		  = (110, 110)
+	_Gross		  = (150, 150)
+}
+
+
+// VM_200_terms_TypSeitendeckel
+enumeration TypSeitendeckel {
+	_Ohne
+	_Standard
+	_Halbiert
+	_Nische
+}
+
+
+// VM_200_terms_TypSender
+enumeration TypSender {
+	_Ohne
+    _EWFSHandsender1KanalSchwarz
+    _EWFSHandsender1KanalSilber
+    _EWFSHandsender1KanalWeiss
+    _EWFSHandsender8KanalSchwarz
+    _EWFSHandsender8KanalSilber
+    _EWFSHandsender8KanalWeiss
+    _EWFSWandsenderSlim
+    _EWFSWandsenderPlus
+	_WMSHandsenderBasic
+	_WMSHandsenderComfort
+	_WMSHandsenderPlus
+	_WMSWandsenderBasicAnthrazit
+	_WMSWandsenderBasicSilber
+	_WMSWandsenderBasicWeiss
+	_WMSWandsenderPlus
+	_SomfyIoHandsenderSituoMobile
+	_SomfyIoWandsenderSmoove1
+	_SomfyIoWandsenderSmooveAM
+	_SomfyIoHandsenderSituo1Variation
+}
+
+
+// VM_200_terms_TypThermax
+enumeration TypThermax {
+	_Ohne
+	_ThermaxM12
+	_ThermaxM16
+}
+
+
+// VM_200_terms_TypVerstaerkungsprofil
+enumeration TypVerstaerkungsprofil {
+	_Ohne
+	_E50
+	_D60
+}
+
+
+// VM_200_terms_VarianteAbsturzsicherung
+enumeration VarianteAbsturzsicherung {
+attribute	string	Label
+	_Ohne		= ("Ohne")
+	_TypA		= ("Ohne MSCH")
+	_TypB		= ("1x MSCH doppelt")
+	_TypB_L		= ("1x MSCH einfach Glas links")
+	_TypB_R		= ("1x MSCH einfach Glas rechts")
+	_TypC	    = ("2x MSCH doppelt")
+	_TypC_LM	= ("1x MSCH einfach / 1x MSCH doppelt Glas links")
+	_TypC_LR	= ("2x MSCH einfach")
+	_TypC_MR	= ("1x MSCH einfach / 1x MSCH doppelt Glas rechts")
+}
+
+
+// VM_200_terms_VerarbeitungTuch
+enumeration VerarbeitungTuch {
+	_Quer
+	_Laengs
+}
+
+
+// VM_200_terms_VerbindungTuch
+enumeration VerbindungTuch {
+	_Naehen
+	_Kleben
+	_Schweissen
+	_UltraSeam
+	_Ohne
+}
+
+
+// VM_200_terms_Verstaerkungsprofil
+structure Verstaerkungsprofil {
+
+	reference	Unterposition	unterposition
+
+	TypVerstaerkungsprofil				typVerstaerkungsprofil
+	AusfuehrungVerstaerkungsprofil		ausfuehrungVerstaerkungsprofil
+}
+
+
+// VM_200_terms_Vertriebskontext
+enumeration Vertriebskontext {
+	// 01.03.2024 - alte Bezeichnungen - werden irgendwann entfernt
+/*	_ExternalOrder
+	_InternalOrder
+	_ExternalQuote
+	_InternalQuote
+*/
+	// neue Bezeichnungen ab 01.03.2024
+	_MyWaremaPlanning
+	_MyWaremaQuote
+	_MyWaremaOrder
+	_SapQuote
+	_SapOrder
+}
+
+
+// VM_200_terms_Volantrollo
+structure Volantrollo {
+	static	bool			volantrolloVorhanden
+	static	bool			windsicherung
+	static	num.#/mm		hoeheVolantrollo
+
+	static	Antriebsart		antriebsartVolantrollo
+
+	static	Kurbel			kurbelVolantrollo
+	static	Tuch			tuchVolantrollo
+
+			Ausrichtung		bedienseiteVolantrollo
+			num.######		flaecheVolantrollo
+}
+
+
+// VM_200_terms_Windlastzone
+enumeration Windlastzone {
+attribute	string	Label
+	_Ohne	=	("Ohne")
+	_065	=	("Winddruck bis 0,65")
+	_080	=	("Winddruck bis 0,8")
+	_110	=	("Winddruck bis 1,1")
+}
+
+
+// VM_200_terms_Zulagen
+structure Zulagen {
+	//ZulagenId		zulagenId
+	string			zulagenId
+	num.##			stueck
+	num/mm			massX
+	num/mm			massY
+
+}
+
+
+// VM_200_terms_Zusatzausstattung
+structure Zusatzausstattung {
+	reference	Unterposition	unterposition
+
+	static	Volantrollo			volantrollo
+			Beleuchtung			beleuchtung
+			Heizstrahler		heizstrahler
+			Sender				sender
+			Steckdose			steckdoseLI
+			Steckdose			steckdoseRE
+
+			KunststoffFarben	farbeSTKG
+			num					anzSTKG
+}
+
+
+// VM_200_terms_Cover
+enumeration Cover {
+attribute num/gramm weight
+	_AcrylLumera   = (1495)
+	_AcrylPerfora  = (1238)
+	 _AcrylAllWeather = (2600)
+	 _AcrylStandardFremd = (800)
+	 _AcrylUniQuer =  (599)
+	 _AcrylUniQuerFremd =(673)
+	 _KombiAcryl =(2598)
+	 _KombiSoltis = (2293)
+	 _Satinee = (1487)
+	 _Screen = (2499)
+ } \\
+
+
+
+// VM_200_terms_Unterposition
+structure Unterposition {
+					string					id
+
+	reference		Antriebsverbund			antriebsverbund
+	reference       Gehaeuseverbund			gehaeuseverbund
+	reference		Anlagenverbund			anlagenverbund
+
+	// --- VORGAENGER/NACHGAENGER VERZEIGERUNG ---
+	reference		Unterposition			previous
+	reference		Unterposition           next
+
+
+					Systemmerkmale			systemmerkmale
+					Konstanten				konstanten
+					Grundmerkmale			grundmerkmale
+					Sonnenschutzkomponente	sonnenschutzkomponente
+					Antrieb					antrieb
+					Konstruktion			konstruktion
+					Montage 				montage
+					Oberflaechen			oberflaechen
+					Zusatzausstattung		zusatzausstattung
+					Preise					preise
+					Cover 					cover
+
+}
+
+
+// VM_200_terms_Grundmerkmale
+structure Grundmerkmale {
+
+	static	Produkttyp						produkttyp
+	static	Ausfuehrung						ausfuehrung
+
+			num/mm							montagehoehe
+		    num/mm			    			durchgangshoehe
+			num/mm							laenge
+			num.#/mm  		    			eingabeBreite
+			num.#/mm  		    			bestellBreite
+
+
+
+			Debug 					debugValues
+
+		    num/mm							ausfall
+
+    // --- BERECHNETE WERTE ---
+		    num.##/qm            			flaeche
+		    num.##/Grad						neigungswinkelGehaeuse
+		    num.##/Grad						neigungswinkelAnlage
+		    num.##/Kg						weight
+
+	// --- Werte für Neigungswinkel ---
+			num.#####						startWinkel
+			num.#####						yMassFSUebergangKonsole
+			num.#####						xMassFSUeberKonsole
+			num.#####						hkKonsoleDurchgangshoehe
+			num.#####						yMassP2
+			num.#####						winkelEndkappe
+			num.#####/Grad			 	  	neigungswinkelEndkappe
+			num.#####						alphaWinkel3
+			num.#####/Grad					alphaWinkel
+			num.####						yZuschlag
+			num.####						hilfsSehne
+			num.####						hilfsAlpha
+			num.####						gamma
+
+	// --- TEST BERECHNUNGEN ---
+		    num.######						Test1
+		    num.######						Test2
+		    num.######						Test3
+		    num.###### 						Test4
+		    num.######						Test5
+
+	// --- TEST KM ---
+			num/mm							posAnfangAktPos
+			num/mm							posEndeVorPos
+			num/mm							tempMass2
+}
+
+
+// VM_200_terms_Debug
+structure Debug {
+    			// some debug features
+			num.###/mm						deltaHoehe
+			num/mm							deltaBreite
+			num.###/mm						deltaHoehePow2
+			num/mm							deltaBreitePow2
+			num.###/mm						sqrtValue
+			num.##							atanValue
+			num.##							acosValue
+			num.######						atanArg
+			num.######						acosArg
+}
+
+
+// KM_200_constraints_KM_Kabelstanzung
+enumeration KM_Kabelstanzung {
+	_LinksUnten
+	_LinksHinten
+	_RechtsUnten
+	_RechtsHinten
+}
+
+
+// KM_200_terms_Antrieb
+structure Antrieb {
+	num		km_artNrAntrieb
+	num		km_drehmoment
+}
+
+
+// KM_200_terms_Finish
+structure Finish {
+	string		km_artNrFarbe
+}
+
+
+// KM_200_terms_Fuehrungsschiene
+structure Fuehrungsschiene {
+	KM_Bauteil			km_profil
+	KM_ProfilBohrung	km_Bohrung
+	KM_Meterware		km_inlay
+	string				km_artNrEndkappe
+	num/mm				km_minFSLaenge
+	num					km_bauteilId
+
+	// Testvariablen
+	num.####		km_xMassParallele
+
+	num.####		km_hilfsvariable1
+	num.####		km_hilfsvariable2
+	num.####		km_hilfsvariable3
+	num.####		km_hilfsvariable4
+	num.####		km_hilfsvariable5
+
+
+	/*
+	// Test math. Funktionen
+
+	// floor(x)
+	num.##		km_test_zMassLicht1
+	num.## 	    km_test_zMassLicht2
+
+	// Mod(x,y)
+	num.##		km_test_anzBahnen
+	num.##		km_test_anzStanz2_1
+	num.##		km_test_anzStanz2_2
+	*/
+}
+
+
+// KM_200_terms_Gehaeuse
+structure Gehaeuse {
+	num				    km_anzGehaeusehalter
+
+	string 		        km_artNrSeitendeckelLI
+	string              km_artNrSeitendeckelRE
+
+	string		        km_artNrGrundplatteLI
+	string		        km_artNrGrundplatteRE
+
+	KM_Gehaeuserevision	km_gehaeuserevision
+	KM_Stanzung		    km_stanzung
+
+	KM_Bauteil			km_profil
+	KM_Keder			km_keder
+
+	// Zuebhör
+	string				km_artNrAbdeckung
+}
+
+
+// KM_200_terms_Gehaeuseverbund
+structure Gehaeuseverbund {
+		0..30   Stanzbild                   km_stanzbilder
+
+		Gehaeusetyp							km_gehaeusetyp
+
+		num									km_anzBuegel
+		num/mm								km_tiefe
+		num/mm								km_hoehe1
+		num/mm								km_hoehe2
+		num/mm                  			km_hoehe3
+		num/mm								km_hoehe4
+
+		// Test Anzahl Unterposition
+		num									km_anzUnterposition
+}
+
+
+// KM_200_terms_Grundmerkmale
+structure Grundmerkmale{
+	/*
+	num/mm		posAnfangAktPos
+	num/mm		posEndeVorPos
+	num/mm		tempMass2
+	*/
+
+	// trigonometrische Funktionen
+	num.##########	km_tanNeigungswinkel
+	num.##########	km_sinNeigungswinkel
+	num.##########	km_cosNeigungswinkel
+
+	num/mm		km_anlagenlaenge
+	num.##/qm	km_anlagenflaeche
+
+	num			TestX
+	num			TestY
+	num.####	TestZ
+}
+
+
+// KM_200_terms_KM_Ballenliste
+structure KM_Ballenliste {
+
+	reference			Tuch				 tuch
+
+	num/mm	            km_effBallenbreite
+	num/mm	            km_ballenbreite
+	num/mm	            km_ballenlaenge
+	num/mm	            km_verschnitt
+	Stoffstammdaten	    km_artNrBallen
+
+}
+
+
+// KM_200_terms_KM_Baugruppe
+structure KM_Baugruppe {
+	string 		km_name
+	num			km_stueck
+}
+
+
+// KM_200_terms_KM_Bauteil
+structure KM_Bauteil {
+	string		km_artNr
+	num/mm		km_zMass
+	string		km_skizze
+	num			km_bauteilId
+	string		km_artNrFarbe
+	num			km_stueck
+}
+
+
+// KM_200_terms_KM_Empfaenger
+enumeration KM_Empfaenger {
+	_Antrieb
+	_Beleuchtung
+	_Heizstrahler
+}
+
+
+// KM_200_terms_KM_Federmechanik
+structure KM_Federmechanik {
+	bool		km_federmechanikVorhanden
+	string		km_artNr
+	Ausrichtung	km_seite
+}
+
+
+// KM_200_terms_KM_Funkempfaenger
+structure KM_Funkempfaenger {
+	KM_Empfaenger		km_empfaenger
+	KM_TypeId			km_typeId
+}
+
+
+// KM_200_terms_KM_GehaeuseUT
+structure KM_Gehaeuserevision {
+	num/mm		km_zMassMittelbohrung
+	num/mm		km_zMassEntwaesserungsbohrung
+
+	string		km_typEntwaesserungsbohrung
+
+	KM_Bauteil	km_profil
+
+}
+
+
+// KM_200_terms_KM_Keder
+structure KM_Keder {
+	string	km_artNrKeder
+	num	km_zMassKeder
+}
+
+
+// KM_200_terms_KM_Meterware
+structure KM_Meterware {
+	string		km_artNr
+	num/mm		km_zMass
+	num			km_bauteilId
+}
+
+
+// KM_200_terms_KM_Produktionshinweise
+structure KM_Produktionshinweise {
+	string			km_text
+	num				km_sortierung
+	//string		km_parameter
+	string			km_kategorie		//Baugruppe
+	string			km_eintrag			//Arbeitsplatz
+	//0..99			KM_Anzeigeort		km_anzeigeorte
+	//0..99			KM_Parameter		km_parameter
+
+	// Parameterbeispiel:
+	// "Hallo {unterpos.grundmerkmale.breite}"
+}
+
+behavior KM_Produktionshinweise {
+	define sortierung 	= km_sortierung
+	define "1" 			= km_kategorie
+
+	/*
+	{
+		"text": "1234",
+		"paramters": {
+			"sortierung": 123,
+			"param1": "..."
+		}
+	}
+	*/
+
+	// HEUTE: message "1234,{param0},{param1}"
+	// ZUKUNFT: message "1234" ["sortierung","1"]
+}
+
+
+// KM_200_terms_KM_ProfilBohrung
+structure KM_ProfilBohrung {
+	num/mm				km_massA
+	num/mm				km_massB
+	num/mm				km_massC
+	num			2-99	km_anzBohrung
+}
+
+
+// KM_200_terms_KM_Stahlband
+structure KM_Stahlband {
+	reference				Tuch					tuch
+
+	string					km_artNrStahlbandLI
+	string					km_artNrStahlbandRE
+	num/mm					km_zMassStahlbandLI
+	num/mm					km_zMassStahlbandRE
+	num/mm					km_ueberstStahlbandOben
+	num/mm					km_ueberstStahlbandUnten
+}
+
+
+// KM_200_terms_KM_Stanzbild
+structure KM_Stanzbild {
+	string	km_baugruppenId
+	string  km_stanzbildId
+
+	num/mm	km_mass1
+	num/mm	km_mass2
+	num		km_parameter1
+	num		km_parameter2
+}
+
+
+// KM_200_terms_KM_Stanzung
+enumeration KM_Stanzung {
+	_Beidseitig
+	_Links
+	_Rechts
+}
+
+
+// KM_200_terms_KM_Stofffahne
+structure KM_Stofffahne {
+
+	num/mm		km_breiteStofffahne
+	num/mm		km_zMassStofffahne
+	num/mm		km_abzugStofffahne
+
+	string		km_artNrStofffahne
+}
+
+
+// KM_200_terms_KM_Tuchverarbeitung
+enumeration KM_Tuchverarbeitung {
+	_Querverarbeitung
+	_Laengsverarbeitung
+}
+
+
+// KM_200_terms_KM_Tuchwellenkonsole
+structure KM_Tuchwellenkonsole {
+	string	km_artNrTuchwellenkonsoleLI
+	string  km_artNrTuchwellenkonsoleRE
+}
+
+
+// KM_200_terms_KM_TypeId
+enumeration KM_TypeId {
+	_AntriebMarkise					//3
+	_AntriebMarkiseVR				//4
+	_AntriebMarkiseSensor			//5
+	_AntriebMarkiseVRSensor			//6
+
+	_Beleuchtung					//26
+
+	_HeizstrahlerZwischenstecker	//17
+	_HeizstrahlerDimmer				//19
+}
+
+
+// KM_200_terms_KM_Zubehoer
+structure KM_Zubehoer {
+	string		km_artNr
+	num			km_stueck
+	string 		km_bemerkung //freitext, keine logik!!
+	//eventuell wird noch ein Schein benötigt, auf welchen Packschein das soll
+}
+
+
+// KM_200_terms_Konsole
+structure Konsole {
+	num		km_anzKonsoleLI
+	num		km_anzKonsoleRE
+	string	km_skizzeSchwertLI
+	string	km_skizzeSchwertRE
+
+	//Zubehör
+	string	km_artNrAufnahme
+}
+
+
+// KM_200_terms_Konstanten
+structure Konstanten{
+// Konstanten für Pergola - relevant für KM
+	num.##		km_cAchseTWHKGehaeuse
+	num.##		km_cOKDrehpunktPfosten
+	num.##		km_cHoeheGrundplatte
+	num.##		km_cParalleleDrehpPfDrehpTW
+	num.##		km_cBreitePfosten
+	num.##		km_cDrehpunktPfostenUKFS
+	num.##		km_cMaxNeigungFallstab
+	num.##		km_cBedienhoeheKurbelPfosten
+	num.##		km_cMitteKurbelausgOKEndlage
+	num.##		km_cLaengeGleitleiste
+	num.##		km_cAbzugGleitleiste
+	num.##		km_cDrehpunktZuWand
+	num.##		km_cDrehpunktZuHKGehaeuse
+	num.##		km_cTiefeKasten
+	num.##		km_cMontagehoeheZuDrehpunkt
+	num.##		km_cDrehpunktZuOKGehaeuse
+	num.##		km_cTiefeGehaeuse
+
+	// P20 Konstanten
+	num.##		 km_cTiefePfosten
+    num.##		 km_cKopfstueckPfosten
+    num.##		 km_cLagerteilFS
+    num.##		 km_cAdapterLagerteilFSLED
+    num.##		 km_cAdapterplatteReihenanlage
+    num.##		 km_cAbdeckblechLagerteilFSLED
+   	num.##		 km_cFSHoehe
+}
+
+
+// KM_200_terms_MontageEndschiene
+structure MontageEndschiene {
+	KM_Bauteil			km_profil
+//	num					km_anzahl
+//	string				km_bohrbild
+
+}
+
+
+// KM_200_terms_MontageFuehrungsschiene
+structure MontageFuehrungsschiene {
+
+	reference	Unterposition	unterposition
+	reference	Finish 			pfostenFinish
+	reference	Finish			fuehrungLinksFinish
+	reference	Finish			fuehrungRechtsFinish
+
+	KM_Bauteil					km_profil
+	KM_Bauteil					km_kopfstueck
+	KM_Bauteil					km_befestigungstyp
+
+	num							km_anzahlWinkel
+}
+
+
+// KM_200_terms_MontagePfosten
+structure MontagePfosten {
+
+//	reference	Unterposition	unterposition
+
+	KM_Bauteil			km_profil
+	KM_Bauteil			km_grundplatte
+	KM_Bauteil			km_abdeckplatte
+/*	num					km_gesamthoehe
+	num					km_tiefeFS
+	num					km_tiefePfosten
+	num					km_cKopfstueckPfosten
+	num					km_cLagerteilFS
+	num					km_cAdapterplatteReihenanlage
+	num					km_cAdapterplatteReihenanlageFSLED
+	num					km_cHoeheGrundplatte
+	num					km_positionPfosten
+	num					km_cBreitePfosten
+	num					km_hilfsmass1
+	num					km_hilfsmass2
+	num					km_CalcGradmassToBogenmass
+	num					km_neigungswinkelEndkappe
+	num					km_neigungswinkelBM
+	num					km_GetNeigungswinkelEndkappe
+	num					km_abzugMittelpfosten
+	num					km_hkKonsoleMittepfosten
+	num					km_achseTWMittePfosten
+	num					km_CAchseTWWand
+	num					km_CParalleleDrehpPfDrehpTW
+	num					km_CUKKastenUKWandkonsole
+	num					km_CUKKastenAchseTW
+	num					km_hkKonsoleDurchgangshoehe
+	num					km_GetHKKonsoleDurchgangshoehe
+	num					km_xMassEndkappe
+	num					km_CDickeEndkappeFS
+	num					km_neigungswinkelEndkappeBM
+	num					km_yMassEndkappe
+	num					km_xMassHilfsbogen
+	num					km_CDrehpunktPfostenUKFS
+	num					km_yMassHilfsbogen
+	num					km_xMassSchnittpunkt
+	num					km_mittePfosten
+	num					km_radiusDrehpunktPfosten
+	num					km_radiusFS
+	//num					winkel
+	num					km_winkel
+	num					abzugMittelpfosten
+	num					km_CalcBogenmassToGradmass
+	num					km_zuschnittFS
+	num					km_neigeungswinkel_anlage	*/
+
+	reference MontageFuehrungsschiene FSMontage
+	reference Finish pfostenFinish
+
+}
+
+
+// KM_200_terms_Motor
+structure Motor{
+	string	km_artNrMitnehmer
+	string	km_artNrMotoradapter
+}
+
+
+// KM_200_terms_Pfosten
+structure Pfosten {
+	KM_Bauteil					km_pfosten
+	KM_Bauteil					km_pfosten2
+	KM_Bauteil					km_htRohr
+
+	num/mm						km_positionPfosten
+	num.####					km_pfostenHilfsmass
+	num.####/mm		0-400		km_verstellweg
+	num.####/mm					km_massX
+	num.####/mm					km_massX2
+	num.####/mm					km_grundZMass
+	num.####/mm					km_grundZMass2
+	num.####/mm					km_grundMassX2
+	num.####/mm					km_gesamthoehe
+
+	num.####					km_hilfsmass1
+	num.####					km_hkKonsoleMittePfosten
+	num.####					km_achseTWMittePfosten
+	num.####					km_hkKonsoleDurchgangshoehe
+	num.####					km_xMassEndkappe
+	num.####					km_yMassEndkappe
+	num.####					km_xMassHilfsbogen
+	num.####					km_yMassHilfsbogen
+	num.####					km_xMassSchnittpunkt
+	num.####					km_mittePfosten
+	num.####					km_radiusDrehpunktPfosten
+	num.####					km_winkel
+
+	num.####					km_hoehenunterschied
+	num.####					km_hoehenunterschiedES
+	num.####					km_teillaengeFS
+
+	num.####					km_hilfsmass2
+	num.####					km_hilfsmass3
+	num.####					km_hilfsmass4
+	num.####					km_hilfsmass5
+	num.####					km_hilfsmass6
+	num.####					ueberstand
+
+
+
+}
+
+
+// KM_200_terms_Regendach
+structure Regendach{
+	KM_Bauteil			km_profil
+	KM_Bauteil			km_befProfil
+	KM_ProfilBohrung	km_befProfilBohrung
+	KM_Meterware		km_keder
+	num/mm				km_abzugsmass
+	string				km_artNrSeitendeckelLI
+	string				km_artNrSeitendeckelRE
+
+
+
+}
+
+
+// KM_200_terms_Regenrinne
+structure Regenrinne {
+	KM_Bauteil			km_profil
+//	num					km_anzahl
+//	string				km_bohrbild
+	string				km_seitenteilArtNrLI
+	string				km_seitenteilArtNrRE
+	string				km_seitendeckelArtNrLI
+	string				km_seitendeckelArtNrRE
+	KM_Kabelstanzung	km_kabelstanzung
+
+
+
+}
+
+
+// KM_200_terms_Sender
+structure Sender {
+	0..8	KM_Funkempfaenger		km_funkempfaenger
+}
+
+
+// KM_200_terms_Sonnenschutzkomponente
+structure Sonnenschutzkomponente {
+	KM_Tuchwellenkonsole	km_tuchwellenkonsole
+	KM_Bauteil				km_tuchwelle
+	num/mm					km_tuchwelleStanzung
+	KM_Bauteil				km_motorwelleLang
+	KM_Bauteil				km_motorwelleKurz
+	KM_Federmechanik		km_federmechanik
+
+}
+
+
+// KM_200_terms_Stanzbild
+structure Stanzbild {
+	string	km_baugruppenId
+	string  km_stanzbildId
+
+	num/mm	km_mass1
+	num/mm	km_mass2
+	num		km_parameter1
+	num		km_parameter2
+}
+
+
+// KM_200_terms_Stoffstammdaten
+enumeration Stoffstammdaten {
+	attribute	string	km_artNrBallen
+	attribute	Dessin	dessin
+	attribute   num/mm	km_ballenbreiteStammdaten
+	attribute   num/mm	km_ballenlaengeStammdaten
+	attribute	bool	km_beschichtet
+	attribute 	bool	km_covermaster
+
+	_2001315    = ("2001315", _273,  1770, 50000, false, false)
+	_416101		= ("416101",  _6011, 1200, 60000, true,  false)
+	_2001335    = ("2001335", _068,  1770, 50000, false, false)
+	_2000429    = ("2000429", _4000, 1200, 60000, false, false)
+	_410610     = ("410610",  _7750, 1200, 60000, false, false)
+	_410594     = ("410594",  _2851, 1200, 60000, false, false)
+
+	_2001342	= ("2001342",  _046,  2670, 50000, false, false)
+	_414067  	= ("414067",   _046,  1770, 50000, false, false)
+
+	_414053  	= ("414053",  _3502, 2500, 52000, false, false)
+	_2024867    = ("2024867", _3502, 2000, 52000, false, false)
+	_2039512    = ("2039512", _3502, 3200, 52000, false, false)
+
+  //_2025067	= ("2025067", _9530, 2050,     0, false,  true)
+  //_2025067	= ("2025065", _9532, 2050,     0, false,  true)
+}
+
+
+// KM_200_terms_StoffstammdatenTEST
+structure StoffstammdatenTEST {
+	//num/mm	            km_effBallenbreite
+	//num/mm	            km_verschnitt
+	//KM_ArtNrStofftuch	   km_artNrBallen
+
+	string			km_artNrBallenTEST
+    num/mm	        km_ballenbreiteTEST
+    num/mm	        km_ballenlaengeTEST
+}
+
+
+// KM_200_terms_Tuch
+structure Tuch {
+
+			string					km_skizzeTuch
+			Stoffstammdaten		    km_artNrTuch
+
+			bool					km_tuchBeschichtet
+			bool					km_ausklinkung
+			bool				    km_uniStrukturtoff
+
+			num/mm					km_maxTuchlaenge
+			num/mm					km_zMassLaengeBahnen
+
+			// ZUSCHNITTSMAßE
+			num/mm					km_zMassBreite
+			num/mm					km_zMassLaenge
+			num/mm					km_hilfsZmassBreite
+			num/mm					km_hilfsZmassLaenge
+
+			// FERTIGMAßE
+			num/mm					km_fertiglaenge
+			num/mm					km_hilfsmassFertiglaenge
+
+			num/mm					km_fertigbreite
+
+			num/mm					km_fertiglaengeMaschine
+			num/mm					km_fertigbreiteMaschine
+
+		    // AUFSCHLAG STOFFLAENGE
+			num/mm					km_aufschlagStofflaenge
+			num/mm					km_minAufschlagStofflaenge
+			num/mm					km_letzteBahn
+
+			// COVERMASTER STOFF
+			bool					km_covermaster
+			num/mm					km_aufschlagCovermaster
+
+			// KONKAVSCHNITT
+			num/mm					km_konkavschnittUnten
+			num/mm					km_konkavschnittOben
+
+			// SÄUME
+			num/mm					km_saumRE
+			num/mm					km_saumLI
+			num/mm					km_saumOben
+			num/mm					km_saumUnten
+
+			// STAHLBAND
+			KM_Stahlband			km_stahlband
+
+			// STOFFFAHNE
+			KM_Stofffahne			km_stofffahne
+
+			// STOFFBALLEN
+			num/mm	                km_minVerschnitt
+			num/mm					km_ballenbreite
+			num/mm					km_maxBallenbreite
+
+			// STOFFBAHNEN
+			num						km_anzBahnen
+			num/mm					km_nahtueberlappung
+
+			// TUCHVERARBEITUNG
+		  	KM_Tuchverarbeitung		km_tuchverarbeitung
+
+		  	// Hilfsstruktur für Stammdaten
+	  4     StoffstammdatenTEST		stoffstammdatentest
+	  4     KM_Ballenliste			km_ballenliste
+	  //3  	KM_Lieferantengruppe	km_lieferantengruppe
+		  //KM_Stoffballen			km_stoffballen
+
+	    	// Hilfsvariablen
+			num						km_anzAnsaetze
+			num/mm					km_hilfsmass
+			num/mm					km_hilfsmassBallenbreite
+
+			// Test Struktur
+      //     KM_ArtNrStofftuch		km_artNrStofftuch
+
+}
+
+
+// KM_200_terms_TypGehaeuse
+enumeration Gehaeusetyp {
+	_BL71
+	_BL81
+	_BL72
+	_BL73
+	_BL82
+	_BL74
+	_BL75
+	_BL83
+	_BL76
+	_BL77
+	_BL84
+	_BL78
+	_BL79
+	_BL85
+	_BL80
+	_BL86
+	_BL88
+	_BL87
+}
+
+
+// KM_200_terms_Unterposition
+structure Unterposition {
+	0..50       KM_Stanzbild       		km_stanzbilder
+	0..99		KM_Zubehoer				km_zubehoer
+	0..99		KM_Baugruppe			km_baugruppen
+	0..99		KM_Produktionshinweise	km_produktionshinweise
+}
+
+
+// KM_200_terms_Verstaerkungsprofil
+structure Verstaerkungsprofil {
+	KM_Bauteil		km_profil
+	num				km_anzahl
+	string			km_bohrbild
+	string			km_wellenkernArtNrLI
+	string			km_wellenkernArtNrRE
+
+	// Konfigurierbares Zubehör
+	string			km_artNrAbdeckblech
+	string			km_artNrLagerteilLI		// Links oder starr
+	string			km_artNrLagerteilRE		// Rechts oder verstellbar
+	string			km_artNrAnschlagFS
+	string			km_artNrGegenstueck
+	string			km_artNrAdapter
+
+
+}
+
+
+// VM_200_ui_Unterposition
+behavior {
+	readonly	unterposition[0].id
+}
+
+
+// VM_minipema_constraints_Unterposition
+
+behavior Unterposition {
+
+define foo = grundmerkmale.bestellBreite
+
+    // Nutzereingaben
+    define eingabeBreite = grundmerkmale.eingabeBreite
+    define montageHoehe = grundmerkmale.montagehoehe
+    define durchgangshoehe = grundmerkmale.durchgangshoehe
+
+    // Konstanten aus der Konstruktion
+    define UKKUKK = 8.82  // Unterkante Kasten zu Unterkante Konsole
+    define UKKKTW = 90 // Unterkante Kasten zu Achse TW
+    define ATWW = 125 // Achse TW zur Wand
+    define r = 48.4985 // Parallele Drehpunkt Pfosten zu Achse T
+    define FSCH_Hoehe = 80 // Dachdicke
+
+    // Berechnung von Hilfsvariablen
+    define debug_deltaHoehe = montageHoehe - UKKUKK + UKKKTW - durchgangshoehe
+    define debug_deltaBreite = ATWW - eingabeBreite
+
+    define debug_deltaHoehePow2 = debug_deltaHoehe^2
+    define debug_deltaBreitePow2 = debug_deltaBreite^2
+    define debug_sqrtValue = sqrt(debug_deltaHoehePow2 + debug_deltaBreitePow2 )
+
+
+
+
+    // Zu berechnende Zielvariablen
+    define bestellBreite = grundmerkmale.bestellBreite
+    define neigungswinkel = grundmerkmale.neigungswinkelAnlage
+
+    // Berechnung
+    define debug_atanArg = debug_deltaBreite / debug_deltaHoehe
+    define debug_acosArg = r / debug_sqrtValue
+    define debug_acosValue = acos(debug_acosArg)
+    define debug_atanValue = atan(debug_atanArg)
+    require neigungswinkel = debug_atanValue + debug_acosValue
+    require bestellBreite = eingabeBreite + tan(neigungswinkel) * FSCH_Hoehe
+    require grundmerkmale.flaeche = grundmerkmale.laenge * bestellBreite / 1000000 // mm x mm to m^2
+    require grundmerkmale.weight = grundmerkmale.flaeche * cover.weight / 1000 // gramm to Kg
+
+
+
+
+    // debug Ausgaben
+    require grundmerkmale.debugValues.deltaHoehe = debug_deltaHoehe
+    require grundmerkmale.debugValues.deltaBreite = debug_deltaBreite
+    require grundmerkmale.debugValues.deltaBreitePow2 = debug_deltaBreitePow2
+    require grundmerkmale.debugValues.deltaHoehePow2 = debug_deltaHoehePow2
+    require grundmerkmale.debugValues.sqrtValue = debug_sqrtValue
+    require grundmerkmale.debugValues.acosValue = debug_acosValue
+    require grundmerkmale.debugValues.atanValue = debug_atanValue
+    require grundmerkmale.debugValues.acosArg = debug_acosArg
+    require grundmerkmale.debugValues.atanArg = debug_atanArg
+
+}
+
+
+
+// VM_minipema_constraints_Unterposition
+behavior Unterposition {
+	imply konstruktion.pfostenLI.unterposition = this
+    imply konstruktion.pfostenRE.unterposition = this
+
+}
+
+
+
+// VM_minipema_constraints_Pfosten
+
+behavior Pfosten {
+
+    // Ausgangswerte für die Bestimmung der Pfosten
+    define eingabeBreite = unterposition.grundmerkmale.eingabeBreite
+    define montageHoehe = unterposition.grundmerkmale.montagehoehe
+    define durchgangshoehe = unterposition.grundmerkmale.durchgangshoehe
+    define neigungswinkel = unterposition.grundmerkmale.neigungswinkelAnlage
+
+    require ueberstand = eingabeBreite - km_mittePfosten
+
+    require km_gesamthoehe = durchgangshoehe + tan(neigungswinkel) * ueberstand
+
+}
+
+
+
+// VM_minipema_constraints_Pfosten
+
+behavior Pfosten {
+
+    require ueberstand > 105
+	require km_mittePfosten < 4000
+	require km_gesamthoehe > 1000
+	require km_gesamthoehe < 3200
+
+
+	condition km_gesamthoehe > 2200
+	require typPfosten != _Doppelpfosten
+
+	 // these defaults are only here for technical reasons -> currently COOM shows unsat if no default for constrained num values exists
+	default ueberstand = 150
+	default km_mittePfosten = 3000
+	default km_gesamthoehe = 2000
+}
+
+
+
+// VM_minipema_terms_Home
+product {
+//			Konfigurationskontext	konfigurationskontext
+
+	1..25	Unterposition    		unterposition
+
+//	1..25	Anlagenverbund			anlagenverbund
+}
+
+
+// VM_minipema_terms_Unterposition
+behavior Unterposition {
+    default cover = _AcrylAllWeather
+}
+
+
+// VM_minipema_terms_Grundmerkmale
+behavior Grundmerkmale {
+readonly 	bestellBreite
+readonly    flaeche
+readonly    weight
+readonly 	debugValues.deltaHoehe
+readonly 	debugValues.deltaBreite
+readonly 	debugValues.deltaHoehePow2
+readonly 	debugValues.deltaBreitePow2
+readonly 	debugValues.sqrtValue
+readonly 	debugValues.atanValue
+readonly 	debugValues.acosValue
+readonly 	debugValues.atanArg
+readonly 	debugValues.acosArg
+readonly 	neigungswinkelAnlage
+}
+
+
+
+// VM_minipema_terms_Pfosten
+
+behavior Pfosten {
+    default typPfosten = _Starr
+}
+
+
+// VM_minipema_terms_Home
+product {
+//			Konfigurationskontext	konfigurationskontext
+
+	1..25	Unterposition    		unterposition
+
+//	1..25	Anlagenverbund			anlagenverbund
+}

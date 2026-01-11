@@ -13,6 +13,7 @@ dependencies = [
     "clingcon >= 5.2.1, == 5.2.*",                                                                  # requirement for flingo
     "fclingo@git+https://github.com/potassco/fclingo.git@6f4d7efc92bfac18465e2c95c4ef9ac99ef470b5",
     "clinguin>=2.6.1",
+    "constraint-handler@file:./src/coomsuite/encodings/constraint-handler/constraint-handler/",
 ]
 license-files = ["LICENSE"]
 dynamic = ["version"]
@@ -25,7 +26,7 @@ Homepage = "https://github.com/potassco/coom-suite.git/"
 format = ["black", "isort", "autoflake"]
 lint_pylint = ["pylint"]
 typecheck = ["types-setuptools", "mypy"]
-test = ["coverage[toml]", "clintest>=0.2.0"]
+test = ["coverage[toml]", "clintest>=0.3.0"]
 doc = [
     "mkdocs",
     "mkdocs-material",

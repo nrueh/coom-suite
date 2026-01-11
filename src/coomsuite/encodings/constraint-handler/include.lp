@@ -1,0 +1,11 @@
+#include "constraint-handler/src/constraint_handler/data/bool.lp".
+#include "constraint-handler/src/constraint_handler/data/conditionals.lp".
+#include "constraint-handler/src/constraint_handler/data/direct.lp".
+%#include "constraint-handler/src/constraint_handler/data/display.lp".
+#include "constraint-handler/src/constraint_handler/data/float.lp".
+#include "constraint-handler/src/constraint_handler/data/gringoEval.lp".
+#include "constraint-handler/src/constraint_handler/data/int.lp".
+#include "constraint-handler/src/constraint_handler/data/main.lp".
+#include "constraint-handler/src/constraint_handler/data/multimap.lp".
+#include "constraint-handler/src/constraint_handler/data/set.lp".
+#include "constraint-handler/src/constraint_handler/data/string.lp".
